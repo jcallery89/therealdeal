@@ -16,6 +16,8 @@ import { pickBucket, pickLabel, pickValue } from "@/lib/values/picks";
 
 interface AssetOption extends TradeAsset {
   search: string;
+  /** Roster designation shown next to the name (taxi squad / injured reserve). */
+  tag?: "TAXI" | "IR";
 }
 
 export default function TradeBuilder({ bundle }: { bundle: LeagueBundle }) {
@@ -47,6 +49,9 @@ export default function TradeBuilder({ bundle }: { bundle: LeagueBundle }) {
 
   const optionsFor = (rosterId: number): AssetOption[] => {
     const roster = rosters.find((r) => r.roster_id === rosterId);
+    const taxiSet = new Set(roster?.taxi ?? []);
+    const irSet = new Set(roster?.reserve ?? []);
+    // roster.players is the complete list (starters, bench, taxi, and IR).
     const playerOptions: AssetOption[] = (roster?.players ?? [])
       .map((id) => players[id])
       .filter((p) => p !== undefined)
@@ -58,6 +63,11 @@ export default function TradeBuilder({ bundle }: { bundle: LeagueBundle }) {
         position: p.position,
         age: p.age,
         search: p.name.toLowerCase(),
+        tag: taxiSet.has(p.sleeperId)
+          ? ("TAXI" as const)
+          : irSet.has(p.sleeperId)
+            ? ("IR" as const)
+            : undefined,
       }))
       .sort((a, b) => b.value - a.value);
     const pickOptions: AssetOption[] = picks
@@ -265,8 +275,24 @@ function SideColumn({
   const sentIds = new Set(sent.map((a) => a.id));
   const filtered = options
     .filter((o) => !sentIds.has(o.id))
-    .filter((o) => o.search.includes(query.toLowerCase()))
-    .slice(0, 8);
+    .filter((o) => o.search.includes(query.toLowerCase()));
+
+  // Full asset browser: every rostered player grouped by position (taxi/IR
+  // tagged inline), then the complete pick inventory.
+  const POSITION_ORDER = ["QB", "RB", "WR", "TE", "K", "DEF"];
+  const groups: { title: string; items: AssetOption[] }[] = [
+    ...POSITION_ORDER.map((pos) => ({
+      title: pos,
+      items: filtered.filter((o) => o.kind === "player" && o.position === pos),
+    })),
+    {
+      title: "Other",
+      items: filtered.filter(
+        (o) => o.kind === "player" && !POSITION_ORDER.includes(o.position ?? "")
+      ),
+    },
+    { title: "Draft picks", items: filtered.filter((o) => o.kind === "pick") },
+  ].filter((g) => g.items.length > 0);
 
   return (
     <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4" data-testid={`trade-side-${side}`}>
@@ -319,34 +345,60 @@ function SideColumn({
       <input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search players & picks…"
+        placeholder="Filter players & picks…"
         className="mt-2 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-slate-200 placeholder:text-slate-600 focus:border-emerald-500 focus:outline-none"
       />
-      <ul className="mt-1.5 flex flex-col">
-        {filtered.map((o) => (
-          <li key={o.id}>
-            <button
-              onClick={() => {
-                setSent([...sent, o]);
-                setQuery("");
-              }}
-              className="flex w-full items-center justify-between rounded px-2 py-1 text-left text-sm text-slate-300 hover:bg-slate-800"
-            >
-              <span className="flex items-center gap-2">
-                {o.kind === "player" && o.position ? (
-                  <PositionBadge position={o.position} />
-                ) : (
-                  <span className="inline-flex w-9 justify-center rounded bg-indigo-500/15 px-1 py-0.5 text-[11px] font-semibold text-indigo-300">
-                    PICK
-                  </span>
-                )}
-                {o.label}
-              </span>
-              <span className="font-mono text-xs text-slate-500">{o.value.toLocaleString()}</span>
-            </button>
-          </li>
+      <div
+        className="mt-1.5 max-h-80 overflow-y-auto rounded-md border border-slate-800/70"
+        data-testid={`asset-list-${side}`}
+      >
+        {groups.map((group) => (
+          <div key={group.title}>
+            <div className="sticky top-0 bg-slate-900 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+              {group.title}
+            </div>
+            <ul className="flex flex-col">
+              {group.items.map((o) => (
+                <li key={o.id}>
+                  <button
+                    onClick={() => {
+                      setSent([...sent, o]);
+                      setQuery("");
+                    }}
+                    className="flex w-full items-center justify-between rounded px-2 py-1 text-left text-sm text-slate-300 hover:bg-slate-800"
+                  >
+                    <span className="flex min-w-0 items-center gap-2">
+                      {o.kind === "player" && o.position ? (
+                        <PositionBadge position={o.position} />
+                      ) : (
+                        <span className="inline-flex w-9 shrink-0 justify-center rounded bg-indigo-500/15 px-1 py-0.5 text-[11px] font-semibold text-indigo-300">
+                          PICK
+                        </span>
+                      )}
+                      <span className="truncate">{o.label}</span>
+                      {o.tag && (
+                        <span
+                          className={`shrink-0 rounded px-1 py-0.5 text-[9px] font-semibold ${
+                            o.tag === "TAXI"
+                              ? "bg-violet-500/15 text-violet-300"
+                              : "bg-rose-500/15 text-rose-300"
+                          }`}
+                        >
+                          {o.tag}
+                        </span>
+                      )}
+                    </span>
+                    <span className="font-mono text-xs text-slate-500">{o.value.toLocaleString()}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
         ))}
-      </ul>
+        {filtered.length === 0 && (
+          <p className="px-2 py-3 text-xs text-slate-600">No assets match that filter.</p>
+        )}
+      </div>
     </div>
   );
 }

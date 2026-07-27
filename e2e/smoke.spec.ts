@@ -34,12 +34,19 @@ test("keeper roster dashboard renders with KTC context values", async ({ page })
 test("trade analyzer evaluates a player-plus-pick swap", async ({ page }) => {
   await page.goto(`/league/${DYNASTY}/trade`);
 
+  // The full asset browser lists every rostered player (12 in the fixture,
+  // taxi/IR included) plus the complete pick inventory — no truncation.
+  const listA = page.getByTestId("asset-list-A");
+  const optionCount = await listA.getByRole("listitem").count();
+  expect(optionCount).toBeGreaterThanOrEqual(24);
+  await expect(listA.getByText("Draft picks")).toBeVisible();
+  await expect(listA.getByText("TAXI").first()).toBeVisible();
+
   const sideA = page.getByTestId("trade-side-A");
-  await sideA.getByPlaceholder("Search players & picks…").fill("1st");
+  await sideA.getByPlaceholder("Filter players & picks…").fill("1st");
   await sideA.getByRole("button", { name: /1st/ }).first().click();
 
   const sideB = page.getByTestId("trade-side-B");
-  await sideB.getByPlaceholder("Search players & picks…").click();
   await sideB.getByRole("listitem").locator("button").first().click();
 
   const verdict = page.getByTestId("verdict-panel");
