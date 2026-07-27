@@ -88,12 +88,17 @@ export async function getLeagueBundle(leagueId: string): Promise<LeagueBundle | 
     picks,
     teamAnalytics,
     defaultSource,
+    // Primary health = Sleeper data only; a blocked FantasyCalc/KTC fetch
+    // must not brand live rosters as demo data.
     source: worstSource(
       leagueRes.source,
       rostersRes.source,
       usersRes.source,
-      tradedRes.source,
-      table.meta.source
+      tradedRes.source
     ),
+    valuesDegraded: {
+      fc: table.meta.sources.fc !== "live",
+      ktc: table.meta.sources.ktc !== "live",
+    },
   };
 }

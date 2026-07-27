@@ -147,7 +147,7 @@ export default function RosterDashboard({ bundle }: { bundle: LeagueBundle }) {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <DataSourceBanner source={bundle.source} />
+      <DataSourceBanner source={bundle.source} valuesDegraded={bundle.valuesDegraded} />
 
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>

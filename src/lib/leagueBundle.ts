@@ -30,7 +30,14 @@ export interface LeagueBundle {
   picks: DraftPick[];
   teamAnalytics: TeamAnalytics[];
   defaultSource: ValueSource;
+  /**
+   * Health of the PRIMARY data (Sleeper rosters/league). Value sources are
+   * tracked separately in valuesDegraded so a blocked scraper doesn't flag
+   * genuinely live rosters as demo data.
+   */
   source: DataSourceKind;
+  /** True per value source when it did not load live (stale or unavailable). */
+  valuesDegraded: { fc: boolean; ktc: boolean };
 }
 
 export function teamName(users: SleeperLeagueUser[], roster: SleeperRoster): string {

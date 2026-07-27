@@ -31,6 +31,8 @@ export interface CanonicalTable {
   fcPicks: { dynastySf: FcEntry[]; redraft: FcEntry[] };
   meta: {
     source: DataSourceKind;
+    /** Per-value-source health, so optional sources can degrade softly. */
+    sources: { fc: DataSourceKind; ktc: DataSourceKind };
     fetchedAt: number;
     ktcUnmatched: string[];
     counts: { players: number; fcDynastySf: number; fcRedraft: number; ktc: number };
@@ -156,6 +158,10 @@ export async function buildCanonicalTable(): Promise<CanonicalTable> {
         fcRedRes.source,
         ktcRes.source
       ),
+      sources: {
+        fc: worstSource(fcDynRes.source, fcRedRes.source),
+        ktc: ktcRes.source,
+      },
       fetchedAt: Date.now(),
       ktcUnmatched,
       counts: {

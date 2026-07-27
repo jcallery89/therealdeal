@@ -136,7 +136,7 @@ export default function TradeBuilder({ bundle }: { bundle: LeagueBundle }) {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <DataSourceBanner source={bundle.source} />
+      <DataSourceBanner source={bundle.source} valuesDegraded={bundle.valuesDegraded} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-slate-100">Trade Analyzer</h1>

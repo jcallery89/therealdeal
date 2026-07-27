@@ -70,7 +70,7 @@ export default function StrategyView({ bundle }: { bundle: LeagueBundle }) {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <DataSourceBanner source={bundle.source} />
+      <DataSourceBanner source={bundle.source} valuesDegraded={bundle.valuesDegraded} />
       <h1 className="text-2xl font-bold text-slate-100">
         {leagueConfig.isDynasty ? "Dynasty Strategy" : "League Strategy"}
       </h1>
