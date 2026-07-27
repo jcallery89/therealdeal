@@ -1,0 +1,35 @@
+{
+  "league_id": "1377306985065619456",
+  "name": "The Real Deal",
+  "season": "2025",
+  "status": "in_season",
+  "total_rosters": 10,
+  "roster_positions": [
+    "QB",
+    "RB",
+    "RB",
+    "WR",
+    "WR",
+    "WR",
+    "TE",
+    "FLEX",
+    "BN",
+    "BN",
+    "BN",
+    "BN"
+  ],
+  "scoring_settings": {
+    "rec": 1,
+    "bonus_rec_te": 0.5,
+    "pass_td": 4
+  },
+  "settings": {
+    "type": 1,
+    "taxi_slots": 0,
+    "max_keepers": 3,
+    "reserve_slots": 2,
+    "leg": 10
+  },
+  "previous_league_id": null,
+  "avatar": null
+}

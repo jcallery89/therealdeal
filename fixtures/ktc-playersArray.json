@@ -1,0 +1,1442 @@
+[
+  {
+    "playerName": "Josh Allen",
+    "position": "QB",
+    "team": "BUF",
+    "age": 29,
+    "oneQBValues": {
+      "value": 6030
+    },
+    "superflexValues": {
+      "value": 9886
+    }
+  },
+  {
+    "playerName": "Lamar Jackson",
+    "position": "QB",
+    "team": "BAL",
+    "age": 28,
+    "oneQBValues": {
+      "value": 5217
+    },
+    "superflexValues": {
+      "value": 8951
+    }
+  },
+  {
+    "playerName": "Jayden Daniels",
+    "position": "QB",
+    "team": "WAS",
+    "age": 24,
+    "oneQBValues": {
+      "value": 5688
+    },
+    "superflexValues": {
+      "value": 9041
+    }
+  },
+  {
+    "playerName": "Jalen Hurts",
+    "position": "QB",
+    "team": "PHI",
+    "age": 27,
+    "oneQBValues": {
+      "value": 4763
+    },
+    "superflexValues": {
+      "value": 8330
+    }
+  },
+  {
+    "playerName": "Patrick Mahomes",
+    "position": "QB",
+    "team": "KC",
+    "age": 30,
+    "oneQBValues": {
+      "value": 4714
+    },
+    "superflexValues": {
+      "value": 7851
+    }
+  },
+  {
+    "playerName": "Joe Burrow",
+    "position": "QB",
+    "team": "CIN",
+    "age": 28,
+    "oneQBValues": {
+      "value": 4965
+    },
+    "superflexValues": {
+      "value": 7875
+    }
+  },
+  {
+    "playerName": "C.J. Stroud",
+    "position": "QB",
+    "team": "HOU",
+    "age": 24,
+    "oneQBValues": {
+      "value": 4125
+    },
+    "superflexValues": {
+      "value": 6919
+    }
+  },
+  {
+    "playerName": "Caleb Williams",
+    "position": "QB",
+    "team": "CHI",
+    "age": 23,
+    "oneQBValues": {
+      "value": 4092
+    },
+    "superflexValues": {
+      "value": 6816
+    }
+  },
+  {
+    "playerName": "Drake Maye",
+    "position": "QB",
+    "team": "NE",
+    "age": 23,
+    "oneQBValues": {
+      "value": 3705
+    },
+    "superflexValues": {
+      "value": 6559
+    }
+  },
+  {
+    "playerName": "Justin Herbert",
+    "position": "QB",
+    "team": "LAC",
+    "age": 27,
+    "oneQBValues": {
+      "value": 4032
+    },
+    "superflexValues": {
+      "value": 6580
+    }
+  },
+  {
+    "playerName": "Kyler Murray",
+    "position": "QB",
+    "team": "ARI",
+    "age": 28,
+    "oneQBValues": {
+      "value": 3432
+    },
+    "superflexValues": {
+      "value": 5787
+    }
+  },
+  {
+    "playerName": "Bo Nix",
+    "position": "QB",
+    "team": "DEN",
+    "age": 25,
+    "oneQBValues": {
+      "value": 3625
+    },
+    "superflexValues": {
+      "value": 6135
+    }
+  },
+  {
+    "playerName": "Jordan Love",
+    "position": "QB",
+    "team": "GB",
+    "age": 27,
+    "oneQBValues": {
+      "value": 3417
+    },
+    "superflexValues": {
+      "value": 5466
+    }
+  },
+  {
+    "playerName": "Baker Mayfield",
+    "position": "QB",
+    "team": "TB",
+    "age": 30,
+    "oneQBValues": {
+      "value": 2746
+    },
+    "superflexValues": {
+      "value": 4611
+    }
+  },
+  {
+    "playerName": "Dak Prescott",
+    "position": "QB",
+    "team": "DAL",
+    "age": 32,
+    "oneQBValues": {
+      "value": 2415
+    },
+    "superflexValues": {
+      "value": 4197
+    }
+  },
+  {
+    "playerName": "Tua Tagovailoa",
+    "position": "QB",
+    "team": "MIA",
+    "age": 27,
+    "oneQBValues": {
+      "value": 2515
+    },
+    "superflexValues": {
+      "value": 4202
+    }
+  },
+  {
+    "playerName": "Trevor Lawrence",
+    "position": "QB",
+    "team": "JAX",
+    "age": 26,
+    "oneQBValues": {
+      "value": 2698
+    },
+    "superflexValues": {
+      "value": 4250
+    }
+  },
+  {
+    "playerName": "Cameron Ward",
+    "position": "QB",
+    "team": "TEN",
+    "age": 23,
+    "oneQBValues": {
+      "value": 3115
+    },
+    "superflexValues": {
+      "value": 5416
+    }
+  },
+  {
+    "playerName": "J.J. McCarthy",
+    "position": "QB",
+    "team": "MIN",
+    "age": 22,
+    "oneQBValues": {
+      "value": 3436
+    },
+    "superflexValues": {
+      "value": 5505
+    }
+  },
+  {
+    "playerName": "Michael Penix",
+    "position": "QB",
+    "team": "ATL",
+    "age": 25,
+    "oneQBValues": {
+      "value": 3097
+    },
+    "superflexValues": {
+      "value": 5052
+    }
+  },
+  {
+    "playerName": "Jared Goff",
+    "position": "QB",
+    "team": "DET",
+    "age": 31,
+    "oneQBValues": {
+      "value": 2481
+    },
+    "superflexValues": {
+      "value": 4126
+    }
+  },
+  {
+    "playerName": "Brock Purdy",
+    "position": "QB",
+    "team": "SF",
+    "age": 26,
+    "oneQBValues": {
+      "value": 2537
+    },
+    "superflexValues": {
+      "value": 4168
+    }
+  },
+  {
+    "playerName": "Bijan Robinson",
+    "position": "RB",
+    "team": "ATL",
+    "age": 23,
+    "oneQBValues": {
+      "value": 8967
+    },
+    "superflexValues": {
+      "value": 8638
+    }
+  },
+  {
+    "playerName": "Jahmyr Gibbs",
+    "position": "RB",
+    "team": "DET",
+    "age": 23,
+    "oneQBValues": {
+      "value": 8536
+    },
+    "superflexValues": {
+      "value": 8401
+    }
+  },
+  {
+    "playerName": "Ashton Jeanty",
+    "position": "RB",
+    "team": "LV",
+    "age": 22,
+    "oneQBValues": {
+      "value": 7863
+    },
+    "superflexValues": {
+      "value": 8309
+    }
+  },
+  {
+    "playerName": "Saquon Barkley",
+    "position": "RB",
+    "team": "PHI",
+    "age": 28,
+    "oneQBValues": {
+      "value": 6363
+    },
+    "superflexValues": {
+      "value": 6366
+    }
+  },
+  {
+    "playerName": "Breece Hall",
+    "position": "RB",
+    "team": "NYJ",
+    "age": 24,
+    "oneQBValues": {
+      "value": 5674
+    },
+    "superflexValues": {
+      "value": 5415
+    }
+  },
+  {
+    "playerName": "Jonathan Taylor",
+    "position": "RB",
+    "team": "IND",
+    "age": 26,
+    "oneQBValues": {
+      "value": 5612
+    },
+    "superflexValues": {
+      "value": 5553
+    }
+  },
+  {
+    "playerName": "De'Von Achane",
+    "position": "RB",
+    "team": "MIA",
+    "age": 24,
+    "oneQBValues": {
+      "value": 6570
+    },
+    "superflexValues": {
+      "value": 6041
+    }
+  },
+  {
+    "playerName": "Bucky Irving",
+    "position": "RB",
+    "team": "TB",
+    "age": 23,
+    "oneQBValues": {
+      "value": 5751
+    },
+    "superflexValues": {
+      "value": 5812
+    }
+  },
+  {
+    "playerName": "Kyren Williams",
+    "position": "RB",
+    "team": "LAR",
+    "age": 25,
+    "oneQBValues": {
+      "value": 4783
+    },
+    "superflexValues": {
+      "value": 4769
+    }
+  },
+  {
+    "playerName": "Derrick Henry",
+    "position": "RB",
+    "team": "BAL",
+    "age": 31,
+    "oneQBValues": {
+      "value": 3739
+    },
+    "superflexValues": {
+      "value": 4070
+    }
+  },
+  {
+    "playerName": "Josh Jacobs",
+    "position": "RB",
+    "team": "GB",
+    "age": 27,
+    "oneQBValues": {
+      "value": 4738
+    },
+    "superflexValues": {
+      "value": 4871
+    }
+  },
+  {
+    "playerName": "Chase Brown",
+    "position": "RB",
+    "team": "CIN",
+    "age": 25,
+    "oneQBValues": {
+      "value": 4513
+    },
+    "superflexValues": {
+      "value": 4688
+    }
+  },
+  {
+    "playerName": "Kenneth Walker",
+    "position": "RB",
+    "team": "SEA",
+    "age": 25,
+    "oneQBValues": {
+      "value": 3994
+    },
+    "superflexValues": {
+      "value": 4350
+    }
+  },
+  {
+    "playerName": "James Cook",
+    "position": "RB",
+    "team": "BUF",
+    "age": 26,
+    "oneQBValues": {
+      "value": 4479
+    },
+    "superflexValues": {
+      "value": 4288
+    }
+  },
+  {
+    "playerName": "Omarion Hampton",
+    "position": "RB",
+    "team": "LAC",
+    "age": 22,
+    "oneQBValues": {
+      "value": 5679
+    },
+    "superflexValues": {
+      "value": 6081
+    }
+  },
+  {
+    "playerName": "TreVeyon Henderson",
+    "position": "RB",
+    "team": "NE",
+    "age": 23,
+    "oneQBValues": {
+      "value": 5155
+    },
+    "superflexValues": {
+      "value": 4986
+    }
+  },
+  {
+    "playerName": "Quinshon Judkins",
+    "position": "RB",
+    "team": "CLE",
+    "age": 22,
+    "oneQBValues": {
+      "value": 4806
+    },
+    "superflexValues": {
+      "value": 5219
+    }
+  },
+  {
+    "playerName": "RJ Harvey",
+    "position": "RB",
+    "team": "DEN",
+    "age": 24,
+    "oneQBValues": {
+      "value": 3924
+    },
+    "superflexValues": {
+      "value": 4119
+    }
+  },
+  {
+    "playerName": "Chuba Hubbard",
+    "position": "RB",
+    "team": "CAR",
+    "age": 26,
+    "oneQBValues": {
+      "value": 3714
+    },
+    "superflexValues": {
+      "value": 3601
+    }
+  },
+  {
+    "playerName": "Alvin Kamara",
+    "position": "RB",
+    "team": "NO",
+    "age": 30,
+    "oneQBValues": {
+      "value": 2910
+    },
+    "superflexValues": {
+      "value": 2681
+    }
+  },
+  {
+    "playerName": "Christian McCaffrey",
+    "position": "RB",
+    "team": "SF",
+    "age": 29,
+    "oneQBValues": {
+      "value": 3523
+    },
+    "superflexValues": {
+      "value": 3714
+    }
+  },
+  {
+    "playerName": "Aaron Jones",
+    "position": "RB",
+    "team": "MIN",
+    "age": 31,
+    "oneQBValues": {
+      "value": 2254
+    },
+    "superflexValues": {
+      "value": 2152
+    }
+  },
+  {
+    "playerName": "Rachaad White",
+    "position": "RB",
+    "team": "TB",
+    "age": 26,
+    "oneQBValues": {
+      "value": 2090
+    },
+    "superflexValues": {
+      "value": 1979
+    }
+  },
+  {
+    "playerName": "Tony Pollard",
+    "position": "RB",
+    "team": "TEN",
+    "age": 28,
+    "oneQBValues": {
+      "value": 2199
+    },
+    "superflexValues": {
+      "value": 2347
+    }
+  },
+  {
+    "playerName": "David Montgomery",
+    "position": "RB",
+    "team": "DET",
+    "age": 28,
+    "oneQBValues": {
+      "value": 2422
+    },
+    "superflexValues": {
+      "value": 2415
+    }
+  },
+  {
+    "playerName": "D'Andre Swift",
+    "position": "RB",
+    "team": "CHI",
+    "age": 26,
+    "oneQBValues": {
+      "value": 2574
+    },
+    "superflexValues": {
+      "value": 2792
+    }
+  },
+  {
+    "playerName": "Isiah Pacheco",
+    "position": "RB",
+    "team": "KC",
+    "age": 26,
+    "oneQBValues": {
+      "value": 2490
+    },
+    "superflexValues": {
+      "value": 2555
+    }
+  },
+  {
+    "playerName": "Brian Robinson",
+    "position": "RB",
+    "team": "WAS",
+    "age": 26,
+    "oneQBValues": {
+      "value": 2002
+    },
+    "superflexValues": {
+      "value": 2222
+    }
+  },
+  {
+    "playerName": "Rhamondre Stevenson",
+    "position": "RB",
+    "team": "NE",
+    "age": 27,
+    "oneQBValues": {
+      "value": 1951
+    },
+    "superflexValues": {
+      "value": 1898
+    }
+  },
+  {
+    "playerName": "Zach Charbonnet",
+    "position": "RB",
+    "team": "SEA",
+    "age": 24,
+    "oneQBValues": {
+      "value": 2436
+    },
+    "superflexValues": {
+      "value": 2542
+    }
+  },
+  {
+    "playerName": "Jaylen Warren",
+    "position": "RB",
+    "team": "PIT",
+    "age": 27,
+    "oneQBValues": {
+      "value": 1887
+    },
+    "superflexValues": {
+      "value": 1896
+    }
+  },
+  {
+    "playerName": "Tyjae Spears",
+    "position": "RB",
+    "team": "TEN",
+    "age": 24,
+    "oneQBValues": {
+      "value": 1696
+    },
+    "superflexValues": {
+      "value": 1819
+    }
+  },
+  {
+    "playerName": "Kaleb Johnson",
+    "position": "RB",
+    "team": "PIT",
+    "age": 22,
+    "oneQBValues": {
+      "value": 3111
+    },
+    "superflexValues": {
+      "value": 3041
+    }
+  },
+  {
+    "playerName": "Braelon Allen",
+    "position": "RB",
+    "team": "NYJ",
+    "age": 21,
+    "oneQBValues": {
+      "value": 2246
+    },
+    "superflexValues": {
+      "value": 2219
+    }
+  },
+  {
+    "playerName": "Ja'Marr Chase",
+    "position": "WR",
+    "team": "CIN",
+    "age": 25,
+    "oneQBValues": {
+      "value": 9033
+    },
+    "superflexValues": {
+      "value": 9755
+    }
+  },
+  {
+    "playerName": "Justin Jefferson",
+    "position": "WR",
+    "team": "MIN",
+    "age": 26,
+    "oneQBValues": {
+      "value": 8307
+    },
+    "superflexValues": {
+      "value": 8457
+    }
+  },
+  {
+    "playerName": "CeeDee Lamb",
+    "position": "WR",
+    "team": "DAL",
+    "age": 26,
+    "oneQBValues": {
+      "value": 8674
+    },
+    "superflexValues": {
+      "value": 7985
+    }
+  },
+  {
+    "playerName": "Amon-Ra St. Brown",
+    "position": "WR",
+    "team": "DET",
+    "age": 26,
+    "oneQBValues": {
+      "value": 7793
+    },
+    "superflexValues": {
+      "value": 7859
+    }
+  },
+  {
+    "playerName": "Puka Nacua",
+    "position": "WR",
+    "team": "LAR",
+    "age": 24,
+    "oneQBValues": {
+      "value": 8399
+    },
+    "superflexValues": {
+      "value": 8301
+    }
+  },
+  {
+    "playerName": "Malik Nabers",
+    "position": "WR",
+    "team": "NYG",
+    "age": 22,
+    "oneQBValues": {
+      "value": 8265
+    },
+    "superflexValues": {
+      "value": 7852
+    }
+  },
+  {
+    "playerName": "Marvin Harrison Jr.",
+    "position": "WR",
+    "team": "ARI",
+    "age": 23,
+    "oneQBValues": {
+      "value": 7102
+    },
+    "superflexValues": {
+      "value": 6966
+    }
+  },
+  {
+    "playerName": "Nico Collins",
+    "position": "WR",
+    "team": "HOU",
+    "age": 26,
+    "oneQBValues": {
+      "value": 6412
+    },
+    "superflexValues": {
+      "value": 6365
+    }
+  },
+  {
+    "playerName": "Brian Thomas Jr.",
+    "position": "WR",
+    "team": "JAX",
+    "age": 23,
+    "oneQBValues": {
+      "value": 7376
+    },
+    "superflexValues": {
+      "value": 7584
+    }
+  },
+  {
+    "playerName": "A.J. Brown",
+    "position": "WR",
+    "team": "PHI",
+    "age": 28,
+    "oneQBValues": {
+      "value": 5941
+    },
+    "superflexValues": {
+      "value": 5996
+    }
+  },
+  {
+    "playerName": "Drake London",
+    "position": "WR",
+    "team": "ATL",
+    "age": 24,
+    "oneQBValues": {
+      "value": 6695
+    },
+    "superflexValues": {
+      "value": 6929
+    }
+  },
+  {
+    "playerName": "Garrett Wilson",
+    "position": "WR",
+    "team": "NYJ",
+    "age": 25,
+    "oneQBValues": {
+      "value": 5907
+    },
+    "superflexValues": {
+      "value": 6509
+    }
+  },
+  {
+    "playerName": "Tyreek Hill",
+    "position": "WR",
+    "team": "MIA",
+    "age": 31,
+    "oneQBValues": {
+      "value": 3982
+    },
+    "superflexValues": {
+      "value": 4035
+    }
+  },
+  {
+    "playerName": "Davante Adams",
+    "position": "WR",
+    "team": "LAR",
+    "age": 33,
+    "oneQBValues": {
+      "value": 2856
+    },
+    "superflexValues": {
+      "value": 2957
+    }
+  },
+  {
+    "playerName": "Jaxon Smith-Njigba",
+    "position": "WR",
+    "team": "SEA",
+    "age": 23,
+    "oneQBValues": {
+      "value": 6694
+    },
+    "superflexValues": {
+      "value": 7231
+    }
+  },
+  {
+    "playerName": "Ladd McConkey",
+    "position": "WR",
+    "team": "LAC",
+    "age": 24,
+    "oneQBValues": {
+      "value": 6016
+    },
+    "superflexValues": {
+      "value": 6630
+    }
+  },
+  {
+    "playerName": "Tetairoa McMillan",
+    "position": "WR",
+    "team": "CAR",
+    "age": 22,
+    "oneQBValues": {
+      "value": 6264
+    },
+    "superflexValues": {
+      "value": 6193
+    }
+  },
+  {
+    "playerName": "Travis Hunter",
+    "position": "WR",
+    "team": "JAX",
+    "age": 22,
+    "oneQBValues": {
+      "value": 6012
+    },
+    "superflexValues": {
+      "value": 5560
+    }
+  },
+  {
+    "playerName": "Rome Odunze",
+    "position": "WR",
+    "team": "CHI",
+    "age": 23,
+    "oneQBValues": {
+      "value": 5391
+    },
+    "superflexValues": {
+      "value": 5384
+    }
+  },
+  {
+    "playerName": "Rashee Rice",
+    "position": "WR",
+    "team": "KC",
+    "age": 25,
+    "oneQBValues": {
+      "value": 5416
+    },
+    "superflexValues": {
+      "value": 5457
+    }
+  },
+  {
+    "playerName": "DeVonta Smith",
+    "position": "WR",
+    "team": "PHI",
+    "age": 27,
+    "oneQBValues": {
+      "value": 4770
+    },
+    "superflexValues": {
+      "value": 4780
+    }
+  },
+  {
+    "playerName": "Jaylen Waddle",
+    "position": "WR",
+    "team": "MIA",
+    "age": 27,
+    "oneQBValues": {
+      "value": 4550
+    },
+    "superflexValues": {
+      "value": 4308
+    }
+  },
+  {
+    "playerName": "Terry McLaurin",
+    "position": "WR",
+    "team": "WAS",
+    "age": 30,
+    "oneQBValues": {
+      "value": 3489
+    },
+    "superflexValues": {
+      "value": 3248
+    }
+  },
+  {
+    "playerName": "Mike Evans",
+    "position": "WR",
+    "team": "TB",
+    "age": 32,
+    "oneQBValues": {
+      "value": 3106
+    },
+    "superflexValues": {
+      "value": 2952
+    }
+  },
+  {
+    "playerName": "Chris Godwin",
+    "position": "WR",
+    "team": "TB",
+    "age": 29,
+    "oneQBValues": {
+      "value": 2626
+    },
+    "superflexValues": {
+      "value": 2739
+    }
+  },
+  {
+    "playerName": "DK Metcalf",
+    "position": "WR",
+    "team": "PIT",
+    "age": 28,
+    "oneQBValues": {
+      "value": 4354
+    },
+    "superflexValues": {
+      "value": 4065
+    }
+  },
+  {
+    "playerName": "Zay Flowers",
+    "position": "WR",
+    "team": "BAL",
+    "age": 25,
+    "oneQBValues": {
+      "value": 5038
+    },
+    "superflexValues": {
+      "value": 5190
+    }
+  },
+  {
+    "playerName": "DJ Moore",
+    "position": "WR",
+    "team": "CHI",
+    "age": 28,
+    "oneQBValues": {
+      "value": 3938
+    },
+    "superflexValues": {
+      "value": 3792
+    }
+  },
+  {
+    "playerName": "Jameson Williams",
+    "position": "WR",
+    "team": "DET",
+    "age": 24,
+    "oneQBValues": {
+      "value": 4637
+    },
+    "superflexValues": {
+      "value": 4617
+    }
+  },
+  {
+    "playerName": "Xavier Worthy",
+    "position": "WR",
+    "team": "KC",
+    "age": 22,
+    "oneQBValues": {
+      "value": 5208
+    },
+    "superflexValues": {
+      "value": 5249
+    }
+  },
+  {
+    "playerName": "Jordan Addison",
+    "position": "WR",
+    "team": "MIN",
+    "age": 23,
+    "oneQBValues": {
+      "value": 4550
+    },
+    "superflexValues": {
+      "value": 4266
+    }
+  },
+  {
+    "playerName": "Chris Olave",
+    "position": "WR",
+    "team": "NO",
+    "age": 25,
+    "oneQBValues": {
+      "value": 4152
+    },
+    "superflexValues": {
+      "value": 4104
+    }
+  },
+  {
+    "playerName": "George Pickens",
+    "position": "WR",
+    "team": "DAL",
+    "age": 24,
+    "oneQBValues": {
+      "value": 4458
+    },
+    "superflexValues": {
+      "value": 4392
+    }
+  },
+  {
+    "playerName": "Tee Higgins",
+    "position": "WR",
+    "team": "CIN",
+    "age": 26,
+    "oneQBValues": {
+      "value": 4313
+    },
+    "superflexValues": {
+      "value": 4128
+    }
+  },
+  {
+    "playerName": "Marquise Brown",
+    "position": "WR",
+    "team": "KC",
+    "age": 28,
+    "oneQBValues": {
+      "value": 1738
+    },
+    "superflexValues": {
+      "value": 1590
+    }
+  },
+  {
+    "playerName": "Stefon Diggs",
+    "position": "WR",
+    "team": "NE",
+    "age": 31,
+    "oneQBValues": {
+      "value": 1751
+    },
+    "superflexValues": {
+      "value": 1753
+    }
+  },
+  {
+    "playerName": "Calvin Ridley",
+    "position": "WR",
+    "team": "TEN",
+    "age": 30,
+    "oneQBValues": {
+      "value": 2068
+    },
+    "superflexValues": {
+      "value": 2043
+    }
+  },
+  {
+    "playerName": "Jerry Jeudy",
+    "position": "WR",
+    "team": "CLE",
+    "age": 26,
+    "oneQBValues": {
+      "value": 2424
+    },
+    "superflexValues": {
+      "value": 2487
+    }
+  },
+  {
+    "playerName": "Courtland Sutton",
+    "position": "WR",
+    "team": "DEN",
+    "age": 30,
+    "oneQBValues": {
+      "value": 2158
+    },
+    "superflexValues": {
+      "value": 2228
+    }
+  },
+  {
+    "playerName": "Cooper Kupp",
+    "position": "WR",
+    "team": "SEA",
+    "age": 32,
+    "oneQBValues": {
+      "value": 1557
+    },
+    "superflexValues": {
+      "value": 1547
+    }
+  },
+  {
+    "playerName": "Matthew Golden",
+    "position": "WR",
+    "team": "GB",
+    "age": 22,
+    "oneQBValues": {
+      "value": 4295
+    },
+    "superflexValues": {
+      "value": 4347
+    }
+  },
+  {
+    "playerName": "Emeka Egbuka",
+    "position": "WR",
+    "team": "TB",
+    "age": 23,
+    "oneQBValues": {
+      "value": 4676
+    },
+    "superflexValues": {
+      "value": 4373
+    }
+  },
+  {
+    "playerName": "Luther Burden III",
+    "position": "WR",
+    "team": "CHI",
+    "age": 22,
+    "oneQBValues": {
+      "value": 3324
+    },
+    "superflexValues": {
+      "value": 3683
+    }
+  },
+  {
+    "playerName": "Jayden Higgins",
+    "position": "WR",
+    "team": "HOU",
+    "age": 23,
+    "oneQBValues": {
+      "value": 3040
+    },
+    "superflexValues": {
+      "value": 3230
+    }
+  },
+  {
+    "playerName": "Brock Bowers",
+    "position": "TE",
+    "team": "LV",
+    "age": 23,
+    "oneQBValues": {
+      "value": 7883
+    },
+    "superflexValues": {
+      "value": 7711
+    }
+  },
+  {
+    "playerName": "Trey McBride",
+    "position": "TE",
+    "team": "ARI",
+    "age": 26,
+    "oneQBValues": {
+      "value": 6368
+    },
+    "superflexValues": {
+      "value": 6083
+    }
+  },
+  {
+    "playerName": "Sam LaPorta",
+    "position": "TE",
+    "team": "DET",
+    "age": 24,
+    "oneQBValues": {
+      "value": 5363
+    },
+    "superflexValues": {
+      "value": 5149
+    }
+  },
+  {
+    "playerName": "George Kittle",
+    "position": "TE",
+    "team": "SF",
+    "age": 32,
+    "oneQBValues": {
+      "value": 2997
+    },
+    "superflexValues": {
+      "value": 2909
+    }
+  },
+  {
+    "playerName": "T.J. Hockenson",
+    "position": "TE",
+    "team": "MIN",
+    "age": 28,
+    "oneQBValues": {
+      "value": 3034
+    },
+    "superflexValues": {
+      "value": 3033
+    }
+  },
+  {
+    "playerName": "Mark Andrews",
+    "position": "TE",
+    "team": "BAL",
+    "age": 30,
+    "oneQBValues": {
+      "value": 2265
+    },
+    "superflexValues": {
+      "value": 2362
+    }
+  },
+  {
+    "playerName": "Travis Kelce",
+    "position": "TE",
+    "team": "KC",
+    "age": 36,
+    "oneQBValues": {
+      "value": 1480
+    },
+    "superflexValues": {
+      "value": 1513
+    }
+  },
+  {
+    "playerName": "David Njoku",
+    "position": "TE",
+    "team": "CLE",
+    "age": 29,
+    "oneQBValues": {
+      "value": 2406
+    },
+    "superflexValues": {
+      "value": 2524
+    }
+  },
+  {
+    "playerName": "Dalton Kincaid",
+    "position": "TE",
+    "team": "BUF",
+    "age": 26,
+    "oneQBValues": {
+      "value": 2718
+    },
+    "superflexValues": {
+      "value": 2809
+    }
+  },
+  {
+    "playerName": "Evan Engram",
+    "position": "TE",
+    "team": "DEN",
+    "age": 31,
+    "oneQBValues": {
+      "value": 1459
+    },
+    "superflexValues": {
+      "value": 1373
+    }
+  },
+  {
+    "playerName": "Kyle Pitts",
+    "position": "TE",
+    "team": "ATL",
+    "age": 25,
+    "oneQBValues": {
+      "value": 2666
+    },
+    "superflexValues": {
+      "value": 2649
+    }
+  },
+  {
+    "playerName": "Tucker Kraft",
+    "position": "TE",
+    "team": "GB",
+    "age": 25,
+    "oneQBValues": {
+      "value": 3120
+    },
+    "superflexValues": {
+      "value": 3387
+    }
+  },
+  {
+    "playerName": "Jake Ferguson",
+    "position": "TE",
+    "team": "DAL",
+    "age": 26,
+    "oneQBValues": {
+      "value": 1923
+    },
+    "superflexValues": {
+      "value": 1803
+    }
+  },
+  {
+    "playerName": "Dallas Goedert",
+    "position": "TE",
+    "team": "PHI",
+    "age": 30,
+    "oneQBValues": {
+      "value": 1302
+    },
+    "superflexValues": {
+      "value": 1345
+    }
+  },
+  {
+    "playerName": "Pat Freiermuth",
+    "position": "TE",
+    "team": "PIT",
+    "age": 27,
+    "oneQBValues": {
+      "value": 1466
+    },
+    "superflexValues": {
+      "value": 1460
+    }
+  },
+  {
+    "playerName": "Tyler Warren",
+    "position": "TE",
+    "team": "IND",
+    "age": 23,
+    "oneQBValues": {
+      "value": 5076
+    },
+    "superflexValues": {
+      "value": 4960
+    }
+  },
+  {
+    "playerName": "Colston Loveland",
+    "position": "TE",
+    "team": "CHI",
+    "age": 21,
+    "oneQBValues": {
+      "value": 4228
+    },
+    "superflexValues": {
+      "value": 4327
+    }
+  },
+  {
+    "playerName": "Isaiah Likely",
+    "position": "TE",
+    "team": "BAL",
+    "age": 25,
+    "oneQBValues": {
+      "value": 1754
+    },
+    "superflexValues": {
+      "value": 1842
+    }
+  },
+  {
+    "playerName": "Cade Otton",
+    "position": "TE",
+    "team": "TB",
+    "age": 26,
+    "oneQBValues": {
+      "value": 1149
+    },
+    "superflexValues": {
+      "value": 1212
+    }
+  },
+  {
+    "playerName": "Hunter Henry",
+    "position": "TE",
+    "team": "NE",
+    "age": 31,
+    "oneQBValues": {
+      "value": 873
+    },
+    "superflexValues": {
+      "value": 937
+    }
+  }
+]

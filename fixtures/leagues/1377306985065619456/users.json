@@ -1,0 +1,92 @@
+[
+  {
+    "user_id": "900000000000000001",
+    "display_name": "Demo Manager",
+    "avatar": null,
+    "metadata": {
+      "team_name": "The Real Deal Crew"
+    },
+    "is_owner": true
+  },
+  {
+    "user_id": "900000000000000002",
+    "display_name": "Alex R.",
+    "avatar": null,
+    "metadata": {
+      "team_name": "Bijan Mustard"
+    },
+    "is_owner": false
+  },
+  {
+    "user_id": "900000000000000003",
+    "display_name": "Sam T.",
+    "avatar": null,
+    "metadata": {
+      "team_name": "Nacua Matata"
+    },
+    "is_owner": false
+  },
+  {
+    "user_id": "900000000000000004",
+    "display_name": "Jordan K.",
+    "avatar": null,
+    "metadata": {
+      "team_name": "Hurts So Good"
+    },
+    "is_owner": false
+  },
+  {
+    "user_id": "900000000000000005",
+    "display_name": "Casey M.",
+    "avatar": null,
+    "metadata": {
+      "team_name": "Breece Mode"
+    },
+    "is_owner": false
+  },
+  {
+    "user_id": "900000000000000006",
+    "display_name": "Riley P.",
+    "avatar": null,
+    "metadata": {
+      "team_name": "Lamar the Merrier"
+    },
+    "is_owner": false
+  },
+  {
+    "user_id": "900000000000000007",
+    "display_name": "Morgan L.",
+    "avatar": null,
+    "metadata": {
+      "team_name": "Chase-ing Rings"
+    },
+    "is_owner": false
+  },
+  {
+    "user_id": "900000000000000008",
+    "display_name": "Taylor B.",
+    "avatar": null,
+    "metadata": {
+      "team_name": "Purdy Good Squad"
+    },
+    "is_owner": false
+  },
+  {
+    "user_id": "900000000000000009",
+    "display_name": "Drew S.",
+    "avatar": null,
+    "metadata": {
+      "team_name": "The Gibbs Standard"
+    },
+    "is_owner": false
+  },
+  {
+    "user_id": "900000000000000010",
+    "display_name": "Jamie F.",
+    "avatar": null,
+    "metadata": {
+      "team_name": "Waddle We Do Now"
+    },
+    "is_owner": false
+  }
+]

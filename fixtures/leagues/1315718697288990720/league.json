@@ -1,0 +1,35 @@
+{
+  "league_id": "1315718697288990720",
+  "name": "Dynasty League",
+  "season": "2025",
+  "status": "in_season",
+  "total_rosters": 10,
+  "roster_positions": [
+    "QB",
+    "RB",
+    "RB",
+    "WR",
+    "WR",
+    "WR",
+    "TE",
+    "FLEX",
+    "SUPER_FLEX",
+    "BN",
+    "BN",
+    "BN"
+  ],
+  "scoring_settings": {
+    "rec": 1,
+    "bonus_rec_te": 0.5,
+    "pass_td": 6
+  },
+  "settings": {
+    "type": 2,
+    "taxi_slots": 3,
+    "max_keepers": 30,
+    "reserve_slots": 2,
+    "leg": 10
+  },
+  "previous_league_id": null,
+  "avatar": null
+}
