@@ -249,7 +249,7 @@ function makeLeagueFixtures(leagueId, name, isDynasty, order) {
 
   const rosters = lists.map((list, i) => {
     const rank = strengthRank.indexOf(i); // 0 = strongest
-    const wins = Math.max(1, Math.min(8, 8 - rank + (rand() > 0.6 ? -1 : 0)));
+    const wins = Math.max(1, Math.min(8, Math.round(8 - (rank * 7) / 9)));
     const losses = WEEK - 1 - wins;
     const taxi = isDynasty
       ? list.filter((p) => p.exp === 0).slice(0, 2).map((p) => p.id)

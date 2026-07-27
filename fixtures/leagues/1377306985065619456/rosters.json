@@ -30,11 +30,11 @@
     "reserve": [],
     "taxi": [],
     "settings": {
-      "wins": 1,
-      "losses": 8,
+      "wins": 2,
+      "losses": 7,
       "ties": 0,
-      "fpts": 1708,
-      "fpts_against": 1078
+      "fpts": 1726,
+      "fpts_against": 1017
     }
   },
   {
@@ -68,11 +68,11 @@
     "reserve": [],
     "taxi": [],
     "settings": {
-      "wins": 2,
-      "losses": 7,
+      "wins": 4,
+      "losses": 5,
       "ties": 0,
-      "fpts": 1676,
-      "fpts_against": 1029
+      "fpts": 1757,
+      "fpts_against": 1050
     }
   },
   {
@@ -111,8 +111,8 @@
       "wins": 7,
       "losses": 2,
       "ties": 0,
-      "fpts": 1732,
-      "fpts_against": 1080
+      "fpts": 1678,
+      "fpts_against": 1029
     }
   },
   {
@@ -151,8 +151,8 @@
       "wins": 8,
       "losses": 1,
       "ties": 0,
-      "fpts": 1689,
-      "fpts_against": 1082
+      "fpts": 1692,
+      "fpts_against": 1044
     }
   },
   {
@@ -186,11 +186,11 @@
     "reserve": [],
     "taxi": [],
     "settings": {
-      "wins": 1,
-      "losses": 8,
+      "wins": 3,
+      "losses": 6,
       "ties": 0,
-      "fpts": 1692,
-      "fpts_against": 980
+      "fpts": 1759,
+      "fpts_against": 1021
     }
   },
   {
@@ -227,8 +227,8 @@
       "wins": 6,
       "losses": 3,
       "ties": 0,
-      "fpts": 1740,
-      "fpts_against": 1042
+      "fpts": 1687,
+      "fpts_against": 1082
     }
   },
   {
@@ -265,8 +265,8 @@
       "wins": 1,
       "losses": 8,
       "ties": 0,
-      "fpts": 1708,
-      "fpts_against": 1076
+      "fpts": 1741,
+      "fpts_against": 996
     }
   },
   {
@@ -300,11 +300,11 @@
     "reserve": [],
     "taxi": [],
     "settings": {
-      "wins": 4,
-      "losses": 5,
+      "wins": 5,
+      "losses": 4,
       "ties": 0,
-      "fpts": 1727,
-      "fpts_against": 955
+      "fpts": 1680,
+      "fpts_against": 1025
     }
   },
   {
@@ -338,11 +338,11 @@
     "reserve": [],
     "taxi": [],
     "settings": {
-      "wins": 1,
-      "losses": 8,
+      "wins": 3,
+      "losses": 6,
       "ties": 0,
-      "fpts": 1662,
-      "fpts_against": 978
+      "fpts": 1737,
+      "fpts_against": 1042
     }
   },
   {
@@ -376,11 +376,11 @@
     "reserve": [],
     "taxi": [],
     "settings": {
-      "wins": 4,
-      "losses": 5,
+      "wins": 6,
+      "losses": 3,
       "ties": 0,
-      "fpts": 1721,
-      "fpts_against": 954
+      "fpts": 1658,
+      "fpts_against": 1021
     }
   }
 ]

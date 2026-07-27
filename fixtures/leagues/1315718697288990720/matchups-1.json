@@ -2,7 +2,7 @@
   {
     "roster_id": 1,
     "matchup_id": 1,
-    "points": 140.93,
+    "points": 99.86,
     "starters": [
       "p1002",
       "p1036",
@@ -32,7 +32,7 @@
   {
     "roster_id": 2,
     "matchup_id": 1,
-    "points": 106.68,
+    "points": 137.89,
     "starters": [
       "p1005",
       "p1026",
@@ -62,7 +62,7 @@
   {
     "roster_id": 3,
     "matchup_id": 2,
-    "points": 128.82,
+    "points": 139.25,
     "starters": [
       "p1001",
       "p1027",
@@ -92,7 +92,7 @@
   {
     "roster_id": 4,
     "matchup_id": 2,
-    "points": 148.42,
+    "points": 140.05,
     "starters": [
       "p1012",
       "p1029",
@@ -122,7 +122,7 @@
   {
     "roster_id": 5,
     "matchup_id": 3,
-    "points": 102.84,
+    "points": 155.31,
     "starters": [
       "p1010",
       "p1023",
@@ -152,7 +152,7 @@
   {
     "roster_id": 6,
     "matchup_id": 3,
-    "points": 159.72,
+    "points": 100.72,
     "starters": [
       "p1006",
       "p1030",
@@ -182,7 +182,7 @@
   {
     "roster_id": 7,
     "matchup_id": 4,
-    "points": 131.58,
+    "points": 156.34,
     "starters": [
       "p1007",
       "p1028",
@@ -212,7 +212,7 @@
   {
     "roster_id": 8,
     "matchup_id": 4,
-    "points": 154.55,
+    "points": 123.02,
     "starters": [
       "p1004",
       "p1042",
@@ -242,7 +242,7 @@
   {
     "roster_id": 9,
     "matchup_id": 5,
-    "points": 123.21,
+    "points": 156.25,
     "starters": [
       "p1003",
       "p1032",
@@ -272,7 +272,7 @@
   {
     "roster_id": 10,
     "matchup_id": 5,
-    "points": 132.6,
+    "points": 103.92,
     "starters": [
       "p1021",
       "p1024",

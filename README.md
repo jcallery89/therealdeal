@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# League HQ — Sleeper Fantasy Manager
 
-## Getting Started
+A web app for managing two Sleeper fantasy football leagues:
 
-First, run the development server:
+- **The Real Deal** — 10-team Keeper, PPR + TE Premium (league `1377306985065619456`)
+- **Dynasty League** — 10-team Dynasty Superflex, PPR + TEP (league `1315718697288990720`)
+
+Rosters sync live from the Sleeper API; market values come from FantasyCalc and
+KeepTradeCut. No API keys are needed — every data source is free and read-only.
+
+## Features
+
+- **Roster dashboard** — starters/bench/taxi/IR with market values, positional
+  strength vs the league, value-weighted age profile, injury/trending/bye badges,
+  and bye-week cluster warnings. View any of the 10 teams.
+- **Trade analyzer** — build a trade from players *and* draft picks, with
+  format-appropriate values (dynasty SF vs redraft), a consolidation adjustment
+  (2-for-1s favor the star side), value-source toggle (FantasyCalc / KeepTradeCut /
+  blend), and roster-fit notes: positional holes, age shift, contend/rebuild
+  alignment.
+- **Strategy page** — all 10 teams ranked by total value (players + pick capital),
+  a win-now vs future scatter, contender/push/retool/rebuild posture scores,
+  full draft-pick inventory grid (traded picks tracked), and a rookie watchlist
+  with free agents highlighted.
+- **Start/Sit & matchups** — stubbed for v2 (Sleeper projections client is
+  already in place).
+
+## Running it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # live mode — real Sleeper/FantasyCalc/KTC data
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000, enter your Sleeper username once, and the app finds
+your teams in both leagues (stored in localStorage only).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Deploy: push to GitHub and import into [Vercel](https://vercel.com) — no
+environment variables required.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Demo / offline mode
 
-## Learn More
+```bash
+SLEEPER_FIXTURES=1 npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Serves a committed 120-player sample world instead of live APIs (an amber banner
+marks demo data). Useful for development without network access and for the
+Playwright suite. Regenerate the sample data with `npm run fixtures`. Without
+the env var the app is always live — `.env` files are gitignored, so a fresh
+clone starts in live mode.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+If a live source fails at runtime (e.g. the KeepTradeCut page changes), the app
+degrades to cached data, then fixtures — with a visible banner, never a blank
+page.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Data sources
 
-## Deploy on Vercel
+| Source | What | How |
+|---|---|---|
+| [Sleeper API](https://docs.sleeper.com) | leagues, rosters, users, traded picks, trending, player db | public JSON API, no key |
+| [FantasyCalc](https://fantasycalc.com) | market trade values (dynasty SF + redraft), draft pick values | public JSON API, joined via `sleeperId` |
+| [KeepTradeCut](https://keeptradecut.com) | crowdsourced dynasty values (1QB + SF) | server-side scrape of their rankings page, name-matched |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Values for TEs get a small TE-premium multiplier (both leagues are TEP);
+see `src/lib/config.ts`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Seasonal maintenance
+
+- **Bye weeks**: update `BYE_WEEKS` in `src/lib/config.ts` when the NFL schedule
+  drops each spring.
+- **KTC name aliases**: if `/api/values` reports `ktcUnmatched` players, add
+  aliases to `src/lib/players/normalize.ts`.
+
+## Development
+
+```bash
+npm test           # vitest unit tests (name matching, trade math, picks, KTC parser)
+npm run e2e        # Playwright smoke suite (runs the app in fixture mode)
+npm run build      # production build + typecheck
+```
+
+Architecture notes: all external HTTP happens server-side (`src/lib/*`) behind
+`fetchWithFixture()` (fixture mode → memory cache → live → stale → fixture);
+client components receive one serializable `LeagueBundle` per page. The
+in-memory cache (`src/lib/cache.ts`) is the seam for adding Redis/KV or a
+database later.
