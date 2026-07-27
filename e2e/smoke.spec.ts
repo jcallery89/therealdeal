@@ -87,7 +87,12 @@ test("cutdown planner optimizes keeps, reacts to rules and pins", async ({ page 
   await page.screenshot({ path: `${SHOTS}/7-keepers.png`, fullPage: true });
 });
 
-test("start/sit stub renders", async ({ page }) => {
-  await page.goto(`/league/${KEEPER}/startsit`);
-  await expect(page.getByText("coming in v2")).toBeVisible();
+test("start/sit page shows matchup, lineup advice, and waivers", async ({ page }) => {
+  await page.goto(`/league/${DYNASTY}/startsit`);
+  await expect(page.getByTestId("matchup-preview")).toBeVisible();
+  await expect(page.getByTestId("lineup-advice")).toBeVisible();
+  const slots = page.getByTestId("optimal-lineup").locator("[class*=divide] > div");
+  expect(await slots.count()).toBe(9); // dynasty fixture lineup slots
+  await expect(page.getByTestId("waiver-watch")).toBeVisible();
+  await page.screenshot({ path: `${SHOTS}/8-startsit.png`, fullPage: true });
 });

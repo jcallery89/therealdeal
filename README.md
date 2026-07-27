@@ -22,8 +22,16 @@ KeepTradeCut. No API keys are needed — every data source is free and read-only
   a win-now vs future scatter, contender/push/retool/rebuild posture scores,
   full draft-pick inventory grid (traded picks tracked), and a rookie watchlist
   with free agents highlighted.
-- **Start/Sit & matchups** — stubbed for v2 (Sleeper projections client is
-  already in place).
+- **Cutdown planner** — recommends who to keep, taxi, and cut before the
+  roster deadline. Rules (keeper count, taxi slots, taxi eligibility by years
+  of experience, deadline) are editable in-app and persist per league; IR
+  players count against keeper slots; manual Keep/Taxi/Cut pins re-optimize
+  around your choices.
+- **Start/Sit & matchups** — weekly lineup optimizer scored with your league's
+  actual scoring settings (TE premium included), start/sit recommendations vs
+  your current lineup, this week's matchup preview with projected totals, and
+  a waiver watch of trending unrostered players. Projections come from
+  Sleeper's best-effort feed and degrade gracefully out of season.
 
 ## Running it
 

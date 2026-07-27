@@ -465,10 +465,22 @@ writeFileSync(
   JSON.stringify(olds.slice(0, 15).map((p, i) => ({ player_id: p.id, count: 2100 - i * 120 })), null, 2)
 );
 
-// --- Projections (best-effort endpoint fixture) ---
+// --- Projections (best-effort endpoint fixture; pts_ppr + rec exercise the
+// fallback scoring path with TE premium) ---
+const RECEPTIONS = { QB: 0, RB: 2.5, WR: 5, TE: 4.5 };
 writeFileSync(
   path.join(ROOT, "projections-week.json"),
-  JSON.stringify(players.map((p) => ({ player_id: p.id, stats: { pts_ppr: Math.round(p.red / 400 + rand() * 8) } })), null, 2)
+  JSON.stringify(
+    players.map((p) => ({
+      player_id: p.id,
+      stats: {
+        pts_ppr: Math.round((p.red / 400 + rand() * 8) * 10) / 10,
+        rec: Math.round((RECEPTIONS[p.pos] ?? 0) * (0.6 + rand() * 0.8) * 10) / 10,
+      },
+    })),
+    null,
+    2
+  )
 );
 
 console.log(`Generated fixtures for ${players.length} players in ${ROOT}`);
