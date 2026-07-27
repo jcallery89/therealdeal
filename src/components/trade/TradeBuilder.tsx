@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import DataSourceBanner from "@/components/DataSourceBanner";
 import { PositionBadge } from "@/components/players/PlayerRow";
 import { starterSlots } from "@/lib/analysis/rosterStrength";
@@ -20,8 +20,21 @@ interface AssetOption extends TradeAsset {
   tag?: "TAXI" | "IR";
 }
 
-export default function TradeBuilder({ bundle }: { bundle: LeagueBundle }) {
-  const { user } = useSleeperUser();
+export interface TradePrefill {
+  teamA: number | null;
+  teamB: number | null;
+  sendA: string[];
+  sendB: string[];
+}
+
+export default function TradeBuilder({
+  bundle,
+  prefill = null,
+}: {
+  bundle: LeagueBundle;
+  prefill?: TradePrefill | null;
+}) {
+  const { user, ready } = useSleeperUser();
   const { leagueConfig, rosters, users, players, valueContext, picks, pickValues, state, teamAnalytics } = bundle;
 
   const myRosterId =
@@ -29,13 +42,26 @@ export default function TradeBuilder({ bundle }: { bundle: LeagueBundle }) {
     rosters.find((r) => r.owner_id === user?.userId)?.roster_id ??
     rosters[0]?.roster_id;
 
-  const [teamA, setTeamA] = useState<number>(myRosterId);
+  const [teamA, setTeamA] = useState<number>(prefill?.teamA ?? myRosterId);
   const [teamB, setTeamB] = useState<number>(
-    rosters.find((r) => r.roster_id !== myRosterId)?.roster_id ?? myRosterId
+    prefill?.teamB ??
+      (rosters.find((r) => r.roster_id !== (prefill?.teamA ?? myRosterId))?.roster_id ?? myRosterId)
   );
   const [source, setSource] = useState<ValueSource>(bundle.defaultSource);
   const [sendA, setSendA] = useState<TradeAsset[]>([]);
   const [sendB, setSendB] = useState<TradeAsset[]>([]);
+
+  // The stored user resolves after mount; without a prefill or manual edits,
+  // snap side A to the user's own team once identity is known.
+  const defaultApplied = useRef(false);
+  useEffect(() => {
+    if (defaultApplied.current || prefill || !ready) return;
+    defaultApplied.current = true;
+    if (sendA.length === 0 && sendB.length === 0 && teamA !== myRosterId) {
+      setTeamA(myRosterId);
+      setTeamB(rosters.find((r) => r.roster_id !== myRosterId)?.roster_id ?? myRosterId);
+    }
+  }, [ready, prefill, myRosterId, teamA, sendA.length, sendB.length, rosters]);
 
   const teamNameById = useMemo(
     () => new Map(rosters.map((r) => [r.roster_id, teamName(users, r)])),
@@ -91,6 +117,22 @@ export default function TradeBuilder({ bundle }: { bundle: LeagueBundle }) {
       .sort((a, b) => b.value - a.value);
     return [...playerOptions, ...pickOptions];
   };
+
+  // Resolve prefilled asset ids into full assets once (values via optionsFor).
+  const prefillApplied = useRef(false);
+  useEffect(() => {
+    if (prefillApplied.current || !prefill) return;
+    prefillApplied.current = true;
+    if (prefill.sendA.length > 0) {
+      const opts = optionsFor(prefill.teamA ?? teamA);
+      setSendA(opts.filter((o) => prefill.sendA.includes(o.id)));
+    }
+    if (prefill.sendB.length > 0) {
+      const opts = optionsFor(prefill.teamB ?? teamB);
+      setSendB(opts.filter((o) => prefill.sendB.includes(o.id)));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const evaluation = useMemo(() => {
     if (sendA.length === 0 && sendB.length === 0) return null;

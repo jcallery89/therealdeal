@@ -87,6 +87,42 @@ test("cutdown planner optimizes keeps, reacts to rules and pins", async ({ page 
   await page.screenshot({ path: `${SHOTS}/7-keepers.png`, fullPage: true });
 });
 
+test("rookie draft board shows the class and my pick slots", async ({ page }) => {
+  await page.goto(`/league/${DYNASTY}/draft`);
+  await expect(page.getByTestId("my-picks")).toBeVisible();
+  // Fixture: my roster owns 2026 firsts incl. one via trade -> at least 4 chips.
+  const chips = page.getByTestId("my-picks").locator("span.font-mono");
+  expect(await chips.count()).toBeGreaterThanOrEqual(4);
+  const board = page.getByTestId("rookie-board");
+  const rows = board.locator("> div");
+  expect(await rows.count()).toBeGreaterThanOrEqual(8); // fixture rookie class
+  await expect(board.getByText("Ashton Jeanty")).toBeVisible();
+  await page.screenshot({ path: `${SHOTS}/9-draftboard.png`, fullPage: true });
+});
+
+test("trade finder suggests deals and hands off to the analyzer", async ({ page }) => {
+  await page.goto(`/league/${DYNASTY}/tradefinder`);
+  const cards = page.getByTestId("trade-suggestions").locator("> div");
+  expect(await cards.count()).toBeGreaterThanOrEqual(1);
+  await page.screenshot({ path: `${SHOTS}/10-tradefinder.png`, fullPage: true });
+
+  await cards.first().getByRole("link", { name: /Open in analyzer/ }).click();
+  await page.waitForURL("**/trade?*");
+  // Both sides arrive pre-filled, so the verdict panel is already rendered.
+  await expect(page.getByTestId("verdict-panel")).toBeVisible();
+  await page.screenshot({ path: `${SHOTS}/11-analyzer-prefill.png` });
+});
+
+test("cutdown page includes the league cut watch", async ({ page }) => {
+  await page.goto(`/league/${DYNASTY}/keepers`);
+  await page.getByTestId("rule-keepers").fill("8");
+  const watch = page.getByTestId("cut-watch");
+  await expect(watch).toBeVisible();
+  const rows = watch.locator("[class*=divide] > div");
+  expect(await rows.count()).toBeGreaterThanOrEqual(5);
+  await page.screenshot({ path: `${SHOTS}/12-cutwatch.png`, fullPage: true });
+});
+
 test("start/sit page shows matchup, lineup advice, and waivers", async ({ page }) => {
   await page.goto(`/league/${DYNASTY}/startsit`);
   await expect(page.getByTestId("matchup-preview")).toBeVisible();

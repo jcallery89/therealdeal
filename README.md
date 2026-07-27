@@ -22,11 +22,22 @@ KeepTradeCut. No API keys are needed — every data source is free and read-only
   a win-now vs future scatter, contender/push/retool/rebuild posture scores,
   full draft-pick inventory grid (traded picks tracked), and a rookie watchlist
   with free agents highlighted.
+- **Trade finder** — scans every opponent for mutually beneficial deals:
+  fair value (consolidation-adjusted gap under 12%), complementary positional
+  needs, and matching contend/rebuild timelines. One click opens a suggestion
+  in the analyzer, pre-filled, for tweaking.
 - **Cutdown planner** — recommends who to keep, taxi, and cut before the
   roster deadline. Rules (keeper count, taxi slots, taxi eligibility by years
   of experience, deadline) are editable in-app and persist per league; IR
   players count against keeper slots; manual Keep/Taxi/Cut pins re-optimize
-  around your choices.
+  around your choices. A league cut watch runs the same optimizer on every
+  rival roster to surface their likely cuts — flagging the ones that fill
+  your needs.
+- **Rookie draft board** — the rookie class ranked by market value with
+  position ranks and 30-day trends, your pick slots overlaid (official
+  Sleeper draft order when set, otherwise estimated from standings), drafted
+  players grayed out during live drafts, and your thinnest positions called
+  out for BPA-vs-need decisions.
 - **Start/Sit & matchups** — weekly lineup optimizer scored with your league's
   actual scoring settings (TE premium included), start/sit recommendations vs
   your current lineup, this week's matchup preview with projected totals, and

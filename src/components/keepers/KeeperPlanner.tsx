@@ -11,6 +11,8 @@ import {
   optimizeKeepers,
   taxiEligible,
 } from "@/lib/analysis/keepers";
+import { starterSlots } from "@/lib/analysis/rosterStrength";
+import { positionBalance } from "@/lib/analysis/tradeFinder";
 import { LeagueBundle, teamName } from "@/lib/leagueBundle";
 import { useSleeperUser } from "@/lib/hooks/useSleeperUser";
 import { CanonicalPlayer } from "@/lib/players/canonical";
@@ -93,6 +95,38 @@ export default function KeeperPlanner({ bundle }: { bundle: LeagueBundle }) {
     () => optimizeKeepers(roster?.players ?? [], players, valueOf, rules, pins),
     [roster, players, valueOf, rules, pins]
   );
+
+  // League cut watch: run the same optimizer for every rival roster (no pins)
+  // to project who hits waivers at the deadline.
+  const cutWatch = useMemo(() => {
+    const mine = rosters.find((r) => r.roster_id === myRosterId);
+    const myBalance = positionBalance(
+      mine?.players ?? [],
+      players,
+      starterSlots(league.roster_positions)
+    );
+    return rosters
+      .filter((r) => r.roster_id !== myRosterId)
+      .flatMap((r) =>
+        optimizeKeepers(r.players ?? [], players, valueOf, rules, {}).cut.map((id) => ({
+          id,
+          ownerRosterId: r.roster_id,
+        }))
+      )
+      .filter((row) => players[row.id] !== undefined)
+      .map((row) => {
+        const pos = players[row.id]!.position;
+        return {
+          ...row,
+          fillsNeed:
+            (pos === "QB" || pos === "RB" || pos === "WR" || pos === "TE") && myBalance[pos] > 0
+              ? pos
+              : null,
+        };
+      })
+      .sort((a, b) => (players[b.id] ? valueOf(players[b.id]!) : 0) - (players[a.id] ? valueOf(players[a.id]!) : 0))
+      .slice(0, 20);
+  }, [rosters, myRosterId, players, valueOf, rules, league.roster_positions]);
 
   if (!roster) return <p className="text-slate-400">No rosters found.</p>;
 
@@ -350,6 +384,41 @@ export default function KeeperPlanner({ bundle }: { bundle: LeagueBundle }) {
         <span className="font-semibold">C</span>ut lock a player in place; everything else re-optimizes
         around your pins. Pins and rules are saved in this browser.
       </p>
+
+      <div data-testid="cut-watch">
+        <h3 className="mb-1.5 mt-8 text-[11px] font-semibold uppercase tracking-wider text-sky-400">
+          League cut watch — rivals&apos; likely cuts under the same rules
+        </h3>
+        <div className="divide-y divide-slate-800/60 rounded-lg border border-slate-800 bg-slate-900/50">
+          {cutWatch.map(({ id, ownerRosterId, fillsNeed }) => (
+            <div key={`${ownerRosterId}-${id}`} className="flex items-center gap-2 px-3 py-2">
+              <div className="min-w-0 flex-1">
+                <PlayerCell player={players[id]} playerId={id} currentWeek={state.week} />
+              </div>
+              <span className="flex shrink-0 items-center gap-2">
+                {fillsNeed && (
+                  <span className="rounded bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-medium text-emerald-300">
+                    fills your need at {fillsNeed}
+                  </span>
+                )}
+                <span className="text-xs text-slate-500">
+                  {teamName(users, rosters.find((r) => r.roster_id === ownerRosterId)!)}
+                </span>
+                <ValueChip value={players[id] ? valueOf(players[id]!) : 0} max={maxVal} />
+              </span>
+            </div>
+          ))}
+          {cutWatch.length === 0 && (
+            <p className="px-3 py-2.5 text-xs text-slate-600">
+              No projected cuts across the league under the current rules.
+            </p>
+          )}
+        </div>
+        <p className="mt-2 text-[11px] text-slate-600">
+          Assumes rivals keep by market value with your configured rules — their actual decisions
+          may differ. Players here are trade-for-cheap or waiver targets around the deadline.
+        </p>
+      </div>
     </div>
   );
 }

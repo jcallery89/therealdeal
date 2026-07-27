@@ -327,8 +327,32 @@ function makeLeagueFixtures(leagueId, name, isDynasty, order) {
     }
   }
 
+  // Upcoming rookie/startup draft: order = inverse standings (worst picks first).
+  const draftId = `draft-${leagueId.slice(-6)}`;
+  const byRecord = [...rosters].sort(
+    (a, b) => a.settings.wins - b.settings.wins || a.settings.fpts - b.settings.fpts
+  );
+  const draftOrder = {};
+  byRecord.forEach((r, i) => {
+    draftOrder[r.owner_id] = i + 1;
+  });
+  const drafts = [
+    {
+      draft_id: draftId,
+      season: String(parseInt(SEASON) + 1),
+      status: "pre_draft",
+      type: "linear",
+      draft_order: draftOrder,
+      settings: { rounds: isDynasty ? 4 : 3, teams: 10 },
+      start_time: null,
+    },
+  ];
+  mkdirSync(path.join(ROOT, "drafts"), { recursive: true });
+  writeFileSync(path.join(ROOT, "drafts", `${draftId}-picks.json`), JSON.stringify([], null, 2));
+
   const dir = path.join(ROOT, "leagues", leagueId);
   mkdirSync(dir, { recursive: true });
+  writeFileSync(path.join(dir, "drafts.json"), JSON.stringify(drafts, null, 2));
   writeFileSync(path.join(dir, "league.json"), JSON.stringify(league, null, 2));
   writeFileSync(path.join(dir, "rosters.json"), JSON.stringify(rosters, null, 2));
   writeFileSync(path.join(dir, "users.json"), JSON.stringify(users, null, 2));

@@ -2,6 +2,8 @@ import { fetchWithFixture, Sourced } from "../datasource";
 import { TTL } from "../config";
 import {
   ProjectionEntry,
+  SleeperDraft,
+  SleeperDraftPick,
   SleeperLeague,
   SleeperLeagueUser,
   SleeperMatchup,
@@ -84,6 +86,24 @@ export function getTrending(type: "add" | "drop"): Promise<Sourced<TrendingEntry
     key: `sleeper:trending:${type}`,
     url: `${BASE}/players/nfl/trending/${type}?lookback_hours=24&limit=25`,
     fixture: `trending-${type}.json`,
+    ttlMs: TTL.trending,
+  });
+}
+
+export function getDrafts(leagueId: string): Promise<Sourced<SleeperDraft[]>> {
+  return fetchWithFixture({
+    key: `sleeper:drafts:${leagueId}`,
+    url: `${BASE}/league/${leagueId}/drafts`,
+    fixture: `leagues/${leagueId}/drafts.json`,
+    ttlMs: TTL.league,
+  });
+}
+
+export function getDraftPicks(draftId: string): Promise<Sourced<SleeperDraftPick[]>> {
+  return fetchWithFixture({
+    key: `sleeper:draftpicks:${draftId}`,
+    url: `${BASE}/draft/${draftId}/picks`,
+    fixture: `drafts/${draftId}-picks.json`,
     ttlMs: TTL.trending,
   });
 }

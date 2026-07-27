@@ -104,3 +104,23 @@ export interface ProjectionEntry {
   player_id: string;
   stats: Record<string, number>;
 }
+
+export interface SleeperDraft {
+  draft_id: string;
+  season: string;
+  status: string; // pre_draft | drafting | paused | complete
+  type?: string;
+  /** user_id -> draft slot (1-based). Null until the order is set. */
+  draft_order: Record<string, number> | null;
+  settings: { rounds?: number; teams?: number; [key: string]: number | undefined };
+  start_time?: number | null;
+}
+
+export interface SleeperDraftPick {
+  draft_id: string;
+  round: number;
+  pick_no: number;
+  player_id: string;
+  roster_id: number | null;
+  picked_by: string;
+}
