@@ -65,6 +65,28 @@ test("strategy page shows value table, matrix, picks, rookies", async ({ page })
   await page.screenshot({ path: `${SHOTS}/6-strategy.png`, fullPage: true });
 });
 
+test("cutdown planner optimizes keeps, reacts to rules and pins", async ({ page }) => {
+  await page.goto(`/league/${DYNASTY}/keepers`);
+  await expect(page.getByTestId("keeper-keep")).toBeVisible();
+
+  // Fixture rosters are only 12 deep; tighten the keeper count so the
+  // optimizer actually has to cut someone (also exercises the rules editor).
+  await page.getByTestId("rule-keepers").fill("6");
+  const cutRows = page.getByTestId("keeper-cut").locator("[class*=divide] > div");
+  const cutCount = await cutRows.count();
+  expect(cutCount).toBeGreaterThanOrEqual(3);
+
+  // Taxi section fills with young players under the eligibility rule.
+  await expect(page.getByTestId("keeper-taxi")).toBeVisible();
+
+  // Pin the top cut player to keep; the plan re-optimizes around the pin.
+  await page.getByTestId("keeper-cut").getByTitle("Pin to keep").first().click();
+  const newCutCount = await cutRows.count();
+  expect(newCutCount).toBe(cutCount); // still same cut total: someone else dropped out
+
+  await page.screenshot({ path: `${SHOTS}/7-keepers.png`, fullPage: true });
+});
+
 test("start/sit stub renders", async ({ page }) => {
   await page.goto(`/league/${KEEPER}/startsit`);
   await expect(page.getByText("coming in v2")).toBeVisible();

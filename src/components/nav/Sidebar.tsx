@@ -7,6 +7,7 @@ import { LEAGUES } from "@/lib/config";
 const LEAGUE_LINKS = [
   { slug: "", label: "Roster" },
   { slug: "/trade", label: "Trade Analyzer" },
+  { slug: "/keepers", label: "Cutdown" },
   { slug: "/strategy", label: "Strategy" },
   { slug: "/startsit", label: "Start/Sit" },
 ];
