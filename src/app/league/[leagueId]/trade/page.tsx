@@ -12,11 +12,10 @@ export default async function TradePage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { leagueId } = await params;
-  const bundle = await getLeagueBundle(leagueId);
-  if (!bundle) notFound();
-
-  // Trade Finder hand-off: ?a=&b=&sendA=&sendB= pre-populates the builder.
   const sp = await searchParams;
+  const bundle = await getLeagueBundle(leagueId, Boolean(sp.sync));
+  if (!bundle) notFound();
+  // Trade Finder hand-off: ?a=&b=&sendA=&sendB= pre-populates the builder.
   const num = (v: string | string[] | undefined) => {
     const n = parseInt(String(v ?? ""), 10);
     return Number.isFinite(n) ? n : null;

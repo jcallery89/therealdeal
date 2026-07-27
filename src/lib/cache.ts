@@ -36,4 +36,16 @@ export const cache = {
   clear(): void {
     store.clear();
   },
+
+  /** Delete all entries whose key starts with prefix (minus exclusions). */
+  sweep(prefix: string, exclude: string[] = []): number {
+    let removed = 0;
+    for (const key of [...store.keys()]) {
+      if (key.startsWith(prefix) && !exclude.includes(key)) {
+        store.delete(key);
+        removed++;
+      }
+    }
+    return removed;
+  },
 };

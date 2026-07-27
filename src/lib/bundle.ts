@@ -21,17 +21,20 @@ export { teamName } from "./leagueBundle";
  * filtered down to players relevant to this league (rostered, rookies,
  * trending) to keep the client payload small in live mode.
  */
-export async function getLeagueBundle(leagueId: string): Promise<LeagueBundle | null> {
+export async function getLeagueBundle(
+  leagueId: string,
+  fresh = false
+): Promise<LeagueBundle | null> {
   const leagueConfig = getLeagueConfig(leagueId);
   if (!leagueConfig) return null;
 
   const [leagueRes, rostersRes, usersRes, tradedRes, stateRes, table] =
     await Promise.all([
-      getLeague(leagueId),
-      getRosters(leagueId),
-      getLeagueUsers(leagueId),
-      getTradedPicks(leagueId),
-      getState(),
+      getLeague(leagueId, fresh),
+      getRosters(leagueId, fresh),
+      getLeagueUsers(leagueId, fresh),
+      getTradedPicks(leagueId, fresh),
+      getState(fresh),
       buildCanonicalTable(),
     ]);
 

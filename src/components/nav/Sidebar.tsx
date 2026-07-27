@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LEAGUES } from "@/lib/config";
+import SyncButton from "./SyncButton";
 
 const LEAGUE_LINKS = [
   { slug: "", label: "Roster" },
@@ -37,6 +38,8 @@ export default function Sidebar() {
         <div className="text-lg font-bold tracking-tight text-slate-100">🏈 League HQ</div>
         <div className="text-xs text-slate-500">Sleeper manager</div>
       </Link>
+
+      <SyncButton />
 
       <nav className="flex flex-col gap-6">
         <NavLink href="/" label="Overview" active={pathname === "/"} />

@@ -87,6 +87,18 @@ test("cutdown planner optimizes keeps, reacts to rules and pins", async ({ page 
   await page.screenshot({ path: `${SHOTS}/7-keepers.png`, fullPage: true });
 });
 
+test("sync button refetches league data in place", async ({ page }) => {
+  await page.goto(`/league/${DYNASTY}`);
+  await expect(page.getByText("Starters")).toBeVisible();
+  const syncResponse = page.waitForResponse((r) => r.url().includes("/api/sync"));
+  await page.getByTestId("sync-button").click();
+  expect((await syncResponse).status()).toBe(200);
+  await page.waitForURL(/sync=\d+/);
+  // Page re-rendered with fresh data, still on the roster dashboard.
+  await expect(page.getByText("Starters")).toBeVisible();
+  await expect(page.getByTestId("sync-button")).toHaveText(/Sync/);
+});
+
 test("rookie draft board shows the class and my pick slots", async ({ page }) => {
   await page.goto(`/league/${DYNASTY}/draft`);
   await expect(page.getByTestId("my-picks")).toBeVisible();

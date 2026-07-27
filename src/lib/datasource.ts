@@ -33,6 +33,8 @@ export interface FetchOptions<T> {
   parse?: (raw: unknown) => T;
   /** Response is HTML/text rather than JSON (e.g. KTC scrape). */
   asText?: boolean;
+  /** Skip the cache read (user-initiated sync); the result is still cached. */
+  fresh?: boolean;
 }
 
 /**
@@ -50,7 +52,7 @@ export async function fetchWithFixture<T>(opts: FetchOptions<T>): Promise<Source
   }
 
   const cached = cache.get<T>(opts.key);
-  if (cached?.fresh) {
+  if (cached?.fresh && !opts.fresh) {
     return { data: cached.data, source: "cache", fetchedAt: cached.fetchedAt };
   }
 
