@@ -5,7 +5,7 @@ import DataSourceBanner from "@/components/DataSourceBanner";
 import RosterNotice from "@/components/RosterNotice";
 import TeamPicker from "@/components/TeamPicker";
 import { PlayerCell, ValueChip } from "@/components/players/PlayerRow";
-import { lineupAdvice } from "@/lib/analysis/lineup";
+import { isUnavailable, lineupAdvice } from "@/lib/analysis/lineup";
 import { LeagueBundle, teamName } from "@/lib/leagueBundle";
 import { useMyRoster } from "@/lib/hooks/useMyRoster";
 import { SleeperMatchup } from "@/lib/sleeper/types";
@@ -153,6 +153,19 @@ export default function StartSitView({
         </div>
       )}
 
+      {advice.unavailableStarters.length > 0 && (
+        <div
+          data-testid="unavailable-starters"
+          className="mt-4 rounded-md border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-xs text-rose-300"
+        >
+          Ruled out but in your lineup:{" "}
+          {advice.unavailableStarters
+            .map((id) => `${players[id]?.name ?? id} (${players[id]?.injuryStatus})`)
+            .join(", ")}{" "}
+          — swap them out in Sleeper before kickoff.
+        </div>
+      )}
+
       {/* Recommendations */}
       {hasProjections && (advice.promote.length > 0 || advice.sit.length > 0) && (
         <div data-testid="lineup-advice" className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
@@ -177,7 +190,14 @@ export default function StartSitView({
               {advice.sit.map((id) => (
                 <div key={id} className="flex items-center justify-between py-1">
                   <PlayerCell player={players[id]} playerId={id} currentWeek={state.week} />
-                  <span className="font-mono text-sm text-rose-300">{proj(id).toFixed(1)}</span>
+                  <span className="flex items-center gap-2">
+                    {isUnavailable(players[id]) && (
+                      <span className="rounded bg-rose-500/20 px-1.5 py-0.5 text-[10px] font-bold text-rose-300">
+                        OUT
+                      </span>
+                    )}
+                    <span className="font-mono text-sm text-rose-300">{proj(id).toFixed(1)}</span>
+                  </span>
                 </div>
               ))}
             </div>

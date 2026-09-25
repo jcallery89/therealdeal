@@ -14,7 +14,7 @@ import {
   taxiEligible,
 } from "@/lib/analysis/keepers";
 import { starterSlots } from "@/lib/analysis/rosterStrength";
-import { positionBalance } from "@/lib/analysis/tradeFinder";
+import { positionBalance, replacementLevels } from "@/lib/analysis/tradeFinder";
 import { LeagueBundle, teamName } from "@/lib/leagueBundle";
 import { useMyRoster } from "@/lib/hooks/useMyRoster";
 import { CanonicalPlayer } from "@/lib/players/canonical";
@@ -79,7 +79,14 @@ export default function KeeperPlanner({ bundle }: { bundle: LeagueBundle }) {
   }, [rules, deadline, hydrated, leagueConfig.id]);
 
   useEffect(() => {
-    setDaysLeft(Math.ceil((new Date(deadline).getTime() - Date.now()) / 86_400_000));
+    // "YYYY-MM-DD" parsed by Date() is UTC midnight, which is the previous
+    // evening in US time zones; compare local calendar days instead.
+    const [y, m, d] = deadline.split("-").map(Number);
+    const end = new Date(y, m - 1, d);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const days = Math.round((end.getTime() - today.getTime()) / 86_400_000);
+    setDaysLeft(Number.isFinite(days) ? days : null);
   }, [deadline]);
 
   const valueOf = useMemo(
@@ -96,10 +103,13 @@ export default function KeeperPlanner({ bundle }: { bundle: LeagueBundle }) {
   // to project who hits waivers at the deadline.
   const cutWatch = useMemo(() => {
     const mine = rosters.find((r) => r.roster_id === viewRosterId);
+    const slotCfg = starterSlots(league.roster_positions);
     const myBalance = positionBalance(
       mine?.players ?? [],
       players,
-      starterSlots(league.roster_positions)
+      slotCfg,
+      valueOf,
+      replacementLevels(rosters, players, valueOf, slotCfg)
     );
     return rosters
       .filter((r) => r.roster_id !== viewRosterId)
@@ -301,7 +311,11 @@ export default function KeeperPlanner({ bundle }: { bundle: LeagueBundle }) {
                   : "bg-slate-800 text-slate-300"
             }`}
           >
-            {daysLeft < 0 ? "deadline passed" : `${daysLeft} day${daysLeft === 1 ? "" : "s"} left`}
+            {daysLeft < 0
+              ? "deadline passed"
+              : daysLeft === 0
+                ? "due today"
+                : `${daysLeft} day${daysLeft === 1 ? "" : "s"} left`}
           </span>
         )}
         <button

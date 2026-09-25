@@ -56,6 +56,13 @@ export function scoreStatLines(
   return map;
 }
 
+/** Sleeper injury statuses that mean the player will not play. */
+const UNAVAILABLE_STATUSES = new Set(["Out", "IR", "PUP", "Sus", "Suspended", "NA", "DNR"]);
+
+export function isUnavailable(p: CanonicalPlayer | undefined): boolean {
+  return p !== undefined && p.injuryStatus !== null && UNAVAILABLE_STATUSES.has(p.injuryStatus);
+}
+
 export interface LineupSlot {
   slot: string;
   playerId: string | null;
@@ -109,6 +116,8 @@ export interface LineupAdvice {
   promote: string[];
   /** Current starters the optimizer benches. */
   sit: string[];
+  /** Current starters who are ruled out (Out/IR/suspended): must replace. */
+  unavailableStarters: string[];
 }
 
 export function lineupAdvice(
@@ -118,7 +127,9 @@ export function lineupAdvice(
   players: Record<string, CanonicalPlayer>,
   projections: Record<string, number>
 ): LineupAdvice {
-  const optimal = optimalLineup(activePlayerIds, rosterPositions, players, projections);
+  // Ruled-out players never start, whatever a stale projection says.
+  const candidates = activePlayerIds.filter((id) => !isUnavailable(players[id]));
+  const optimal = optimalLineup(candidates, rosterPositions, players, projections);
   const optimalIds = new Set(
     optimal.map((s) => s.playerId).filter((id): id is string => id !== null)
   );
@@ -132,5 +143,6 @@ export function lineupAdvice(
     currentTotal: Math.round(current.reduce((s, id) => s + proj(id), 0) * 10) / 10,
     promote: [...optimalIds].filter((id) => !currentSet.has(id)).sort((a, b) => proj(b) - proj(a)),
     sit: current.filter((id) => !optimalIds.has(id)).sort((a, b) => proj(b) - proj(a)),
+    unavailableStarters: current.filter((id) => isUnavailable(players[id])),
   };
 }

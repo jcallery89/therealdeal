@@ -95,3 +95,27 @@ describe("lineupAdvice", () => {
     expect(advice.currentTotal).toBeCloseTo(20);
   });
 });
+
+describe("injury handling", () => {
+  it("never starts a ruled-out player and flags them if currently starting", () => {
+    const players = pool([
+      ["rbOut", "RB"],
+      ["rbHealthy", "RB"],
+    ]);
+    players.rbOut.injuryStatus = "Out";
+    // Stale projection still likes the injured player.
+    const proj = { rbOut: 20, rbHealthy: 8 };
+    const advice = lineupAdvice(["rbOut"], ["rbOut", "rbHealthy"], ["RB"], players, proj);
+    expect(advice.optimal[0].playerId).toBe("rbHealthy");
+    expect(advice.unavailableStarters).toEqual(["rbOut"]);
+    expect(advice.sit).toEqual(["rbOut"]);
+  });
+
+  it("still starts questionable players", () => {
+    const players = pool([["wrQ", "WR"]]);
+    players.wrQ.injuryStatus = "Questionable";
+    const advice = lineupAdvice([], ["wrQ"], ["WR"], players, { wrQ: 12 });
+    expect(advice.optimal[0].playerId).toBe("wrQ");
+    expect(advice.unavailableStarters).toEqual([]);
+  });
+});

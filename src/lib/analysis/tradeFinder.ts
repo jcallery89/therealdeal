@@ -22,23 +22,64 @@ export interface TradeSuggestion {
   theirNotes: string[];
 }
 
-/** Positive = deficit (need bodies), negative = surplus beyond one backup. */
+export type ReplacementLevels = Record<CorePosition, number>;
+
+/**
+ * League replacement level per position: the value of the Nth-best rostered
+ * player, where N = teams x starters needed at that position. Anyone at or
+ * above it is a legitimate starter somewhere in this league.
+ */
+export function replacementLevels(
+  rosters: SleeperRoster[],
+  players: Record<string, CanonicalPlayer>,
+  valueOf: (p: CanonicalPlayer) => number,
+  slots: StarterSlots
+): ReplacementLevels {
+  const out = { QB: 0, RB: 0, WR: 0, TE: 0 };
+  const rostered = rosters.flatMap((r) => r.players ?? []);
+  for (const pos of CORE_POSITIONS) {
+    const values = rostered
+      .map((id) => players[id])
+      .filter((p) => p?.position === pos)
+      .map((p) => valueOf(p!))
+      .sort((a, b) => b - a);
+    const n = rosters.length * Math.max(1, neededAtPosition(slots, pos));
+    out[pos] = values[n - 1] ?? 0;
+  }
+  return out;
+}
+
+/**
+ * Positive = deficit, negative = surplus. With replacement levels, only
+ * startable players count toward the starters needed (four bad QBs are not a
+ * QB surplus); without them, raw bodies are compared to starters + a backup.
+ */
 export function positionBalance(
   playerIds: string[],
   players: Record<string, CanonicalPlayer>,
-  slots: StarterSlots
+  slots: StarterSlots,
+  valueOf?: (p: CanonicalPlayer) => number,
+  replacement?: ReplacementLevels
 ): Record<CorePosition, number> {
   const out = { QB: 0, RB: 0, WR: 0, TE: 0 };
   for (const pos of CORE_POSITIONS) {
-    const count = playerIds.filter((id) => players[id]?.position === pos).length;
-    const need = neededAtPosition(slots, pos) + 1; // starters + one backup
-    out[pos] = need - count;
+    const atPos = playerIds.map((id) => players[id]).filter((p) => p?.position === pos);
+    if (valueOf && replacement) {
+      const startable = atPos.filter((p) => valueOf(p!) >= replacement[pos]).length;
+      out[pos] = neededAtPosition(slots, pos) - startable;
+    } else {
+      out[pos] = neededAtPosition(slots, pos) + 1 - atPos.length;
+    }
   }
   return out;
 }
 
 const MAX_GAP_PCT = 12;
 const TOP_ASSETS = 12;
+/** Diversity caps so one player or opponent can't dominate the list. */
+const MAX_PER_OPPONENT = 2;
+const MAX_PER_MY_ASSET = 2;
+const MAX_PER_THEIR_ASSET = 1;
 
 interface SideContext {
   rosterId: number;
@@ -156,11 +197,12 @@ export function findTrades(opts: {
       .sort((a, b) => b.value - a.value)
       .slice(0, 6);
 
+  const replacement = replacementLevels(rosters, players, valueOf, slots);
   const ctxFor = (rosterId: number): SideContext => {
     const roster = rosters.find((r) => r.roster_id === rosterId);
     return {
       rosterId,
-      balance: positionBalance(roster?.players ?? [], players, slots),
+      balance: positionBalance(roster?.players ?? [], players, slots, valueOf, replacement),
       contenderScore: teamAnalytics.find((t) => t.rosterId === rosterId)?.contenderScore ?? 0,
     };
   };
@@ -244,7 +286,27 @@ export function findTrades(opts: {
     }
   }
 
-  return suggestions
-    .sort((a, b) => b.mutualScore - a.mutualScore || a.deltaPct - b.deltaPct)
-    .slice(0, opts.limit ?? 10);
+  suggestions.sort((a, b) => b.mutualScore - a.mutualScore || a.deltaPct - b.deltaPct);
+  return diversify(suggestions, opts.limit ?? 10);
 }
+
+/** Greedy pick in rank order, enforcing the per-opponent / per-asset caps. */
+export function diversify(ranked: TradeSuggestion[], limit: number): TradeSuggestion[] {
+  const perOpponent = new Map<number, number>();
+  const perMine = new Map<string, number>();
+  const perTheirs = new Map<string, number>();
+  const bump = <K,>(m: Map<K, number>, k: K) => m.set(k, (m.get(k) ?? 0) + 1);
+  const out: TradeSuggestion[] = [];
+  for (const s of ranked) {
+    if (out.length >= limit) break;
+    if ((perOpponent.get(s.opponentRosterId) ?? 0) >= MAX_PER_OPPONENT) continue;
+    if (s.send.some((a) => (perMine.get(a.id) ?? 0) >= MAX_PER_MY_ASSET)) continue;
+    if (s.receive.some((a) => (perTheirs.get(a.id) ?? 0) >= MAX_PER_THEIR_ASSET)) continue;
+    out.push(s);
+    bump(perOpponent, s.opponentRosterId);
+    s.send.forEach((a) => bump(perMine, a.id));
+    s.receive.forEach((a) => bump(perTheirs, a.id));
+  }
+  return out;
+}
+

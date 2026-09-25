@@ -4,7 +4,7 @@ import { CanonicalPlayer } from "../players/canonical";
 import { SleeperRoster } from "../sleeper/types";
 import { TeamAnalytics } from "./contender";
 import { StarterSlots } from "./rosterStrength";
-import { findTrades, positionBalance } from "./tradeFinder";
+import { diversify, findTrades, positionBalance, replacementLevels, TradeSuggestion } from "./tradeFinder";
 
 function makePlayer(id: string, position: string, value: number, age = 25): CanonicalPlayer {
   return {
@@ -116,5 +116,58 @@ describe("findTrades", () => {
       teamNameById: new Map(),
     });
     expect(suggestions).toEqual([]);
+  });
+});
+
+describe("replacement-level needs", () => {
+  it("doesn't count sub-replacement bodies as depth", () => {
+    // Two teams, QB demand 2 each (QB + SF) -> replacement = 4th-best QB.
+    const players: Record<string, CanonicalPlayer> = {
+      a1: makePlayer("a1", "QB", 9000),
+      a2: makePlayer("a2", "QB", 8000),
+      b1: makePlayer("b1", "QB", 7000),
+      b2: makePlayer("b2", "QB", 6000),
+      b3: makePlayer("b3", "QB", 300),
+      b4: makePlayer("b4", "QB", 200),
+      b5: makePlayer("b5", "QB", 100),
+    };
+    const rosters = [roster(1, ["a1", "a2"]), roster(2, ["b1", "b2", "b3", "b4", "b5"])];
+    const repl = replacementLevels(rosters, players, valueOf, slots);
+    expect(repl.QB).toBe(6000);
+    // Team 2 has five QBs but only two startable: balanced, not a surplus.
+    const bal = positionBalance(rosters[1].players!, players, slots, valueOf, repl);
+    expect(bal.QB).toBe(0);
+    // Raw-count mode would have called that a big surplus.
+    expect(positionBalance(rosters[1].players!, players, slots).QB).toBeLessThan(0);
+  });
+});
+
+describe("diversify", () => {
+  const sug = (opp: number, send: string, receive: string, score: number): TradeSuggestion => ({
+    opponentRosterId: opp,
+    send: [{ kind: "player", id: send, label: send, value: 1 }],
+    receive: [{ kind: "player", id: receive, label: receive, value: 1 }],
+    deltaPct: 1,
+    mutualScore: score,
+    myNotes: [],
+    theirNotes: [],
+  });
+
+  it("caps suggestions per opponent and per asset", () => {
+    const ranked = [
+      sug(2, "star", "x1", 9),
+      sug(2, "star", "x2", 8),
+      sug(2, "other", "x3", 7), // 3rd for opponent 2 -> dropped
+      sug(3, "star", "y1", 6), // star already used twice -> dropped
+      sug(3, "depth", "x1", 5), // their x1 already used -> dropped
+      sug(3, "depth", "y2", 4),
+    ];
+    const picked = diversify(ranked, 10).map((s) => `${s.opponentRosterId}:${s.send[0].id}:${s.receive[0].id}`);
+    expect(picked).toEqual(["2:star:x1", "2:star:x2", "3:depth:y2"]);
+  });
+
+  it("respects the limit", () => {
+    const ranked = Array.from({ length: 8 }, (_, i) => sug(i, `m${i}`, `t${i}`, 10 - i));
+    expect(diversify(ranked, 3)).toHaveLength(3);
   });
 });
