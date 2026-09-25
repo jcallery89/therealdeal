@@ -10,9 +10,17 @@ export interface LeagueConfig {
   description: string;
 }
 
+/**
+ * Sleeper issues a NEW league_id every season when a league renews. Override
+ * the IDs via NEXT_PUBLIC_LEAGUE_ID_KEEPER / NEXT_PUBLIC_LEAGUE_ID_DYNASTY
+ * (e.g. in Vercel project settings) instead of editing code each year.
+ */
+const KEEPER_LEAGUE_ID = process.env.NEXT_PUBLIC_LEAGUE_ID_KEEPER || "1377306985065619456";
+const DYNASTY_LEAGUE_ID = process.env.NEXT_PUBLIC_LEAGUE_ID_DYNASTY || "1315718697288990720";
+
 export const LEAGUES: LeagueConfig[] = [
   {
-    id: "1377306985065619456",
+    id: KEEPER_LEAGUE_ID,
     label: "The Real Deal",
     short: "Keeper",
     format: "keeper_ppr_tep",
@@ -21,7 +29,7 @@ export const LEAGUES: LeagueConfig[] = [
     description: "10-team Keeper · PPR · TE Premium",
   },
   {
-    id: "1315718697288990720",
+    id: DYNASTY_LEAGUE_ID,
     label: "Dynasty League",
     short: "Dynasty SF",
     format: "dynasty_sf_ppr_tep",
@@ -57,18 +65,19 @@ export const TTL = {
 } as const;
 
 /**
- * Team bye weeks. Sleeper's player blob does not reliably carry byes, so this
- * is a static per-season map — update once each season when the NFL schedule
- * drops (see README). Empty/missing entries simply hide bye badges.
+ * 2026 NFL bye weeks (Weeks 5-14; no byes in Week 12). Sleeper's player blob
+ * doesn't carry byes, so this is a static per-season map — update it each May
+ * when the NFL schedule is released (see README).
  */
+export const BYE_WEEKS_SEASON = "2026";
 export const BYE_WEEKS: Record<string, number> = {
-  ATL: 5, CHI: 5, GB: 5, PIT: 5,
-  HOU: 6, MIN: 6,
-  BAL: 7, BUF: 7,
-  ARI: 8, DET: 8, JAX: 8, LV: 8, LAR: 8, SEA: 8,
-  CLE: 9, NYJ: 9, PHI: 9, TB: 9,
-  CIN: 10, DAL: 10, KC: 10, TEN: 10,
-  IND: 11, NO: 11,
-  DEN: 12, LAC: 12, MIA: 12, WAS: 12,
-  CAR: 14, NE: 14, NYG: 14, SF: 14,
+  KC: 5, CAR: 5,
+  CIN: 6, DET: 6, MIA: 6, MIN: 6,
+  BUF: 7, JAX: 7, LAC: 7, WAS: 7,
+  HOU: 8, NO: 8, NYG: 8, SF: 8,
+  PIT: 9, TEN: 9,
+  CHI: 10, DEN: 10, PHI: 10, TB: 10,
+  ATL: 11, CLE: 11, GB: 11, LAR: 11, NE: 11, SEA: 11,
+  BAL: 13, IND: 13, LV: 13, NYJ: 13,
+  ARI: 14, DAL: 14,
 };

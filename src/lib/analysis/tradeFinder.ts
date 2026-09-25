@@ -1,7 +1,7 @@
 import { LeagueConfig } from "../config";
 import { CanonicalPlayer } from "../players/canonical";
 import { SleeperRoster } from "../sleeper/types";
-import { DraftPick, PickValueTable, pickBucket, pickLabel, pickValue } from "../values/picks";
+import { DraftPick, pickLabel } from "../values/picks";
 import { TeamAnalytics } from "./contender";
 import {
   CORE_POSITIONS,
@@ -116,14 +116,14 @@ export function findTrades(opts: {
   slots: StarterSlots;
   teamAnalytics: TeamAnalytics[];
   picks: DraftPick[];
-  pickValues: PickValueTable;
-  currentSeason: string;
+  /** Pick value in the same scale as valueOf (see draftPickValue). */
+  pickValueOf: (pick: DraftPick) => number;
   teamNameById: Map<number, string>;
   limit?: number;
 }): TradeSuggestion[] {
   const {
     myRosterId, rosters, players, valueOf, slots, teamAnalytics,
-    picks, pickValues, currentSeason, teamNameById,
+    picks, pickValueOf, teamNameById,
   } = opts;
 
   const assetsFor = (rosterId: number): TradeAsset[] => {
@@ -151,7 +151,7 @@ export function findTrades(opts: {
         kind: "pick" as const,
         id: `${p.season}-${p.round}-${p.originalRosterId}`,
         label: pickLabel(p, teamNameById),
-        value: pickValue(pickValues, p.season, p.round, pickBucket(p, rosters, currentSeason), currentSeason),
+        value: pickValueOf(p),
       }))
       .sort((a, b) => b.value - a.value)
       .slice(0, 6);

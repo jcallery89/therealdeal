@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CanonicalPlayer } from "../players/canonical";
-import { lineupAdvice, optimalLineup, scoreProjection } from "./lineup";
+import { lineupAdvice, optimalLineup, scoreStatLine } from "./lineup";
 
 function makePlayer(id: string, position: string): CanonicalPlayer {
   return {
@@ -21,9 +21,9 @@ function pool(specs: [string, string][]): Record<string, CanonicalPlayer> {
   return out;
 }
 
-describe("scoreProjection", () => {
+describe("scoreStatLine", () => {
   it("scores granular stat lines with league settings", () => {
-    const pts = scoreProjection(
+    const pts = scoreStatLine(
       { pass_yd: 250, pass_td: 2, rec: 0 },
       { pass_yd: 0.04, pass_td: 6, rec: 1, bonus_rec_te: 0.5 },
       "QB"
@@ -32,9 +32,9 @@ describe("scoreProjection", () => {
   });
 
   it("falls back to pts_ppr and still applies TE premium", () => {
-    const te = scoreProjection({ pts_ppr: 10, rec: 4 }, { rec: 1, bonus_rec_te: 0.5 }, "TE");
+    const te = scoreStatLine({ pts_ppr: 10, rec: 4 }, { rec: 1, bonus_rec_te: 0.5 }, "TE");
     expect(te).toBeCloseTo(12);
-    const wr = scoreProjection({ pts_ppr: 10, rec: 4 }, { rec: 1, bonus_rec_te: 0.5 }, "WR");
+    const wr = scoreStatLine({ pts_ppr: 10, rec: 4 }, { rec: 1, bonus_rec_te: 0.5 }, "WR");
     expect(wr).toBeCloseTo(10);
   });
 });

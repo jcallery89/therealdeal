@@ -3,6 +3,7 @@ import type { LeagueConfig } from "./config";
 import type { DataSourceKind } from "./datasource";
 import type { CanonicalPlayer } from "./players/canonical";
 import type {
+  SleeperDraft,
   SleeperLeague,
   SleeperLeagueUser,
   SleeperRoster,
@@ -28,6 +29,10 @@ export interface LeagueBundle {
   valueContext: ValueContext;
   pickValues: PickValueTable;
   picks: DraftPick[];
+  /** Seasons tracked in `picks`, next draft first. */
+  pickSeasons: string[];
+  /** The league's most recent Sleeper draft, if any. */
+  draft: SleeperDraft | null;
   teamAnalytics: TeamAnalytics[];
   defaultSource: ValueSource;
   /**

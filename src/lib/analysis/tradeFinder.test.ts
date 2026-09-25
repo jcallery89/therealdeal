@@ -86,8 +86,7 @@ describe("findTrades", () => {
       slots,
       teamAnalytics: [analytics(1, 0), analytics(2, 0)],
       picks: [],
-      pickValues: { values: {}, source: "static" },
-      currentSeason: "2025",
+      pickValueOf: () => 0,
       teamNameById: new Map([[1, "Me"], [2, "Them"]]),
     });
     expect(suggestions.length).toBeGreaterThan(0);
@@ -113,8 +112,7 @@ describe("findTrades", () => {
       slots,
       teamAnalytics: [analytics(1, 0), analytics(2, 0)],
       picks: [],
-      pickValues: { values: {}, source: "static" },
-      currentSeason: "2025",
+      pickValueOf: () => 0,
       teamNameById: new Map(),
     });
     expect(suggestions).toEqual([]);

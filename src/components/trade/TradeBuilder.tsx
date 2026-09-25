@@ -11,8 +11,8 @@ import {
 } from "@/lib/analysis/trade";
 import { LeagueBundle, teamName } from "@/lib/leagueBundle";
 import { useSleeperUser } from "@/lib/hooks/useSleeperUser";
-import { playerValue, ValueSource } from "@/lib/values/engine";
-import { pickBucket, pickLabel, pickValue } from "@/lib/values/picks";
+import { draftPickValue, playerValue, ValueSource } from "@/lib/values/engine";
+import { pickLabel } from "@/lib/values/picks";
 
 interface AssetOption extends TradeAsset {
   search: string;
@@ -35,7 +35,7 @@ export default function TradeBuilder({
   prefill?: TradePrefill | null;
 }) {
   const { user, ready } = useSleeperUser();
-  const { leagueConfig, rosters, users, players, valueContext, picks, pickValues, state, teamAnalytics } = bundle;
+  const { leagueConfig, league, rosters, users, players, valueContext, picks, pickValues, teamAnalytics } = bundle;
 
   const myRosterId =
     user?.rosterIdByLeague?.[leagueConfig.id] ??
@@ -104,13 +104,7 @@ export default function TradeBuilder({
           kind: "pick" as const,
           id: `${p.season}-${p.round}-${p.originalRosterId}`,
           label,
-          value: pickValue(
-            pickValues,
-            p.season,
-            p.round,
-            pickBucket(p, rosters, state.season),
-            state.season
-          ),
+          value: draftPickValue(p, pickValues, league.season, leagueConfig, source, valueContext),
           search: label.toLowerCase(),
         };
       })

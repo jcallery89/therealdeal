@@ -3,18 +3,19 @@
 import { useMemo, useState } from "react";
 import DataSourceBanner from "@/components/DataSourceBanner";
 import { PlayerCell, ValueChip } from "@/components/players/PlayerRow";
-import { buildProjectionMap, lineupAdvice } from "@/lib/analysis/lineup";
+import { lineupAdvice } from "@/lib/analysis/lineup";
 import { LeagueBundle, teamName } from "@/lib/leagueBundle";
 import { useSleeperUser } from "@/lib/hooks/useSleeperUser";
-import { ProjectionEntry, SleeperMatchup } from "@/lib/sleeper/types";
+import { SleeperMatchup } from "@/lib/sleeper/types";
 
 export default function StartSitView({
   bundle,
-  projections,
+  projectedPoints,
   matchups,
 }: {
   bundle: LeagueBundle;
-  projections: ProjectionEntry[] | null;
+  /** player_id -> projected points under this league's scoring (server-scored). */
+  projectedPoints: Record<string, number>;
   matchups: SleeperMatchup[];
 }) {
   const { user } = useSleeperUser();
@@ -28,10 +29,7 @@ export default function StartSitView({
   const rosterId = selectedId ?? myRosterId;
   const roster = rosters.find((r) => r.roster_id === rosterId) ?? rosters[0];
 
-  const projMap = useMemo(
-    () => buildProjectionMap(projections, players, league.scoring_settings),
-    [projections, players, league.scoring_settings]
-  );
+  const projMap = projectedPoints;
   const hasProjections = Object.keys(projMap).length > 0;
 
   const advice = useMemo(() => {

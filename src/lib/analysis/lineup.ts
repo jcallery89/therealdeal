@@ -1,5 +1,5 @@
 import { CanonicalPlayer } from "../players/canonical";
-import { ProjectionEntry } from "../sleeper/types";
+import type { StatLines } from "../sleeper/stats";
 
 /** Slot label -> positions that can fill it. Unknown labels stay unfillable. */
 const SLOT_ELIGIBILITY: Record<string, string[]> = {
@@ -16,12 +16,12 @@ const SLOT_ELIGIBILITY: Record<string, string[]> = {
 };
 
 /**
- * Project fantasy points under the league's actual scoring settings.
- * If the stat line is granular (has yardage keys) we score it stat-by-stat;
- * otherwise we fall back to Sleeper's pre-computed pts_ppr. TE-premium
+ * Fantasy points for a stat line (projected or actual) under the league's
+ * scoring settings. Granular lines (with yardage keys) are scored
+ * stat-by-stat; otherwise Sleeper's pre-computed pts_ppr is used. TE premium
  * (bonus_rec_te) is applied per reception for TEs in both paths.
  */
-export function scoreProjection(
+export function scoreStatLine(
   stats: Record<string, number>,
   scoring: Record<string, number>,
   position: string
@@ -41,16 +41,17 @@ export function scoreProjection(
   return (stats.pts_ppr ?? 0) + teBonus;
 }
 
-export function buildProjectionMap(
-  entries: ProjectionEntry[] | null,
+/** Score every stat line for known players: player_id -> fantasy points. */
+export function scoreStatLines(
+  lines: StatLines,
   players: Record<string, CanonicalPlayer>,
   scoring: Record<string, number>
 ): Record<string, number> {
   const map: Record<string, number> = {};
-  for (const e of entries ?? []) {
-    const p = players[e.player_id];
-    if (!p || !e.stats) continue;
-    map[e.player_id] = Math.round(scoreProjection(e.stats, scoring, p.position) * 10) / 10;
+  for (const [id, stats] of Object.entries(lines)) {
+    const p = players[id];
+    if (!p) continue;
+    map[id] = Math.round(scoreStatLine(stats, scoring, p.position) * 10) / 10;
   }
   return map;
 }

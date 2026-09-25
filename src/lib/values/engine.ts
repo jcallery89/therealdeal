@@ -1,5 +1,6 @@
 import { LeagueConfig, TE_PREMIUM_MULTIPLIER } from "../config";
 import { CanonicalPlayer } from "../players/canonical";
+import { DraftPick, PickValueTable, pickValue } from "./picks";
 
 export type ValueSource = "fc" | "ktc" | "blend";
 
@@ -65,4 +66,42 @@ export function keeperContextValue(p: CanonicalPlayer): number | null {
 
 export function trend30(p: CanonicalPlayer, league: LeagueConfig): number {
   return (league.isDynasty ? p.values.fcDynastySf?.trend30Day : p.values.fcRedraft?.trend30Day) ?? 0;
+}
+
+/** FantasyCalc's typical top dynasty value — the static pick curve's scale. */
+const FC_REFERENCE_MAX = 10500;
+
+/**
+ * Pick values come from FantasyCalc (or the static curve on the same scale),
+ * while player values in Blend/KTC mode live on other scales. Map a raw pick
+ * value into the active source's scale so picks and players stay comparable.
+ */
+export function scaledPickValue(
+  raw: number,
+  league: LeagueConfig,
+  source: ValueSource,
+  ctx: ValueContext
+): number {
+  if (!league.isDynasty || source === "fc") return raw;
+  const fcMax = ctx.fcDynMax > 1 ? ctx.fcDynMax : FC_REFERENCE_MAX;
+  if (source === "blend") return Math.round((raw * BLEND_SCALE) / fcMax);
+  const ktcMax = ctx.ktcSfMax > 1 ? ctx.ktcSfMax : 9999;
+  return Math.round((raw * ktcMax) / fcMax);
+}
+
+/** Value of a draft pick in the active source's scale. */
+export function draftPickValue(
+  pick: DraftPick,
+  table: PickValueTable,
+  leagueSeason: string,
+  league: LeagueConfig,
+  source: ValueSource,
+  ctx: ValueContext
+): number {
+  return scaledPickValue(
+    pickValue(table, pick.season, pick.round, pick.bucket, leagueSeason),
+    league,
+    source,
+    ctx
+  );
 }

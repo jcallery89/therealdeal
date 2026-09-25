@@ -1,8 +1,8 @@
 import { LeagueConfig } from "../config";
 import { CanonicalPlayer } from "../players/canonical";
 import { SleeperRoster } from "../sleeper/types";
-import { DraftPick, PickValueTable, pickBucket, pickValue } from "../values/picks";
-import { playerValue, ValueContext, ValueSource, trend30 } from "../values/engine";
+import { DraftPick, PickValueTable } from "../values/picks";
+import { draftPickValue, playerValue, ValueContext, ValueSource, trend30 } from "../values/engine";
 
 export type PostureBucket = "Contend" | "Push" | "Retool" | "Rebuild";
 
@@ -49,9 +49,9 @@ export function computeTeamAnalytics(opts: {
   source: ValueSource;
   picks: DraftPick[];
   pickValues: PickValueTable;
-  currentSeason: string;
+  leagueSeason: string;
 }): TeamAnalytics[] {
-  const { league, rosters, players, ctx, source, picks, pickValues, currentSeason } = opts;
+  const { league, rosters, players, ctx, source, picks, pickValues, leagueSeason } = opts;
 
   const base = rosters.map((r) => {
     const ids = r.players ?? [];
@@ -71,13 +71,7 @@ export function computeTeamAnalytics(opts: {
     }
     let pickTotal = 0;
     for (const pick of picks.filter((p) => p.ownerRosterId === r.roster_id)) {
-      pickTotal += pickValue(
-        pickValues,
-        pick.season,
-        pick.round,
-        pickBucket(pick, rosters, currentSeason),
-        currentSeason
-      );
+      pickTotal += draftPickValue(pick, pickValues, leagueSeason, league, source, ctx);
     }
     if (league.isDynasty) future += pickTotal;
     const { wins, losses, ties } = r.settings;

@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 import StartSitView from "@/components/startsit/StartSitView";
 import { getLeagueBundle } from "@/lib/bundle";
-import { getMatchups, getProjections } from "@/lib/sleeper/client";
+import { getMatchups } from "@/lib/sleeper/client";
+import { getWeekProjections } from "@/lib/sleeper/stats";
+import { scoreStatLines } from "@/lib/analysis/lineup";
 
 export const dynamic = "force-dynamic";
 
@@ -18,14 +20,14 @@ export default async function StartSitPage({
   if (!bundle) notFound();
 
   const [projRes, matchupsRes] = await Promise.all([
-    getProjections(bundle.state.season, bundle.state.week),
+    getWeekProjections(bundle.state.season, bundle.state.week),
     getMatchups(leagueId, bundle.state.week, fresh).catch(() => null),
   ]);
 
   return (
     <StartSitView
       bundle={bundle}
-      projections={projRes?.data ?? null}
+      projectedPoints={scoreStatLines(projRes.data, bundle.players, bundle.league.scoring_settings)}
       matchups={matchupsRes?.data ?? []}
     />
   );

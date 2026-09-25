@@ -19,7 +19,7 @@ test("setup flow links a Sleeper user and lands on league cards", async ({ page 
 test("dynasty roster dashboard renders starters, strength, and demo banner", async ({ page }) => {
   await page.goto(`/league/${DYNASTY}`);
   await expect(page.getByTestId("source-banner")).toBeVisible();
-  await expect(page.getByText("Starters")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Starters" })).toBeVisible();
   await expect(page.getByTestId("strength-bars")).toBeVisible();
   await expect(page.getByText("Taxi squad")).toBeVisible();
   await page.screenshot({ path: `${SHOTS}/3-roster-dynasty.png`, fullPage: true });
@@ -27,7 +27,7 @@ test("dynasty roster dashboard renders starters, strength, and demo banner", asy
 
 test("keeper roster dashboard renders with KTC context values", async ({ page }) => {
   await page.goto(`/league/${KEEPER}`);
-  await expect(page.getByText("Starters")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Starters" })).toBeVisible();
   await page.screenshot({ path: `${SHOTS}/4-roster-keeper.png` });
 });
 
@@ -89,13 +89,13 @@ test("cutdown planner optimizes keeps, reacts to rules and pins", async ({ page 
 
 test("sync button refetches league data in place", async ({ page }) => {
   await page.goto(`/league/${DYNASTY}`);
-  await expect(page.getByText("Starters")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Starters" })).toBeVisible();
   const syncResponse = page.waitForResponse((r) => r.url().includes("/api/sync"));
   await page.getByTestId("sync-button").click();
   expect((await syncResponse).status()).toBe(200);
   await page.waitForURL(/sync=\d+/);
   // Page re-rendered with fresh data, still on the roster dashboard.
-  await expect(page.getByText("Starters")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Starters" })).toBeVisible();
   await expect(page.getByTestId("sync-button")).toHaveText(/Sync/);
 });
 

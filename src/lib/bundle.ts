@@ -2,7 +2,9 @@ import { computeTeamAnalytics } from "./analysis/contender";
 import { getLeagueConfig } from "./config";
 import { worstSource } from "./datasource";
 import { buildCanonicalTable, CanonicalPlayer } from "./players/canonical";
+import { draftSlots } from "./analysis/draftBoard";
 import {
+  getDrafts,
   getLeague,
   getLeagueUsers,
   getRosters,
@@ -10,7 +12,7 @@ import {
   getTradedPicks,
 } from "./sleeper/client";
 import { computeValueContext, ValueSource } from "./values/engine";
-import { computePickInventory, parseFcPicks } from "./values/picks";
+import { computePickInventory, parseFcPicks, pickRounds, pickSeasons } from "./values/picks";
 import type { LeagueBundle } from "./leagueBundle";
 
 export type { LeagueBundle } from "./leagueBundle";
@@ -28,7 +30,7 @@ export async function getLeagueBundle(
   const leagueConfig = getLeagueConfig(leagueId);
   if (!leagueConfig) return null;
 
-  const [leagueRes, rostersRes, usersRes, tradedRes, stateRes, table] =
+  const [leagueRes, rostersRes, usersRes, tradedRes, stateRes, table, draftsRes] =
     await Promise.all([
       getLeague(leagueId, fresh),
       getRosters(leagueId, fresh),
@@ -36,7 +38,10 @@ export async function getLeagueBundle(
       getTradedPicks(leagueId, fresh),
       getState(fresh),
       buildCanonicalTable(),
+      getDrafts(leagueId, fresh).catch(() => null),
     ]);
+  // Sleeper lists a league's drafts newest first.
+  const draft = draftsRes?.data?.[0] ?? null;
 
   const valueContext = computeValueContext(table.players);
   const rostered = new Set(
@@ -61,10 +66,16 @@ export async function getLeagueBundle(
   const pickValues = parseFcPicks(
     leagueConfig.isDynasty ? table.fcPicks.dynastySf : table.fcPicks.redraft
   );
+  const seasons = pickSeasons(leagueRes.data.season, draft);
+  // The official draft order only applies to the draft it belongs to;
+  // otherwise estimate the next draft's order from standings.
+  const orderForNextDraft = draft && draft.season === seasons[0] ? draft.draft_order : null;
   const picks = computePickInventory(
     rostersRes.data,
     tradedRes.data,
-    stateRes.data.season
+    seasons,
+    pickRounds(draft, tradedRes.data),
+    draftSlots(rostersRes.data, orderForNextDraft)
   );
   const defaultSource: ValueSource = leagueConfig.isDynasty ? "blend" : "fc";
 
@@ -76,7 +87,7 @@ export async function getLeagueBundle(
     source: defaultSource,
     picks,
     pickValues,
-    currentSeason: stateRes.data.season,
+    leagueSeason: leagueRes.data.season,
   });
 
   return {
@@ -89,6 +100,8 @@ export async function getLeagueBundle(
     valueContext,
     pickValues,
     picks,
+    pickSeasons: seasons,
+    draft,
     teamAnalytics,
     defaultSource,
     // Primary health = Sleeper data only; a blocked FantasyCalc/KTC fetch

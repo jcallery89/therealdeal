@@ -1,6 +1,6 @@
 import { cache } from "../cache";
 import { TTL } from "../config";
-import { DataSourceKind, worstSource } from "../datasource";
+import { DataSourceKind, Sourced, worstSource } from "../datasource";
 import { getFcValues } from "../fantasycalc/client";
 import { FcEntry } from "../fantasycalc/types";
 import { getKtcValues } from "../ktc/scrape";
@@ -53,18 +53,33 @@ function fcValueShape(e: FcEntry) {
  * FantasyCalc (direct via sleeperId) and KTC (normalized-name match with
  * position/team disambiguation). Cached for an hour.
  */
+/** Optional sources degrade to an empty list rather than failing the page. */
+async function optional<T>(p: Promise<Sourced<T[]>>): Promise<Sourced<T[]>> {
+  try {
+    return await p;
+  } catch (err) {
+    console.warn("[canonical] optional source unavailable:", err);
+    return { data: [], source: "unavailable", fetchedAt: Date.now() };
+  }
+}
+
+/** Degraded tables are retried soon instead of sticking for the full TTL. */
+const DEGRADED_TTL_MS = 2 * 60 * 1000;
+
 export async function buildCanonicalTable(): Promise<CanonicalTable> {
   const hit = cache.get<CanonicalTable>("canonical");
   if (hit?.fresh) return hit.data;
 
+  // The player database is required (throws -> error page); value and
+  // trending sources are optional.
   const [playersRes, fcDynRes, fcRedRes, ktcRes, trendAddRes, trendDropRes] =
     await Promise.all([
       getPlayersMap(),
-      getFcValues("dynasty_sf"),
-      getFcValues("redraft_1qb"),
-      getKtcValues(),
-      getTrending("add").catch(() => null),
-      getTrending("drop").catch(() => null),
+      optional(getFcValues("dynasty_sf")),
+      optional(getFcValues("redraft_1qb")),
+      optional(getKtcValues()),
+      optional(getTrending("add")),
+      optional(getTrending("drop")),
     ]);
 
   const players: Record<string, CanonicalPlayer> = {};
@@ -139,11 +154,11 @@ export async function buildCanonicalTable(): Promise<CanonicalTable> {
     }
   }
 
-  for (const t of trendAddRes?.data ?? []) {
+  for (const t of trendAddRes.data) {
     const p = players[t.player_id];
     if (p) p.trending = { ...p.trending, add: t.count };
   }
-  for (const t of trendDropRes?.data ?? []) {
+  for (const t of trendDropRes.data) {
     const p = players[t.player_id];
     if (p) p.trending = { ...p.trending, drop: t.count };
   }
@@ -172,6 +187,7 @@ export async function buildCanonicalTable(): Promise<CanonicalTable> {
       },
     },
   };
-  cache.set("canonical", table, TTL.canonical);
+  const degraded = table.meta.sources.fc !== "live" || table.meta.sources.ktc !== "live";
+  cache.set("canonical", table, degraded && table.meta.source !== "fixture" ? DEGRADED_TTL_MS : TTL.canonical);
   return table;
 }

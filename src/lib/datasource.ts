@@ -2,7 +2,8 @@ import { promises as fs } from "fs";
 import path from "path";
 import { cache } from "./cache";
 
-export type DataSourceKind = "live" | "cache" | "fixture";
+/** "unavailable": an optional source failed live with nothing cached. */
+export type DataSourceKind = "live" | "cache" | "fixture" | "unavailable";
 
 export interface Sourced<T> {
   data: T;
@@ -15,6 +16,8 @@ export function fixturesMode(): boolean {
 }
 
 const FETCH_TIMEOUT_MS = 8000;
+/** A user sync only refetches entries older than this (rate-limit guard). */
+const SYNC_FLOOR_MS = 10_000;
 
 async function readFixture<T>(fixture: string): Promise<T> {
   const file = path.join(process.cwd(), "fixtures", fixture);
@@ -26,7 +29,7 @@ export interface FetchOptions<T> {
   /** Cache key; also used to dedupe. */
   key: string;
   url: string;
-  /** Path relative to fixtures/, served in fixture mode or as last resort. */
+  /** Path relative to fixtures/, served only in fixture (demo) mode. */
   fixture: string;
   ttlMs: number;
   /** Transform/validate the live response (fixtures store the parsed shape). */
@@ -40,10 +43,11 @@ export interface FetchOptions<T> {
 /**
  * Resolution order:
  *  1. SLEEPER_FIXTURES=1  -> fixture file (offline/demo mode)
- *  2. fresh in-memory cache
+ *  2. fresh in-memory cache (a sync bypasses it once the entry is >10s old)
  *  3. live fetch (8s timeout) -> cached
  *  4. stale cache entry
- *  5. fixture file (so the UI degrades to demo data, never a blank page)
+ *  5. throw — live mode never substitutes demo fixtures for real league data;
+ *     callers either surface an error page or treat the source as unavailable.
  */
 export async function fetchWithFixture<T>(opts: FetchOptions<T>): Promise<Sourced<T>> {
   if (fixturesMode()) {
@@ -52,7 +56,8 @@ export async function fetchWithFixture<T>(opts: FetchOptions<T>): Promise<Source
   }
 
   const cached = cache.get<T>(opts.key);
-  if (cached?.fresh && !opts.fresh) {
+  const syncBypass = opts.fresh && cached !== null && Date.now() - cached.fetchedAt > SYNC_FLOOR_MS;
+  if (cached?.fresh && !syncBypass) {
     return { data: cached.data, source: "cache", fetchedAt: cached.fetchedAt };
   }
 
@@ -70,14 +75,20 @@ export async function fetchWithFixture<T>(opts: FetchOptions<T>): Promise<Source
     if (cached) {
       return { data: cached.data, source: "cache", fetchedAt: cached.fetchedAt };
     }
-    console.warn(`[datasource] live fetch failed for ${opts.key}, using fixture:`, err);
-    const data = await readFixture<T>(opts.fixture);
-    return { data, source: "fixture", fetchedAt: Date.now() };
+    throw new SourceUnavailableError(opts.key, err);
   }
 }
 
-/** Merge source metadata: live < cache < fixture (most degraded wins). */
+export class SourceUnavailableError extends Error {
+  constructor(key: string, cause: unknown) {
+    super(`Data source unavailable: ${key} (${cause instanceof Error ? cause.message : String(cause)})`);
+    this.name = "SourceUnavailableError";
+  }
+}
+
+/** Merge source metadata: live < cache < fixture < unavailable (most degraded wins). */
 export function worstSource(...sources: DataSourceKind[]): DataSourceKind {
+  if (sources.includes("unavailable")) return "unavailable";
   if (sources.includes("fixture")) return "fixture";
   if (sources.includes("cache")) return "cache";
   return "live";

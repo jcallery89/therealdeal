@@ -1,7 +1,6 @@
 import { fetchWithFixture, Sourced } from "../datasource";
 import { TTL } from "../config";
 import {
-  ProjectionEntry,
   SleeperDraft,
   SleeperDraftPick,
   SleeperLeague,
@@ -114,23 +113,4 @@ export function getDraftPicks(draftId: string, fresh = false): Promise<Sourced<S
     ttlMs: TTL.trending,
     fresh,
   });
-}
-
-/**
- * Undocumented endpoint — best-effort only. Callers must tolerate null.
- */
-export async function getProjections(
-  season: string,
-  week: number
-): Promise<Sourced<ProjectionEntry[]> | null> {
-  try {
-    return await fetchWithFixture<ProjectionEntry[]>({
-      key: `sleeper:projections:${season}:${week}`,
-      url: `https://api.sleeper.app/projections/nfl/${season}/${week}?season_type=regular`,
-      fixture: "projections-week.json",
-      ttlMs: TTL.projections,
-    });
-  } catch {
-    return null;
-  }
 }

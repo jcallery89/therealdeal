@@ -1,5 +1,5 @@
 import { FcEntry } from "../fantasycalc/types";
-import { SleeperRoster, SleeperTradedPick } from "../sleeper/types";
+import { SleeperDraft, SleeperRoster, SleeperTradedPick } from "../sleeper/types";
 import { PICK_SEASONS_AHEAD, ROOKIE_DRAFT_ROUNDS } from "../config";
 
 export type PickBucket = "early" | "mid" | "late" | null;
@@ -11,6 +11,8 @@ export interface DraftPick {
   originalRosterId: number;
   /** Roster that currently owns the pick. */
   ownerRosterId: number;
+  /** Projected early/mid/late position; only known for the next draft. */
+  bucket: PickBucket;
 }
 
 export interface PickValueTable {
@@ -87,57 +89,65 @@ export function pickLabel(pick: DraftPick, teamNameByRosterId: Map<number, strin
 }
 
 /**
- * Compute every team's pick inventory: each roster natively owns its picks
- * for the next PICK_SEASONS_AHEAD seasons, then traded_picks reassigns
- * ownership of (season, round, original roster) tuples.
+ * Seasons with tradeable picks: the league's own season while its draft is
+ * still pending (picks for it exist until the draft runs), then the next
+ * PICK_SEASONS_AHEAD seasons.
+ */
+export function pickSeasons(leagueSeason: string, draft: SleeperDraft | null): string[] {
+  const base = parseInt(leagueSeason, 10);
+  const includeCurrent = draft !== null && draft.season === leagueSeason && draft.status !== "complete";
+  const seasons = includeCurrent ? [leagueSeason] : [];
+  for (let i = 1; i <= PICK_SEASONS_AHEAD; i++) seasons.push(String(base + i));
+  return seasons;
+}
+
+/**
+ * Draft rounds to track: Sleeper's configured rounds when known (rookie drafts
+ * are short; a keeper league's full draft is long), never fewer than any round
+ * that appears in a trade.
+ */
+export function pickRounds(draft: SleeperDraft | null, tradedPicks: SleeperTradedPick[]): number {
+  const maxTraded = tradedPicks.reduce((m, tp) => Math.max(m, tp.round), 0);
+  return Math.max(draft?.settings.rounds ?? ROOKIE_DRAFT_ROUNDS, maxTraded, 1);
+}
+
+/** Early/mid/late from a 1-based draft slot. */
+export function bucketForSlot(slot: number, teams: number): PickBucket {
+  const t = (slot - 1) / Math.max(1, teams);
+  return t < 1 / 3 ? "early" : t < 2 / 3 ? "mid" : "late";
+}
+
+/**
+ * Every team's pick inventory: each roster natively owns its picks for each
+ * season/round, then traded_picks reassigns ownership of (season, round,
+ * original roster) tuples. Picks in the first (next) draft get an early/mid/
+ * late bucket from `slotByRoster` (official order or standings estimate).
  */
 export function computePickInventory(
   rosters: SleeperRoster[],
   tradedPicks: SleeperTradedPick[],
-  currentSeason: string
+  seasons: string[],
+  rounds: number,
+  slotByRoster: Map<number, number> | null = null
 ): DraftPick[] {
-  const startSeason = parseInt(currentSeason, 10) + 1;
   const picks = new Map<string, DraftPick>();
   for (const r of rosters) {
-    for (let s = 0; s < PICK_SEASONS_AHEAD; s++) {
-      const season = String(startSeason + s);
-      for (let round = 1; round <= ROOKIE_DRAFT_ROUNDS; round++) {
+    seasons.forEach((season, i) => {
+      const slot = i === 0 ? slotByRoster?.get(r.roster_id) : undefined;
+      for (let round = 1; round <= rounds; round++) {
         picks.set(`${season}-${round}-${r.roster_id}`, {
           season,
           round,
           originalRosterId: r.roster_id,
           ownerRosterId: r.roster_id,
+          bucket: slot !== undefined ? bucketForSlot(slot, rosters.length) : null,
         });
       }
-    }
+    });
   }
   for (const tp of tradedPicks) {
-    const key = `${tp.season}-${tp.round}-${tp.roster_id}`;
-    const pick = picks.get(key);
+    const pick = picks.get(`${tp.season}-${tp.round}-${tp.roster_id}`);
     if (pick) pick.ownerRosterId = tp.owner_id;
   }
   return [...picks.values()];
-}
-
-/**
- * Early/mid/late bucket for a pick from the original team's current standing
- * (worse record => earlier pick). Only meaningful for the next draft; later
- * seasons return null (generic round value).
- */
-export function pickBucket(
-  pick: DraftPick,
-  rosters: SleeperRoster[],
-  currentSeason: string
-): PickBucket {
-  if (parseInt(pick.season, 10) > parseInt(currentSeason, 10) + 1) return null;
-  const sorted = [...rosters].sort((a, b) => {
-    const wa = a.settings.wins / Math.max(1, a.settings.wins + a.settings.losses + a.settings.ties);
-    const wb = b.settings.wins / Math.max(1, b.settings.wins + b.settings.losses + b.settings.ties);
-    if (wa !== wb) return wa - wb;
-    return (a.settings.fpts ?? 0) - (b.settings.fpts ?? 0);
-  });
-  const idx = sorted.findIndex((r) => r.roster_id === pick.originalRosterId);
-  if (idx < 0) return null;
-  const tercile = idx / sorted.length;
-  return tercile < 1 / 3 ? "early" : tercile < 2 / 3 ? "mid" : "late";
 }

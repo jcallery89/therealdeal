@@ -10,7 +10,7 @@ import { TradeAsset } from "@/lib/analysis/trade";
 import { LeagueBundle, teamName } from "@/lib/leagueBundle";
 import { useSleeperUser } from "@/lib/hooks/useSleeperUser";
 import { CanonicalPlayer } from "@/lib/players/canonical";
-import { playerValue } from "@/lib/values/engine";
+import { draftPickValue, playerValue } from "@/lib/values/engine";
 
 function AssetLine({ asset }: { asset: TradeAsset }) {
   return (
@@ -32,7 +32,7 @@ function AssetLine({ asset }: { asset: TradeAsset }) {
 
 export default function TradeFinder({ bundle }: { bundle: LeagueBundle }) {
   const { user } = useSleeperUser();
-  const { leagueConfig, league, rosters, users, players, valueContext, picks, pickValues, teamAnalytics, state } = bundle;
+  const { leagueConfig, league, rosters, users, players, valueContext, picks, pickValues, teamAnalytics } = bundle;
 
   const myRosterId =
     user?.rosterIdByLeague?.[leagueConfig.id] ??
@@ -60,12 +60,12 @@ export default function TradeFinder({ bundle }: { bundle: LeagueBundle }) {
         slots: starterSlots(league.roster_positions),
         teamAnalytics,
         picks,
-        pickValues,
-        currentSeason: state.season,
+        pickValueOf: (p) =>
+          draftPickValue(p, pickValues, league.season, leagueConfig, bundle.defaultSource, valueContext),
         teamNameById,
         limit: 10,
       }),
-    [leagueConfig, myRosterId, rosters, players, valueOf, league.roster_positions, teamAnalytics, picks, pickValues, state.season, teamNameById]
+    [leagueConfig, myRosterId, rosters, players, valueOf, league.roster_positions, teamAnalytics, picks, pickValues, league.season, bundle.defaultSource, valueContext, teamNameById]
   );
 
   const analyzerLink = (s: (typeof suggestions)[number]) => {

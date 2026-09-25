@@ -5,7 +5,6 @@ import DataSourceBanner from "@/components/DataSourceBanner";
 import { PlayerCell, ValueChip } from "@/components/players/PlayerRow";
 import { TeamAnalytics } from "@/lib/analysis/contender";
 import { LeagueBundle, teamName } from "@/lib/leagueBundle";
-import { PICK_SEASONS_AHEAD, ROOKIE_DRAFT_ROUNDS } from "@/lib/config";
 import { useSleeperUser } from "@/lib/hooks/useSleeperUser";
 import { playerValue } from "@/lib/values/engine";
 import { pickLabel } from "@/lib/values/picks";
@@ -55,9 +54,10 @@ export default function StrategyView({ bundle }: { bundle: LeagueBundle }) {
     [players, leagueConfig, bundle.defaultSource, valueContext, rosters]
   );
 
-  const seasons = Array.from({ length: PICK_SEASONS_AHEAD }, (_, i) =>
-    String(parseInt(state.season, 10) + 1 + i)
-  );
+  const seasons = bundle.pickSeasons;
+  const maxRound = picks.reduce((m, p) => Math.max(m, p.round), 0);
+  /** Rounds shown as individual chips; later rounds collapse into "+N". */
+  const CHIP_ROUNDS = 4;
 
   // Scatter scales: min-max with padding so tightly grouped leagues still spread.
   const winNowVals = teamAnalytics.map((t) => t.winNowValue);
@@ -217,7 +217,7 @@ export default function StrategyView({ bundle }: { bundle: LeagueBundle }) {
                         return (
                           <td key={season} className="px-2 py-1.5">
                             <div className="flex flex-wrap gap-1">
-                              {owned.map((p) => (
+                              {owned.filter((p) => p.round <= CHIP_ROUNDS).map((p) => (
                                 <span
                                   key={`${p.round}-${p.originalRosterId}`}
                                   title={pickLabel(p, nameById)}
@@ -232,6 +232,17 @@ export default function StrategyView({ bundle }: { bundle: LeagueBundle }) {
                                   {p.round}
                                 </span>
                               ))}
+                              {owned.some((p) => p.round > CHIP_ROUNDS) && (
+                                <span
+                                  className="rounded px-1 py-0.5 font-mono text-[10px] text-slate-500"
+                                  title={owned
+                                    .filter((p) => p.round > CHIP_ROUNDS)
+                                    .map((p) => pickLabel(p, nameById))
+                                    .join(", ")}
+                                >
+                                  +{owned.filter((p) => p.round > CHIP_ROUNDS).length}
+                                </span>
+                              )}
                               {owned.length === 0 && <span className="text-slate-700">—</span>}
                             </div>
                           </td>
@@ -244,7 +255,8 @@ export default function StrategyView({ bundle }: { bundle: LeagueBundle }) {
             </table>
           </div>
           <p className="mt-2 text-[11px] text-slate-600">
-            Numbers are rounds ({ROOKIE_DRAFT_ROUNDS} rounds tracked). Outlined chips were acquired via trade.
+            Numbers are rounds ({maxRound} tracked{maxRound > CHIP_ROUNDS ? `; rounds ${CHIP_ROUNDS + 1}+ collapse into +N` : ""}).
+            Outlined chips were acquired via trade.
           </p>
         </div>
       </div>

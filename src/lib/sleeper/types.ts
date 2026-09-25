@@ -100,11 +100,6 @@ export interface SlimPlayer {
 
 export type PlayersMap = Record<string, SlimPlayer>;
 
-export interface ProjectionEntry {
-  player_id: string;
-  stats: Record<string, number>;
-}
-
 export interface SleeperDraft {
   draft_id: string;
   season: string;
