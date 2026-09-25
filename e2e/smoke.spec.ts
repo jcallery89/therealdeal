@@ -178,3 +178,24 @@ test("players explorer sorts and filters", async ({ page }) => {
   await expect(page.getByTestId("players-table").getByText("Justin Fields")).toBeVisible();
   await page.screenshot({ path: `${SHOTS}/14-players.png`, fullPage: true });
 });
+
+test("weekly review builds a ChatGPT image prompt with every mascot", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto(`/league/${DYNASTY}/review`);
+  await expect(page.getByTestId("review-results")).toBeVisible();
+  const prompt = await page.getByTestId("review-prompt").inputValue();
+
+  const teams = [
+    "The Real Deal Crew", "Bijan Mustard", "Nacua Matata", "Hurts So Good", "Breece Mode",
+    "Lamar the Merrier", "Chase-ing Rings", "Purdy Good Squad", "The Gibbs Standard", "Waddle We Do Now",
+  ];
+  for (const t of teams) expect(prompt).toContain(t);
+  expect(prompt).toMatch(/\d+\.\d{2} def\. .+ \d+\.\d{2}/);
+  expect(prompt).toContain("MASCOTS — I've attached 10 mascot images");
+  await expect(page.getByTestId("attach-order").locator("li")).toHaveCount(10);
+
+  await page.getByTestId("copy-prompt").click();
+  await expect(page.getByTestId("copy-prompt")).toHaveText(/Copied/);
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toEqual(prompt);
+  await page.screenshot({ path: `${SHOTS}/15-weekly-review.png`, fullPage: true });
+});

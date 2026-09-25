@@ -1,662 +1,662 @@
 {
   "p1001": {
     "gp": 9,
-    "pts_ppr": 161.2,
+    "pts_ppr": 172.3,
     "rec": 0
   },
   "p1002": {
     "gp": 9,
-    "pts_ppr": 167.6,
+    "pts_ppr": 174.4,
     "rec": 0
   },
   "p1003": {
-    "gp": 9,
-    "pts_ppr": 167.4,
+    "gp": 8,
+    "pts_ppr": 145.2,
     "rec": 0
   },
   "p1004": {
     "gp": 9,
-    "pts_ppr": 154,
+    "pts_ppr": 160.9,
     "rec": 0
   },
   "p1005": {
     "gp": 9,
-    "pts_ppr": 141.3,
+    "pts_ppr": 108.3,
     "rec": 0
   },
   "p1006": {
     "gp": 9,
-    "pts_ppr": 170.9,
+    "pts_ppr": 157.9,
     "rec": 0
   },
   "p1007": {
     "gp": 9,
-    "pts_ppr": 135.9,
+    "pts_ppr": 97.9,
     "rec": 0
   },
   "p1008": {
     "gp": 9,
-    "pts_ppr": 108.8,
+    "pts_ppr": 83.1,
     "rec": 0
   },
   "p1009": {
     "gp": 9,
-    "pts_ppr": 104.6,
+    "pts_ppr": 128.9,
     "rec": 0
   },
   "p1010": {
     "gp": 9,
-    "pts_ppr": 123.1,
+    "pts_ppr": 101.8,
     "rec": 0
   },
   "p1011": {
-    "gp": 8,
-    "pts_ppr": 70.5,
+    "gp": 9,
+    "pts_ppr": 88.2,
     "rec": 0
   },
   "p1012": {
     "gp": 9,
-    "pts_ppr": 104.8,
+    "pts_ppr": 111.4,
     "rec": 0
   },
   "p1013": {
     "gp": 9,
-    "pts_ppr": 93.9,
+    "pts_ppr": 117.3,
     "rec": 0
   },
   "p1014": {
     "gp": 9,
-    "pts_ppr": 79.6,
+    "pts_ppr": 116.8,
     "rec": 0
   },
   "p1015": {
     "gp": 9,
-    "pts_ppr": 79.9,
+    "pts_ppr": 88.2,
     "rec": 0
   },
   "p1016": {
-    "gp": 9,
-    "pts_ppr": 66.8,
+    "gp": 8,
+    "pts_ppr": 62.7,
     "rec": 0
   },
   "p1017": {
     "gp": 9,
-    "pts_ppr": 84.5,
+    "pts_ppr": 78.2,
     "rec": 0
   },
   "p1018": {
-    "gp": 9,
-    "pts_ppr": 85.9,
+    "gp": 8,
+    "pts_ppr": 82.3,
     "rec": 0
   },
   "p1019": {
     "gp": 9,
-    "pts_ppr": 111.1,
+    "pts_ppr": 91.4,
     "rec": 0
   },
   "p1020": {
     "gp": 9,
-    "pts_ppr": 84,
+    "pts_ppr": 102.9,
     "rec": 0
   },
   "p1021": {
     "gp": 9,
-    "pts_ppr": 121,
+    "pts_ppr": 101.3,
     "rec": 0
   },
   "p1022": {
     "gp": 9,
-    "pts_ppr": 86.2,
+    "pts_ppr": 98,
     "rec": 0
   },
   "p1023": {
     "gp": 9,
-    "pts_ppr": 185.1,
-    "rec": 17
+    "pts_ppr": 170.1,
+    "rec": 14
   },
   "p1024": {
     "gp": 9,
-    "pts_ppr": 204.7,
-    "rec": 24
+    "pts_ppr": 175.1,
+    "rec": 30
   },
   "p1025": {
     "gp": 8,
-    "pts_ppr": 157.3,
-    "rec": 26
+    "pts_ppr": 134.6,
+    "rec": 20
   },
   "p1026": {
     "gp": 9,
-    "pts_ppr": 175.5,
-    "rec": 20
+    "pts_ppr": 175.3,
+    "rec": 18
   },
   "p1027": {
-    "gp": 8,
-    "pts_ppr": 108.1,
-    "rec": 13
+    "gp": 9,
+    "pts_ppr": 145.2,
+    "rec": 22
   },
   "p1028": {
     "gp": 9,
-    "pts_ppr": 123,
-    "rec": 16
+    "pts_ppr": 174.6,
+    "rec": 23
   },
   "p1029": {
     "gp": 9,
-    "pts_ppr": 129.1,
-    "rec": 18
+    "pts_ppr": 168.3,
+    "rec": 23
   },
   "p1030": {
     "gp": 9,
-    "pts_ppr": 132.7,
-    "rec": 31
+    "pts_ppr": 118.3,
+    "rec": 16
   },
   "p1031": {
     "gp": 9,
-    "pts_ppr": 144.7,
-    "rec": 29
+    "pts_ppr": 158.7,
+    "rec": 19
   },
   "p1032": {
     "gp": 9,
-    "pts_ppr": 138.4,
-    "rec": 28
+    "pts_ppr": 135.8,
+    "rec": 22
   },
   "p1033": {
     "gp": 9,
-    "pts_ppr": 127.8,
-    "rec": 15
+    "pts_ppr": 132.3,
+    "rec": 23
   },
   "p1034": {
     "gp": 9,
-    "pts_ppr": 138.6,
-    "rec": 30
+    "pts_ppr": 101.8,
+    "rec": 22
   },
   "p1035": {
     "gp": 9,
-    "pts_ppr": 101.6,
-    "rec": 25
+    "pts_ppr": 95.2,
+    "rec": 14
   },
   "p1036": {
     "gp": 9,
-    "pts_ppr": 110.8,
-    "rec": 30
+    "pts_ppr": 108.2,
+    "rec": 21
   },
   "p1037": {
-    "gp": 9,
-    "pts_ppr": 125.9,
-    "rec": 25
+    "gp": 8,
+    "pts_ppr": 123.9,
+    "rec": 22
   },
   "p1038": {
     "gp": 9,
-    "pts_ppr": 125.3,
-    "rec": 21
+    "pts_ppr": 110.2,
+    "rec": 17
   },
   "p1039": {
     "gp": 8,
-    "pts_ppr": 110.4,
-    "rec": 13
+    "pts_ppr": 80.6,
+    "rec": 23
   },
   "p1040": {
-    "gp": 8,
-    "pts_ppr": 82.5,
+    "gp": 9,
+    "pts_ppr": 81.8,
     "rec": 25
   },
   "p1041": {
     "gp": 9,
-    "pts_ppr": 80.4,
-    "rec": 29
+    "pts_ppr": 109.5,
+    "rec": 24
   },
   "p1042": {
     "gp": 9,
-    "pts_ppr": 108.6,
-    "rec": 29
+    "pts_ppr": 104.5,
+    "rec": 18
   },
   "p1043": {
     "gp": 4,
-    "pts_ppr": 55.2,
-    "rec": 9
+    "pts_ppr": 54.2,
+    "rec": 10
   },
   "p1044": {
     "gp": 9,
-    "pts_ppr": 62.4,
-    "rec": 19
+    "pts_ppr": 86.8,
+    "rec": 20
   },
   "p1045": {
-    "gp": 8,
-    "pts_ppr": 79.9,
-    "rec": 21
+    "gp": 9,
+    "pts_ppr": 57.7,
+    "rec": 19
   },
   "p1046": {
     "gp": 9,
-    "pts_ppr": 62.6,
-    "rec": 15
+    "pts_ppr": 94.2,
+    "rec": 14
   },
   "p1047": {
-    "gp": 8,
-    "pts_ppr": 63.5,
-    "rec": 17
+    "gp": 9,
+    "pts_ppr": 100.5,
+    "rec": 25
   },
   "p1048": {
-    "gp": 8,
-    "pts_ppr": 83.3,
-    "rec": 16
+    "gp": 9,
+    "pts_ppr": 62.8,
+    "rec": 24
   },
   "p1049": {
     "gp": 9,
-    "pts_ppr": 61.2,
-    "rec": 18
+    "pts_ppr": 60,
+    "rec": 28
   },
   "p1050": {
-    "gp": 8,
-    "pts_ppr": 88.3,
-    "rec": 22
+    "gp": 9,
+    "pts_ppr": 76.3,
+    "rec": 21
   },
   "p1051": {
     "gp": 9,
-    "pts_ppr": 80.7,
-    "rec": 17
+    "pts_ppr": 70.9,
+    "rec": 22
   },
   "p1052": {
     "gp": 9,
-    "pts_ppr": 66.9,
-    "rec": 24
+    "pts_ppr": 75.6,
+    "rec": 21
   },
   "p1053": {
     "gp": 9,
-    "pts_ppr": 62.4,
-    "rec": 22
+    "pts_ppr": 73.1,
+    "rec": 30
   },
   "p1054": {
-    "gp": 9,
-    "pts_ppr": 61.6,
-    "rec": 17
+    "gp": 8,
+    "pts_ppr": 60,
+    "rec": 25
   },
   "p1055": {
     "gp": 9,
-    "pts_ppr": 77.8,
-    "rec": 25
+    "pts_ppr": 44.1,
+    "rec": 17
   },
   "p1056": {
     "gp": 9,
-    "pts_ppr": 37.9,
-    "rec": 17
+    "pts_ppr": 69.2,
+    "rec": 26
   },
   "p1057": {
-    "gp": 8,
-    "pts_ppr": 163,
-    "rec": 41
+    "gp": 9,
+    "pts_ppr": 207.6,
+    "rec": 37
   },
   "p1058": {
     "gp": 9,
-    "pts_ppr": 183,
-    "rec": 28
+    "pts_ppr": 215.2,
+    "rec": 38
   },
   "p1059": {
     "gp": 9,
-    "pts_ppr": 161.8,
-    "rec": 56
+    "pts_ppr": 211.7,
+    "rec": 59
   },
   "p1060": {
     "gp": 9,
-    "pts_ppr": 166.7,
-    "rec": 49
+    "pts_ppr": 154.7,
+    "rec": 46
   },
   "p1061": {
-    "gp": 9,
-    "pts_ppr": 188.4,
-    "rec": 57
+    "gp": 8,
+    "pts_ppr": 153.5,
+    "rec": 27
   },
   "p1062": {
-    "gp": 8,
-    "pts_ppr": 138,
-    "rec": 24
+    "gp": 9,
+    "pts_ppr": 169,
+    "rec": 37
   },
   "p1063": {
     "gp": 9,
-    "pts_ppr": 152.6,
-    "rec": 46
+    "pts_ppr": 156.2,
+    "rec": 49
   },
   "p1064": {
     "gp": 9,
-    "pts_ppr": 146.7,
-    "rec": 36
+    "pts_ppr": 182.4,
+    "rec": 39
   },
   "p1065": {
     "gp": 9,
-    "pts_ppr": 153,
-    "rec": 32
+    "pts_ppr": 145.9,
+    "rec": 44
   },
   "p1066": {
     "gp": 9,
-    "pts_ppr": 167.6,
-    "rec": 53
+    "pts_ppr": 173.5,
+    "rec": 58
   },
   "p1067": {
     "gp": 9,
-    "pts_ppr": 182.1,
-    "rec": 45
+    "pts_ppr": 139.7,
+    "rec": 31
   },
   "p1068": {
-    "gp": 8,
-    "pts_ppr": 146.9,
-    "rec": 47
+    "gp": 9,
+    "pts_ppr": 127.6,
+    "rec": 55
   },
   "p1069": {
-    "gp": 8,
-    "pts_ppr": 111.6,
-    "rec": 30
+    "gp": 9,
+    "pts_ppr": 138.5,
+    "rec": 60
   },
   "p1070": {
     "gp": 9,
-    "pts_ppr": 117.4,
-    "rec": 49
+    "pts_ppr": 129.9,
+    "rec": 37
   },
   "p1071": {
     "gp": 9,
-    "pts_ppr": 178.3,
-    "rec": 62
+    "pts_ppr": 128.9,
+    "rec": 28
   },
   "p1072": {
     "gp": 9,
-    "pts_ppr": 166.8,
-    "rec": 36
+    "pts_ppr": 117.4,
+    "rec": 29
   },
   "p1073": {
     "gp": 9,
-    "pts_ppr": 97.8,
-    "rec": 38
+    "pts_ppr": 109.5,
+    "rec": 45
   },
   "p1074": {
     "gp": 9,
-    "pts_ppr": 112.3,
-    "rec": 63
+    "pts_ppr": 83.2,
+    "rec": 54
   },
   "p1075": {
-    "gp": 9,
-    "pts_ppr": 124.4,
-    "rec": 56
+    "gp": 8,
+    "pts_ppr": 97.7,
+    "rec": 39
   },
   "p1076": {
-    "gp": 8,
-    "pts_ppr": 131,
-    "rec": 51
+    "gp": 9,
+    "pts_ppr": 108.6,
+    "rec": 63
   },
   "p1077": {
     "gp": 9,
-    "pts_ppr": 144.9,
-    "rec": 40
+    "pts_ppr": 100.5,
+    "rec": 33
   },
   "p1078": {
     "gp": 9,
-    "pts_ppr": 88.3,
-    "rec": 40
+    "pts_ppr": 87.9,
+    "rec": 34
   },
   "p1079": {
     "gp": 9,
-    "pts_ppr": 131.9,
-    "rec": 35
+    "pts_ppr": 130.7,
+    "rec": 41
   },
   "p1080": {
     "gp": 9,
-    "pts_ppr": 105.9,
-    "rec": 55
+    "pts_ppr": 115.9,
+    "rec": 54
   },
   "p1081": {
     "gp": 9,
-    "pts_ppr": 69.1,
-    "rec": 32
+    "pts_ppr": 76.9,
+    "rec": 43
   },
   "p1082": {
-    "gp": 9,
-    "pts_ppr": 138.9,
-    "rec": 62
+    "gp": 8,
+    "pts_ppr": 97.6,
+    "rec": 26
   },
   "p1083": {
     "gp": 9,
-    "pts_ppr": 109.8,
-    "rec": 59
+    "pts_ppr": 144.2,
+    "rec": 48
   },
   "p1084": {
-    "gp": 9,
-    "pts_ppr": 94.2,
-    "rec": 39
+    "gp": 8,
+    "pts_ppr": 95.1,
+    "rec": 37
   },
   "p1085": {
     "gp": 9,
-    "pts_ppr": 111.4,
-    "rec": 59
+    "pts_ppr": 85.5,
+    "rec": 56
   },
   "p1086": {
     "gp": 9,
-    "pts_ppr": 133.3,
-    "rec": 57
+    "pts_ppr": 99.7,
+    "rec": 60
   },
   "p1087": {
-    "gp": 9,
-    "pts_ppr": 114.8,
-    "rec": 36
+    "gp": 8,
+    "pts_ppr": 96.7,
+    "rec": 38
   },
   "p1088": {
     "gp": 9,
-    "pts_ppr": 92.2,
+    "pts_ppr": 107.8,
     "rec": 35
   },
   "p1089": {
-    "gp": 8,
-    "pts_ppr": 76.9,
-    "rec": 42
+    "gp": 9,
+    "pts_ppr": 113.8,
+    "rec": 60
   },
   "p1090": {
     "gp": 9,
-    "pts_ppr": 116.2,
-    "rec": 60
+    "pts_ppr": 148.7,
+    "rec": 33
   },
   "p1091": {
     "gp": 8,
-    "pts_ppr": 61,
-    "rec": 30
+    "pts_ppr": 44,
+    "rec": 37
   },
   "p1092": {
     "gp": 9,
-    "pts_ppr": 67.4,
-    "rec": 59
+    "pts_ppr": 59.6,
+    "rec": 45
   },
   "p1093": {
-    "gp": 9,
-    "pts_ppr": 92.9,
-    "rec": 29
+    "gp": 8,
+    "pts_ppr": 79.3,
+    "rec": 38
   },
   "p1094": {
     "gp": 9,
-    "pts_ppr": 83.3,
-    "rec": 41
+    "pts_ppr": 58.2,
+    "rec": 30
   },
   "p1095": {
     "gp": 9,
-    "pts_ppr": 88,
-    "rec": 58
+    "pts_ppr": 81.7,
+    "rec": 28
   },
   "p1096": {
     "gp": 9,
-    "pts_ppr": 38.1,
-    "rec": 28
+    "pts_ppr": 74.3,
+    "rec": 54
   },
   "p1097": {
     "gp": 9,
-    "pts_ppr": 69.1,
-    "rec": 61
+    "pts_ppr": 91.3,
+    "rec": 53
   },
   "p1098": {
     "gp": 8,
-    "pts_ppr": 75.9,
-    "rec": 40
+    "pts_ppr": 65.2,
+    "rec": 50
   },
   "p1099": {
     "gp": 9,
-    "pts_ppr": 65.3,
-    "rec": 35
+    "pts_ppr": 65.6,
+    "rec": 62
   },
   "p1100": {
     "gp": 9,
-    "pts_ppr": 73.2,
-    "rec": 44
+    "pts_ppr": 66.4,
+    "rec": 34
   },
   "p1101": {
     "gp": 9,
-    "pts_ppr": 188.6,
-    "rec": 42
+    "pts_ppr": 144.5,
+    "rec": 53
   },
   "p1102": {
-    "gp": 9,
-    "pts_ppr": 166.3,
-    "rec": 41
+    "gp": 8,
+    "pts_ppr": 132.2,
+    "rec": 49
   },
   "p1103": {
     "gp": 9,
-    "pts_ppr": 100.3,
-    "rec": 29
+    "pts_ppr": 103.4,
+    "rec": 48
   },
   "p1104": {
     "gp": 9,
-    "pts_ppr": 138.7,
-    "rec": 35
+    "pts_ppr": 91.4,
+    "rec": 29
   },
   "p1105": {
     "gp": 9,
-    "pts_ppr": 77.8,
-    "rec": 40
+    "pts_ppr": 73.9,
+    "rec": 57
   },
   "p1106": {
-    "gp": 9,
-    "pts_ppr": 78.3,
-    "rec": 41
+    "gp": 8,
+    "pts_ppr": 79,
+    "rec": 30
   },
   "p1107": {
     "gp": 9,
-    "pts_ppr": 55.8,
-    "rec": 40
+    "pts_ppr": 76.4,
+    "rec": 32
   },
   "p1108": {
     "gp": 9,
-    "pts_ppr": 63.2,
-    "rec": 25
+    "pts_ppr": 72,
+    "rec": 28
   },
   "p1109": {
-    "gp": 9,
-    "pts_ppr": 58.2,
-    "rec": 38
+    "gp": 8,
+    "pts_ppr": 47.4,
+    "rec": 35
   },
   "p1110": {
-    "gp": 8,
-    "pts_ppr": 70.6,
-    "rec": 40
+    "gp": 9,
+    "pts_ppr": 41.1,
+    "rec": 54
   },
   "p1111": {
     "gp": 9,
-    "pts_ppr": 76.2,
-    "rec": 31
+    "pts_ppr": 71,
+    "rec": 46
   },
   "p1112": {
     "gp": 8,
-    "pts_ppr": 61.1,
-    "rec": 42
+    "pts_ppr": 71,
+    "rec": 43
   },
   "p1113": {
     "gp": 9,
-    "pts_ppr": 61.8,
-    "rec": 44
+    "pts_ppr": 57.9,
+    "rec": 26
   },
   "p1114": {
     "gp": 9,
-    "pts_ppr": 63.5,
-    "rec": 43
+    "pts_ppr": 34.4,
+    "rec": 54
   },
   "p1115": {
     "gp": 9,
-    "pts_ppr": 52.5,
-    "rec": 32
+    "pts_ppr": 67.2,
+    "rec": 41
   },
   "p1116": {
     "gp": 9,
-    "pts_ppr": 94.9,
-    "rec": 29
+    "pts_ppr": 86.5,
+    "rec": 43
   },
   "p1117": {
     "gp": 9,
-    "pts_ppr": 66.2,
-    "rec": 32
+    "pts_ppr": 58,
+    "rec": 55
   },
   "p1118": {
-    "gp": 9,
-    "pts_ppr": 39.3,
-    "rec": 32
+    "gp": 8,
+    "pts_ppr": 21.8,
+    "rec": 31
   },
   "p1119": {
-    "gp": 9,
-    "pts_ppr": 20.3,
-    "rec": 38
+    "gp": 8,
+    "pts_ppr": 41.9,
+    "rec": 28
   },
   "p1120": {
     "gp": 9,
-    "pts_ppr": 55.7,
-    "rec": 39
+    "pts_ppr": 63.8,
+    "rec": 55
   },
   "p2001": {
     "gp": 9,
-    "pts_ppr": 70.4,
+    "pts_ppr": 50,
     "rec": 0
   },
   "p2002": {
     "gp": 9,
-    "pts_ppr": 74.6,
+    "pts_ppr": 41.3,
     "rec": 0
   },
   "p2003": {
-    "gp": 9,
-    "pts_ppr": 46,
-    "rec": 27
+    "gp": 8,
+    "pts_ppr": 25.9,
+    "rec": 18
   },
   "p2004": {
     "gp": 9,
-    "pts_ppr": 40.7,
-    "rec": 28
+    "pts_ppr": 24.1,
+    "rec": 17
   },
   "p2005": {
     "gp": 9,
-    "pts_ppr": 29,
+    "pts_ppr": 60.2,
     "rec": 18
   },
   "p2006": {
     "gp": 9,
-    "pts_ppr": 62.1,
-    "rec": 30
+    "pts_ppr": 51.3,
+    "rec": 17
   },
   "p2007": {
-    "gp": 9,
-    "pts_ppr": 71.3,
-    "rec": 50
+    "gp": 8,
+    "pts_ppr": 50.2,
+    "rec": 46
   },
   "p2008": {
     "gp": 9,
-    "pts_ppr": 31.9,
-    "rec": 31
+    "pts_ppr": 70.1,
+    "rec": 45
   },
   "p2009": {
-    "gp": 8,
-    "pts_ppr": 43.2,
-    "rec": 39
+    "gp": 9,
+    "pts_ppr": 52.8,
+    "rec": 51
   },
   "p2010": {
     "gp": 9,
-    "pts_ppr": 27.7,
-    "rec": 49
+    "pts_ppr": 16.6,
+    "rec": 30
   },
   "p2011": {
     "gp": 8,
-    "pts_ppr": 31.1,
-    "rec": 34
+    "pts_ppr": 49.3,
+    "rec": 32
   },
   "p2012": {
-    "gp": 8,
-    "pts_ppr": 52.7,
-    "rec": 43
+    "gp": 9,
+    "pts_ppr": 21.2,
+    "rec": 34
   }
 }

@@ -340,12 +340,24 @@ function makeLeagueFixtures(leagueId, name, isDynasty, order) {
   for (let m = 1; m <= 5; m++) {
     for (const rosterId of [m * 2 - 1, m * 2]) {
       const r = rosters[rosterId - 1];
+      // Per-player actual points; a team's score is its starters' sum, so
+      // bench points and "optimal lineup" math are internally consistent.
+      const byId = Object.fromEntries(allPlayers.map((p) => [p.id, p]));
+      const playersPoints = {};
+      for (const id of r.players) {
+        const p = byId[id];
+        const out = p.injury === "IR" || p.injury === "Out";
+        playersPoints[id] = out ? 0 : Math.round(Math.max(0, p.red / 450 + (rand() - 0.35) * 16) * 100) / 100;
+      }
+      const startersPoints = r.starters.map((id) => playersPoints[id] ?? 0);
       matchups.push({
         roster_id: rosterId,
         matchup_id: m,
-        points: Math.round((95 + rand() * 65) * 100) / 100,
+        points: Math.round(startersPoints.reduce((a, b) => a + b, 0) * 100) / 100,
         starters: r.starters,
         players: r.players,
+        players_points: playersPoints,
+        starters_points: startersPoints,
       });
     }
   }

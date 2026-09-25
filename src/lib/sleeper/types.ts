@@ -66,6 +66,10 @@ export interface SleeperMatchup {
   points: number;
   starters: string[] | null;
   players: string[] | null;
+  /** Actual points per player this week (starters and bench). */
+  players_points?: Record<string, number> | null;
+  /** Actual points per starter, aligned with `starters`. */
+  starters_points?: number[] | null;
 }
 
 export interface SleeperTradedPick {
