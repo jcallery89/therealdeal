@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import DataSourceBanner from "@/components/DataSourceBanner";
+import { LEAGUE_LINKS, leagueHref } from "@/components/nav/navLinks";
 import { LEAGUES } from "@/lib/config";
+import { resolveMyRosterId } from "@/lib/leagueBundle";
 import { useApi } from "@/lib/hooks/useApi";
 import { useSleeperUser } from "@/lib/hooks/useSleeperUser";
 import { SleeperLeagueUser, SleeperRoster } from "@/lib/sleeper/types";
@@ -15,10 +17,8 @@ function LeagueCard({ leagueId }: { leagueId: string }) {
   const rosters = useApi<SleeperRoster[]>(`/api/sleeper/league/${leagueId}/rosters`);
   const users = useApi<SleeperLeagueUser[]>(`/api/sleeper/league/${leagueId}/users`);
 
-  const myRosterId = user?.rosterIdByLeague?.[leagueId];
-  const mine =
-    rosters.data?.find((r) => r.roster_id === myRosterId) ??
-    rosters.data?.find((r) => r.owner_id === user?.userId);
+  const myRosterId = rosters.data ? resolveMyRosterId(user, rosters.data, leagueId) : null;
+  const mine = rosters.data?.find((r) => r.roster_id === myRosterId);
   const teamUser = users.data?.find((u) => u.user_id === mine?.owner_id);
 
   return (
@@ -41,16 +41,29 @@ function LeagueCard({ leagueId }: { leagueId: string }) {
         )}
       </div>
       <div className="mt-4 flex flex-wrap gap-2 text-sm">
-        <Link className="rounded-md bg-slate-800 px-3 py-1.5 text-slate-200 hover:bg-slate-700" href={`/league/${leagueId}`}>
-          Roster
-        </Link>
-        <Link className="rounded-md bg-slate-800 px-3 py-1.5 text-slate-200 hover:bg-slate-700" href={`/league/${leagueId}/trade`}>
-          Trade Analyzer
-        </Link>
-        <Link className="rounded-md bg-slate-800 px-3 py-1.5 text-slate-200 hover:bg-slate-700" href={`/league/${leagueId}/strategy`}>
-          Strategy
-        </Link>
+        {LEAGUE_LINKS.map(({ slug, label }) => (
+          <Link
+            key={slug}
+            className="rounded-md bg-slate-800 px-3 py-1.5 text-slate-200 hover:bg-slate-700"
+            href={leagueHref(leagueId, slug)}
+          >
+            {label}
+          </Link>
+        ))}
       </div>
+      {rosters.error && (
+        <p className="mt-3 text-xs text-rose-400">
+          Couldn&apos;t load this league from Sleeper right now — try Sync in a moment.
+        </p>
+      )}
+      {rosters.data && myRosterId === null && (
+        <p className="mt-3 text-xs text-sky-300">
+          Your account isn&apos;t on a roster in this league.{" "}
+          <Link href="/setup" className="underline">
+            Relink
+          </Link>
+        </p>
+      )}
       {rosters.source === "fixture" && (
         <div className="mt-3">
           <DataSourceBanner source="fixture" />

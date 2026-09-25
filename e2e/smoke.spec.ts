@@ -91,12 +91,26 @@ test("sync button refetches league data in place", async ({ page }) => {
   await page.goto(`/league/${DYNASTY}`);
   await expect(page.getByRole("heading", { name: "Starters" })).toBeVisible();
   const syncResponse = page.waitForResponse((r) => r.url().includes("/api/sync"));
-  await page.getByTestId("sync-button").click();
+  await page.getByTestId("sync-button").filter({ visible: true }).click();
   expect((await syncResponse).status()).toBe(200);
   await page.waitForURL(/sync=\d+/);
   // Page re-rendered with fresh data, still on the roster dashboard.
   await expect(page.getByRole("heading", { name: "Starters" })).toBeVisible();
-  await expect(page.getByTestId("sync-button")).toHaveText(/Sync/);
+  await expect(page.getByTestId("sync-button").filter({ visible: true })).toHaveText(/Sync/);
+});
+
+test("mobile nav drawer navigates between pages", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(`/league/${DYNASTY}`);
+  await expect(page.getByTestId("sync-button").filter({ visible: true })).toBeVisible();
+  await page.getByTestId("mobile-menu-button").click();
+  const drawer = page.getByTestId("mobile-drawer");
+  await expect(drawer).toBeVisible();
+  await page.screenshot({ path: `${SHOTS}/13-mobile-drawer.png` });
+  await drawer.locator(`a[href="/league/${DYNASTY}/tradefinder"]`).click();
+  await page.waitForURL(`**/league/${DYNASTY}/tradefinder`);
+  await expect(drawer).toBeHidden();
+  await expect(page.getByRole("heading", { name: "Trade Finder" })).toBeVisible();
 });
 
 test("rookie draft board shows the class and my pick slots", async ({ page }) => {

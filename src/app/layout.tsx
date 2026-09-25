@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import MobileNav from "@/components/nav/MobileNav";
 import Sidebar from "@/components/nav/Sidebar";
 
 export const metadata: Metadata = {
@@ -14,7 +15,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="antialiased">
         <div className="flex min-h-screen">
           <Sidebar />
-          <main className="min-w-0 flex-1 px-4 py-6 sm:px-8">{children}</main>
+          <div className="min-w-0 flex-1">
+            <MobileNav />
+            <main className="px-4 py-6 sm:px-8">{children}</main>
+          </div>
         </div>
       </body>
     </html>
