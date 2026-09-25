@@ -163,6 +163,29 @@ players.find((p) => p.name === "Rashee Rice").injury = "Questionable";
 players.find((p) => p.name === "Christian McCaffrey").injury = "IR";
 players.find((p) => p.name === "Chris Godwin").injury = "Out";
 
+// Unrostered players so free-agent views (waiver watch, players explorer)
+// have data. Not distributed to any roster.
+const FA_POOL = [
+  ["Justin Fields", "QB", "NYJ", 27, 7, 2600, 2900],
+  ["Daniel Jones", "QB", "IND", 29, 7, 1500, 2400],
+  ["Tyler Allgeier", "RB", "ATL", 26, 4, 1700, 2100],
+  ["Jaylen Wright", "RB", "MIA", 23, 2, 2100, 1600],
+  ["Ray Davis", "RB", "BUF", 26, 2, 1200, 1300],
+  ["Tank Bigsby", "RB", "JAX", 25, 3, 1400, 1500],
+  ["Wan'Dale Robinson", "WR", "NYG", 25, 4, 1600, 2300],
+  ["Rashid Shaheed", "WR", "NO", 28, 4, 1300, 2000],
+  ["Jalen McMillan", "WR", "TB", 24, 2, 1500, 1400],
+  ["Demario Douglas", "WR", "NE", 25, 3, 1100, 1500],
+  ["Dalton Schultz", "TE", "HOU", 30, 8, 800, 1800],
+  ["Mike Gesicki", "TE", "CIN", 31, 8, 600, 1500],
+];
+const faPlayers = FA_POOL.map(([name, pos, team, age, exp, dyn, red], i) => ({
+  id: `p${2001 + i}`,
+  name, pos, team, age, exp, dyn, red,
+  injury: null,
+}));
+const allPlayers = [...players, ...faPlayers];
+
 const TEAMS = [
   { name: "The Real Deal Crew", user: "Demo Manager", username: "demo" },
   { name: "Bijan Mustard", user: "Alex R." },
@@ -378,7 +401,7 @@ writeFileSync(
 );
 
 const playersMap = {};
-for (const p of players) {
+for (const p of allPlayers) {
   playersMap[p.id] = {
     player_id: p.id,
     full_name: p.name,
@@ -401,13 +424,13 @@ function jitter(v, pct) {
 }
 
 function fcEntries(key) {
-  const sorted = [...players].sort((a, b) => b[key] - a[key]);
+  const sorted = [...allPlayers].sort((a, b) => b[key] - a[key]);
   const posCounts = {};
   return sorted.map((p, i) => {
     posCounts[p.pos] = (posCounts[p.pos] ?? 0) + 1;
     return {
       player: {
-        id: 20000 + players.indexOf(p),
+        id: 20000 + allPlayers.indexOf(p),
         name: p.name,
         position: p.pos,
         sleeperId: p.id,
@@ -465,7 +488,7 @@ const KTC_NAME_VARIANTS = {
   "Cam Ward": "Cameron Ward",
   "Brian Robinson Jr.": "Brian Robinson",
 };
-const ktc = players
+const ktc = allPlayers
   .filter((p) => p.dyn > 1200 || rand() > 0.5) // ~85% coverage
   .map((p) => ({
     playerName: KTC_NAME_VARIANTS[p.name] ?? p.name,
@@ -478,12 +501,12 @@ const ktc = players
 writeFileSync(path.join(ROOT, "ktc-playersArray.json"), JSON.stringify(ktc, null, 2));
 
 // --- Trending ---
-const byTrend = [...players].sort((a, b) => (b.exp === 0 ? b.dyn : b.dyn * 0.4) - (a.exp === 0 ? a.dyn : a.dyn * 0.4));
+const byTrend = [...allPlayers].sort((a, b) => (b.exp === 0 ? b.dyn : b.dyn * 0.4) - (a.exp === 0 ? a.dyn : a.dyn * 0.4));
 writeFileSync(
   path.join(ROOT, "trending-add.json"),
   JSON.stringify(byTrend.slice(0, 15).map((p, i) => ({ player_id: p.id, count: 5200 - i * 300 })), null, 2)
 );
-const olds = [...players].sort((a, b) => b.age - a.age);
+const olds = [...allPlayers].sort((a, b) => b.age - a.age);
 writeFileSync(
   path.join(ROOT, "trending-drop.json"),
   JSON.stringify(olds.slice(0, 15).map((p, i) => ({ player_id: p.id, count: 2100 - i * 120 })), null, 2)
@@ -495,7 +518,7 @@ const RECEPTIONS = { QB: 0, RB: 2.5, WR: 5, TE: 4.5 };
 writeFileSync(
   path.join(ROOT, "projections-week.json"),
   JSON.stringify(
-    players.map((p) => ({
+    allPlayers.map((p) => ({
       player_id: p.id,
       stats: {
         pts_ppr: Math.round((p.red / 400 + rand() * 8) * 10) / 10,
@@ -507,4 +530,19 @@ writeFileSync(
   )
 );
 
-console.log(`Generated fixtures for ${players.length} players in ${ROOT}`);
+// --- Season-to-date stats: Sleeper's object-map shape {player_id: stats}
+// (the projections fixture uses the array shape; both are normalized). ---
+const GAMES = WEEK - 1;
+const seasonStats = {};
+for (const p of allPlayers) {
+  const gp = p.injury === "IR" ? Math.max(1, GAMES - 5) : GAMES - (rand() > 0.85 ? 1 : 0);
+  const ppg = p.red / 450 + rand() * 6 - 2;
+  seasonStats[p.id] = {
+    gp,
+    pts_ppr: Math.round(Math.max(0, ppg) * gp * 10) / 10,
+    rec: Math.round((RECEPTIONS[p.pos] ?? 0) * gp * (0.6 + rand() * 0.8)),
+  };
+}
+writeFileSync(path.join(ROOT, "stats-season.json"), JSON.stringify(seasonStats, null, 2));
+
+console.log(`Generated fixtures for ${allPlayers.length} players (${faPlayers.length} free agents) in ${ROOT}`);

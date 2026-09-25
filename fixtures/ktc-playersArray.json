@@ -5,10 +5,10 @@
     "team": "BUF",
     "age": 29,
     "oneQBValues": {
-      "value": 5809
+      "value": 5963
     },
     "superflexValues": {
-      "value": 9882
+      "value": 9931
     }
   },
   {
@@ -17,10 +17,10 @@
     "team": "BAL",
     "age": 28,
     "oneQBValues": {
-      "value": 5480
+      "value": 5585
     },
     "superflexValues": {
-      "value": 9188
+      "value": 8859
     }
   },
   {
@@ -29,10 +29,10 @@
     "team": "WAS",
     "age": 24,
     "oneQBValues": {
-      "value": 5692
+      "value": 5614
     },
     "superflexValues": {
-      "value": 9491
+      "value": 9417
     }
   },
   {
@@ -41,10 +41,10 @@
     "team": "PHI",
     "age": 27,
     "oneQBValues": {
-      "value": 5052
+      "value": 4921
     },
     "superflexValues": {
-      "value": 8065
+      "value": 8198
     }
   },
   {
@@ -53,10 +53,10 @@
     "team": "KC",
     "age": 30,
     "oneQBValues": {
-      "value": 4637
+      "value": 4331
     },
     "superflexValues": {
-      "value": 7797
+      "value": 7668
     }
   },
   {
@@ -65,10 +65,10 @@
     "team": "CIN",
     "age": 28,
     "oneQBValues": {
-      "value": 5052
+      "value": 5068
     },
     "superflexValues": {
-      "value": 8038
+      "value": 8272
     }
   },
   {
@@ -77,10 +77,10 @@
     "team": "HOU",
     "age": 24,
     "oneQBValues": {
-      "value": 4140
+      "value": 3923
     },
     "superflexValues": {
-      "value": 6529
+      "value": 6613
     }
   },
   {
@@ -89,10 +89,10 @@
     "team": "CHI",
     "age": 23,
     "oneQBValues": {
-      "value": 4256
+      "value": 4127
     },
     "superflexValues": {
-      "value": 6777
+      "value": 6985
     }
   },
   {
@@ -101,10 +101,10 @@
     "team": "NE",
     "age": 23,
     "oneQBValues": {
-      "value": 3830
+      "value": 3913
     },
     "superflexValues": {
-      "value": 6581
+      "value": 6259
     }
   },
   {
@@ -113,10 +113,10 @@
     "team": "LAC",
     "age": 27,
     "oneQBValues": {
-      "value": 4006
+      "value": 3696
     },
     "superflexValues": {
-      "value": 6543
+      "value": 6207
     }
   },
   {
@@ -125,10 +125,10 @@
     "team": "ARI",
     "age": 28,
     "oneQBValues": {
-      "value": 3618
+      "value": 3307
     },
     "superflexValues": {
-      "value": 5931
+      "value": 5747
     }
   },
   {
@@ -137,10 +137,10 @@
     "team": "DEN",
     "age": 25,
     "oneQBValues": {
-      "value": 3425
+      "value": 3716
     },
     "superflexValues": {
-      "value": 5877
+      "value": 6208
     }
   },
   {
@@ -149,10 +149,10 @@
     "team": "GB",
     "age": 27,
     "oneQBValues": {
-      "value": 3599
+      "value": 3485
     },
     "superflexValues": {
-      "value": 5720
+      "value": 5490
     }
   },
   {
@@ -161,10 +161,10 @@
     "team": "TB",
     "age": 30,
     "oneQBValues": {
-      "value": 2783
+      "value": 2700
     },
     "superflexValues": {
-      "value": 4867
+      "value": 4694
     }
   },
   {
@@ -173,10 +173,10 @@
     "team": "DAL",
     "age": 32,
     "oneQBValues": {
-      "value": 2612
+      "value": 2591
     },
     "superflexValues": {
-      "value": 4351
+      "value": 4152
     }
   },
   {
@@ -185,10 +185,10 @@
     "team": "MIA",
     "age": 27,
     "oneQBValues": {
-      "value": 2482
+      "value": 2523
     },
     "superflexValues": {
-      "value": 3937
+      "value": 4116
     }
   },
   {
@@ -197,10 +197,10 @@
     "team": "JAX",
     "age": 26,
     "oneQBValues": {
-      "value": 2750
+      "value": 2770
     },
     "superflexValues": {
-      "value": 4612
+      "value": 4606
     }
   },
   {
@@ -209,10 +209,10 @@
     "team": "TEN",
     "age": 23,
     "oneQBValues": {
-      "value": 3318
+      "value": 3239
     },
     "superflexValues": {
-      "value": 5527
+      "value": 5321
     }
   },
   {
@@ -221,10 +221,10 @@
     "team": "MIN",
     "age": 22,
     "oneQBValues": {
-      "value": 3183
+      "value": 3406
     },
     "superflexValues": {
-      "value": 5635
+      "value": 5488
     }
   },
   {
@@ -233,10 +233,10 @@
     "team": "ATL",
     "age": 25,
     "oneQBValues": {
-      "value": 3110
+      "value": 2963
     },
     "superflexValues": {
-      "value": 5076
+      "value": 4879
     }
   },
   {
@@ -245,10 +245,10 @@
     "team": "DET",
     "age": 31,
     "oneQBValues": {
-      "value": 2343
+      "value": 2297
     },
     "superflexValues": {
-      "value": 3949
+      "value": 4060
     }
   },
   {
@@ -257,10 +257,10 @@
     "team": "SF",
     "age": 26,
     "oneQBValues": {
-      "value": 2621
+      "value": 2591
     },
     "superflexValues": {
-      "value": 4436
+      "value": 4337
     }
   },
   {
@@ -269,10 +269,10 @@
     "team": "ATL",
     "age": 23,
     "oneQBValues": {
-      "value": 8851
+      "value": 8929
     },
     "superflexValues": {
-      "value": 8464
+      "value": 8522
     }
   },
   {
@@ -281,10 +281,10 @@
     "team": "DET",
     "age": 23,
     "oneQBValues": {
-      "value": 8215
+      "value": 8845
     },
     "superflexValues": {
-      "value": 8245
+      "value": 8753
     }
   },
   {
@@ -293,10 +293,10 @@
     "team": "LV",
     "age": 22,
     "oneQBValues": {
-      "value": 7728
+      "value": 8503
     },
     "superflexValues": {
-      "value": 8029
+      "value": 7818
     }
   },
   {
@@ -305,10 +305,10 @@
     "team": "PHI",
     "age": 28,
     "oneQBValues": {
-      "value": 6598
+      "value": 6012
     },
     "superflexValues": {
-      "value": 6589
+      "value": 6076
     }
   },
   {
@@ -317,10 +317,10 @@
     "team": "NYJ",
     "age": 24,
     "oneQBValues": {
-      "value": 5735
+      "value": 5505
     },
     "superflexValues": {
-      "value": 5401
+      "value": 5489
     }
   },
   {
@@ -329,10 +329,10 @@
     "team": "IND",
     "age": 26,
     "oneQBValues": {
-      "value": 5124
+      "value": 5252
     },
     "superflexValues": {
-      "value": 5325
+      "value": 5717
     }
   },
   {
@@ -341,10 +341,10 @@
     "team": "MIA",
     "age": 24,
     "oneQBValues": {
-      "value": 6406
+      "value": 6317
     },
     "superflexValues": {
-      "value": 6137
+      "value": 6496
     }
   },
   {
@@ -353,10 +353,10 @@
     "team": "TB",
     "age": 23,
     "oneQBValues": {
-      "value": 6331
+      "value": 5957
     },
     "superflexValues": {
-      "value": 6174
+      "value": 6188
     }
   },
   {
@@ -365,10 +365,10 @@
     "team": "LAR",
     "age": 25,
     "oneQBValues": {
-      "value": 5115
+      "value": 4602
     },
     "superflexValues": {
-      "value": 5086
+      "value": 5011
     }
   },
   {
@@ -377,10 +377,10 @@
     "team": "BAL",
     "age": 31,
     "oneQBValues": {
-      "value": 3792
+      "value": 4002
     },
     "superflexValues": {
-      "value": 3725
+      "value": 3832
     }
   },
   {
@@ -389,10 +389,10 @@
     "team": "GB",
     "age": 27,
     "oneQBValues": {
-      "value": 4764
+      "value": 4526
     },
     "superflexValues": {
-      "value": 4588
+      "value": 4845
     }
   },
   {
@@ -401,10 +401,10 @@
     "team": "CIN",
     "age": 25,
     "oneQBValues": {
-      "value": 4589
+      "value": 4603
     },
     "superflexValues": {
-      "value": 4517
+      "value": 4452
     }
   },
   {
@@ -413,10 +413,10 @@
     "team": "SEA",
     "age": 25,
     "oneQBValues": {
-      "value": 4110
+      "value": 4020
     },
     "superflexValues": {
-      "value": 4344
+      "value": 4366
     }
   },
   {
@@ -425,10 +425,10 @@
     "team": "BUF",
     "age": 26,
     "oneQBValues": {
-      "value": 4334
+      "value": 4289
     },
     "superflexValues": {
-      "value": 4337
+      "value": 4503
     }
   },
   {
@@ -437,10 +437,10 @@
     "team": "LAC",
     "age": 22,
     "oneQBValues": {
-      "value": 5953
+      "value": 6094
     },
     "superflexValues": {
-      "value": 5681
+      "value": 5908
     }
   },
   {
@@ -449,10 +449,10 @@
     "team": "NE",
     "age": 23,
     "oneQBValues": {
-      "value": 5326
+      "value": 5431
     },
     "superflexValues": {
-      "value": 5271
+      "value": 5005
     }
   },
   {
@@ -461,10 +461,10 @@
     "team": "CLE",
     "age": 22,
     "oneQBValues": {
-      "value": 5314
+      "value": 4845
     },
     "superflexValues": {
-      "value": 4886
+      "value": 5107
     }
   },
   {
@@ -473,10 +473,10 @@
     "team": "DEN",
     "age": 24,
     "oneQBValues": {
-      "value": 3747
+      "value": 4039
     },
     "superflexValues": {
-      "value": 3787
+      "value": 3855
     }
   },
   {
@@ -485,10 +485,10 @@
     "team": "CAR",
     "age": 26,
     "oneQBValues": {
-      "value": 3519
+      "value": 3704
     },
     "superflexValues": {
-      "value": 3509
+      "value": 3510
     }
   },
   {
@@ -497,10 +497,10 @@
     "team": "NO",
     "age": 30,
     "oneQBValues": {
-      "value": 2671
+      "value": 2639
     },
     "superflexValues": {
-      "value": 2907
+      "value": 2815
     }
   },
   {
@@ -509,10 +509,10 @@
     "team": "SF",
     "age": 29,
     "oneQBValues": {
-      "value": 3716
+      "value": 3725
     },
     "superflexValues": {
-      "value": 3821
+      "value": 3715
     }
   },
   {
@@ -521,10 +521,10 @@
     "team": "MIN",
     "age": 31,
     "oneQBValues": {
-      "value": 2166
+      "value": 2130
     },
     "superflexValues": {
-      "value": 2250
+      "value": 2311
     }
   },
   {
@@ -533,10 +533,10 @@
     "team": "TB",
     "age": 26,
     "oneQBValues": {
-      "value": 1910
+      "value": 2029
     },
     "superflexValues": {
-      "value": 2080
+      "value": 2082
     }
   },
   {
@@ -545,10 +545,10 @@
     "team": "TEN",
     "age": 28,
     "oneQBValues": {
-      "value": 2382
+      "value": 2176
     },
     "superflexValues": {
-      "value": 2281
+      "value": 2416
     }
   },
   {
@@ -557,10 +557,10 @@
     "team": "DET",
     "age": 28,
     "oneQBValues": {
-      "value": 2307
+      "value": 2415
     },
     "superflexValues": {
-      "value": 2471
+      "value": 2350
     }
   },
   {
@@ -569,10 +569,10 @@
     "team": "CHI",
     "age": 26,
     "oneQBValues": {
-      "value": 2670
+      "value": 2523
     },
     "superflexValues": {
-      "value": 2582
+      "value": 2632
     }
   },
   {
@@ -581,10 +581,10 @@
     "team": "KC",
     "age": 26,
     "oneQBValues": {
-      "value": 2360
+      "value": 2547
     },
     "superflexValues": {
-      "value": 2562
+      "value": 2559
     }
   },
   {
@@ -593,10 +593,10 @@
     "team": "WAS",
     "age": 26,
     "oneQBValues": {
-      "value": 2099
+      "value": 2053
     },
     "superflexValues": {
-      "value": 2204
+      "value": 2202
     }
   },
   {
@@ -605,10 +605,10 @@
     "team": "NE",
     "age": 27,
     "oneQBValues": {
-      "value": 2000
+      "value": 1922
     },
     "superflexValues": {
-      "value": 1939
+      "value": 1878
     }
   },
   {
@@ -617,10 +617,10 @@
     "team": "SEA",
     "age": 24,
     "oneQBValues": {
-      "value": 2716
+      "value": 2620
     },
     "superflexValues": {
-      "value": 2503
+      "value": 2589
     }
   },
   {
@@ -629,10 +629,10 @@
     "team": "PIT",
     "age": 27,
     "oneQBValues": {
-      "value": 1762
+      "value": 1771
     },
     "superflexValues": {
-      "value": 1858
+      "value": 1913
     }
   },
   {
@@ -641,10 +641,10 @@
     "team": "TEN",
     "age": 24,
     "oneQBValues": {
-      "value": 1785
+      "value": 1661
     },
     "superflexValues": {
-      "value": 1704
+      "value": 1691
     }
   },
   {
@@ -653,10 +653,10 @@
     "team": "PIT",
     "age": 22,
     "oneQBValues": {
-      "value": 3229
+      "value": 3314
     },
     "superflexValues": {
-      "value": 3060
+      "value": 3050
     }
   },
   {
@@ -665,10 +665,10 @@
     "team": "NYJ",
     "age": 21,
     "oneQBValues": {
-      "value": 2111
+      "value": 2200
     },
     "superflexValues": {
-      "value": 2252
+      "value": 2219
     }
   },
   {
@@ -677,10 +677,10 @@
     "team": "CIN",
     "age": 25,
     "oneQBValues": {
-      "value": 9500
+      "value": 9519
     },
     "superflexValues": {
-      "value": 9475
+      "value": 9408
     }
   },
   {
@@ -689,10 +689,10 @@
     "team": "MIN",
     "age": 26,
     "oneQBValues": {
-      "value": 8431
+      "value": 8923
     },
     "superflexValues": {
-      "value": 9146
+      "value": 8476
     }
   },
   {
@@ -701,10 +701,10 @@
     "team": "DAL",
     "age": 26,
     "oneQBValues": {
-      "value": 8209
+      "value": 8659
     },
     "superflexValues": {
-      "value": 8424
+      "value": 8493
     }
   },
   {
@@ -713,10 +713,10 @@
     "team": "DET",
     "age": 26,
     "oneQBValues": {
-      "value": 7398
+      "value": 7676
     },
     "superflexValues": {
-      "value": 8211
+      "value": 7620
     }
   },
   {
@@ -725,10 +725,10 @@
     "team": "LAR",
     "age": 24,
     "oneQBValues": {
-      "value": 8360
+      "value": 8298
     },
     "superflexValues": {
-      "value": 8134
+      "value": 8532
     }
   },
   {
@@ -737,10 +737,10 @@
     "team": "NYG",
     "age": 22,
     "oneQBValues": {
-      "value": 7656
+      "value": 8044
     },
     "superflexValues": {
-      "value": 7989
+      "value": 8118
     }
   },
   {
@@ -749,10 +749,10 @@
     "team": "ARI",
     "age": 23,
     "oneQBValues": {
-      "value": 6887
+      "value": 6516
     },
     "superflexValues": {
-      "value": 6920
+      "value": 6744
     }
   },
   {
@@ -761,10 +761,10 @@
     "team": "HOU",
     "age": 26,
     "oneQBValues": {
-      "value": 6337
+      "value": 6167
     },
     "superflexValues": {
-      "value": 6797
+      "value": 6796
     }
   },
   {
@@ -773,10 +773,10 @@
     "team": "JAX",
     "age": 23,
     "oneQBValues": {
-      "value": 7321
+      "value": 7240
     },
     "superflexValues": {
-      "value": 7155
+      "value": 7335
     }
   },
   {
@@ -785,10 +785,10 @@
     "team": "PHI",
     "age": 28,
     "oneQBValues": {
-      "value": 6082
+      "value": 5802
     },
     "superflexValues": {
-      "value": 6010
+      "value": 6007
     }
   },
   {
@@ -797,10 +797,10 @@
     "team": "ATL",
     "age": 24,
     "oneQBValues": {
-      "value": 6642
+      "value": 6520
     },
     "superflexValues": {
-      "value": 7173
+      "value": 7044
     }
   },
   {
@@ -809,10 +809,10 @@
     "team": "NYJ",
     "age": 25,
     "oneQBValues": {
-      "value": 5946
+      "value": 5929
     },
     "superflexValues": {
-      "value": 6054
+      "value": 6534
     }
   },
   {
@@ -821,10 +821,10 @@
     "team": "MIA",
     "age": 31,
     "oneQBValues": {
-      "value": 4288
+      "value": 4176
     },
     "superflexValues": {
-      "value": 3948
+      "value": 4129
     }
   },
   {
@@ -833,10 +833,10 @@
     "team": "LAR",
     "age": 33,
     "oneQBValues": {
-      "value": 2934
+      "value": 3054
     },
     "superflexValues": {
-      "value": 2959
+      "value": 2824
     }
   },
   {
@@ -845,10 +845,10 @@
     "team": "SEA",
     "age": 23,
     "oneQBValues": {
-      "value": 7186
+      "value": 7158
     },
     "superflexValues": {
-      "value": 7102
+      "value": 7148
     }
   },
   {
@@ -857,10 +857,10 @@
     "team": "LAC",
     "age": 24,
     "oneQBValues": {
-      "value": 6481
+      "value": 6334
     },
     "superflexValues": {
-      "value": 6156
+      "value": 6382
     }
   },
   {
@@ -869,10 +869,10 @@
     "team": "CAR",
     "age": 22,
     "oneQBValues": {
-      "value": 6421
+      "value": 6054
     },
     "superflexValues": {
-      "value": 6298
+      "value": 6067
     }
   },
   {
@@ -881,10 +881,10 @@
     "team": "JAX",
     "age": 22,
     "oneQBValues": {
-      "value": 5689
+      "value": 5850
     },
     "superflexValues": {
-      "value": 5648
+      "value": 5538
     }
   },
   {
@@ -893,10 +893,10 @@
     "team": "CHI",
     "age": 23,
     "oneQBValues": {
-      "value": 5348
+      "value": 5469
     },
     "superflexValues": {
-      "value": 5498
+      "value": 5092
     }
   },
   {
@@ -905,10 +905,10 @@
     "team": "KC",
     "age": 25,
     "oneQBValues": {
-      "value": 5393
+      "value": 5552
     },
     "superflexValues": {
-      "value": 5442
+      "value": 5277
     }
   },
   {
@@ -917,10 +917,10 @@
     "team": "PHI",
     "age": 27,
     "oneQBValues": {
-      "value": 4642
+      "value": 4709
     },
     "superflexValues": {
-      "value": 4804
+      "value": 4912
     }
   },
   {
@@ -929,10 +929,10 @@
     "team": "MIA",
     "age": 27,
     "oneQBValues": {
-      "value": 4256
+      "value": 4741
     },
     "superflexValues": {
-      "value": 4691
+      "value": 4427
     }
   },
   {
@@ -941,10 +941,10 @@
     "team": "WAS",
     "age": 30,
     "oneQBValues": {
-      "value": 3348
+      "value": 3452
     },
     "superflexValues": {
-      "value": 3393
+      "value": 3556
     }
   },
   {
@@ -953,10 +953,10 @@
     "team": "TB",
     "age": 32,
     "oneQBValues": {
-      "value": 2945
+      "value": 3022
     },
     "superflexValues": {
-      "value": 3050
+      "value": 2910
     }
   },
   {
@@ -965,10 +965,10 @@
     "team": "TB",
     "age": 29,
     "oneQBValues": {
-      "value": 2521
+      "value": 2690
     },
     "superflexValues": {
-      "value": 2723
+      "value": 2678
     }
   },
   {
@@ -977,10 +977,10 @@
     "team": "PIT",
     "age": 28,
     "oneQBValues": {
-      "value": 3924
+      "value": 4111
     },
     "superflexValues": {
-      "value": 4324
+      "value": 4144
     }
   },
   {
@@ -989,10 +989,10 @@
     "team": "BAL",
     "age": 25,
     "oneQBValues": {
-      "value": 5125
+      "value": 5119
     },
     "superflexValues": {
-      "value": 5068
+      "value": 4800
     }
   },
   {
@@ -1001,10 +1001,10 @@
     "team": "CHI",
     "age": 28,
     "oneQBValues": {
-      "value": 4103
+      "value": 4058
     },
     "superflexValues": {
-      "value": 3795
+      "value": 4010
     }
   },
   {
@@ -1013,10 +1013,10 @@
     "team": "DET",
     "age": 24,
     "oneQBValues": {
-      "value": 4648
+      "value": 4846
     },
     "superflexValues": {
-      "value": 4642
+      "value": 4773
     }
   },
   {
@@ -1025,10 +1025,10 @@
     "team": "KC",
     "age": 22,
     "oneQBValues": {
-      "value": 5232
+      "value": 5231
     },
     "superflexValues": {
-      "value": 5273
+      "value": 5007
     }
   },
   {
@@ -1037,10 +1037,10 @@
     "team": "MIN",
     "age": 23,
     "oneQBValues": {
-      "value": 4403
+      "value": 4634
     },
     "superflexValues": {
-      "value": 4412
+      "value": 4240
     }
   },
   {
@@ -1049,10 +1049,10 @@
     "team": "NO",
     "age": 25,
     "oneQBValues": {
-      "value": 4085
+      "value": 4056
     },
     "superflexValues": {
-      "value": 3868
+      "value": 4060
     }
   },
   {
@@ -1061,10 +1061,10 @@
     "team": "DAL",
     "age": 24,
     "oneQBValues": {
-      "value": 4338
+      "value": 4324
     },
     "superflexValues": {
-      "value": 4039
+      "value": 4273
     }
   },
   {
@@ -1073,10 +1073,10 @@
     "team": "CIN",
     "age": 26,
     "oneQBValues": {
-      "value": 4423
+      "value": 4381
     },
     "superflexValues": {
-      "value": 4204
+      "value": 4495
     }
   },
   {
@@ -1085,10 +1085,10 @@
     "team": "KC",
     "age": 28,
     "oneQBValues": {
-      "value": 1630
+      "value": 1689
     },
     "superflexValues": {
-      "value": 1701
+      "value": 1744
     }
   },
   {
@@ -1097,10 +1097,10 @@
     "team": "NE",
     "age": 31,
     "oneQBValues": {
-      "value": 1838
+      "value": 1849
     },
     "superflexValues": {
-      "value": 1716
+      "value": 1837
     }
   },
   {
@@ -1109,10 +1109,10 @@
     "team": "TEN",
     "age": 30,
     "oneQBValues": {
-      "value": 2053
+      "value": 2100
     },
     "superflexValues": {
-      "value": 2114
+      "value": 2125
     }
   },
   {
@@ -1121,10 +1121,10 @@
     "team": "CLE",
     "age": 26,
     "oneQBValues": {
-      "value": 2381
+      "value": 2481
     },
     "superflexValues": {
-      "value": 2293
+      "value": 2320
     }
   },
   {
@@ -1133,10 +1133,10 @@
     "team": "DEN",
     "age": 30,
     "oneQBValues": {
-      "value": 2133
+      "value": 2012
     },
     "superflexValues": {
-      "value": 2124
+      "value": 2230
     }
   },
   {
@@ -1145,10 +1145,10 @@
     "team": "SEA",
     "age": 32,
     "oneQBValues": {
-      "value": 1462
+      "value": 1390
     },
     "superflexValues": {
-      "value": 1473
+      "value": 1477
     }
   },
   {
@@ -1157,10 +1157,10 @@
     "team": "GB",
     "age": 22,
     "oneQBValues": {
-      "value": 4266
+      "value": 4326
     },
     "superflexValues": {
-      "value": 4000
+      "value": 4231
     }
   },
   {
@@ -1169,10 +1169,10 @@
     "team": "TB",
     "age": 23,
     "oneQBValues": {
-      "value": 4624
+      "value": 4657
     },
     "superflexValues": {
-      "value": 4570
+      "value": 4449
     }
   },
   {
@@ -1181,10 +1181,10 @@
     "team": "CHI",
     "age": 22,
     "oneQBValues": {
-      "value": 3683
+      "value": 3639
     },
     "superflexValues": {
-      "value": 3627
+      "value": 3494
     }
   },
   {
@@ -1193,10 +1193,10 @@
     "team": "HOU",
     "age": 23,
     "oneQBValues": {
-      "value": 3212
+      "value": 3383
     },
     "superflexValues": {
-      "value": 3074
+      "value": 3283
     }
   },
   {
@@ -1205,10 +1205,10 @@
     "team": "LV",
     "age": 23,
     "oneQBValues": {
-      "value": 7916
+      "value": 7318
     },
     "superflexValues": {
-      "value": 7243
+      "value": 7315
     }
   },
   {
@@ -1217,10 +1217,10 @@
     "team": "ARI",
     "age": 26,
     "oneQBValues": {
-      "value": 6176
+      "value": 6071
     },
     "superflexValues": {
-      "value": 6182
+      "value": 6329
     }
   },
   {
@@ -1229,10 +1229,10 @@
     "team": "DET",
     "age": 24,
     "oneQBValues": {
-      "value": 5264
+      "value": 4874
     },
     "superflexValues": {
-      "value": 5202
+      "value": 4986
     }
   },
   {
@@ -1241,10 +1241,10 @@
     "team": "SF",
     "age": 32,
     "oneQBValues": {
-      "value": 2890
+      "value": 2763
     },
     "superflexValues": {
-      "value": 2965
+      "value": 2899
     }
   },
   {
@@ -1253,10 +1253,10 @@
     "team": "MIN",
     "age": 28,
     "oneQBValues": {
-      "value": 3190
+      "value": 3081
     },
     "superflexValues": {
-      "value": 3293
+      "value": 3184
     }
   },
   {
@@ -1265,10 +1265,10 @@
     "team": "BAL",
     "age": 30,
     "oneQBValues": {
-      "value": 2432
+      "value": 2431
     },
     "superflexValues": {
-      "value": 2418
+      "value": 2289
     }
   },
   {
@@ -1277,10 +1277,10 @@
     "team": "KC",
     "age": 36,
     "oneQBValues": {
-      "value": 1622
+      "value": 1619
     },
     "superflexValues": {
-      "value": 1642
+      "value": 1608
     }
   },
   {
@@ -1289,10 +1289,10 @@
     "team": "CLE",
     "age": 29,
     "oneQBValues": {
-      "value": 2577
+      "value": 2340
     },
     "superflexValues": {
-      "value": 2409
+      "value": 2540
     }
   },
   {
@@ -1301,10 +1301,10 @@
     "team": "BUF",
     "age": 26,
     "oneQBValues": {
-      "value": 2624
+      "value": 2884
     },
     "superflexValues": {
-      "value": 2908
+      "value": 2703
     }
   },
   {
@@ -1313,10 +1313,10 @@
     "team": "DEN",
     "age": 31,
     "oneQBValues": {
-      "value": 1303
+      "value": 1395
     },
     "superflexValues": {
-      "value": 1385
+      "value": 1441
     }
   },
   {
@@ -1325,10 +1325,10 @@
     "team": "ATL",
     "age": 25,
     "oneQBValues": {
-      "value": 2692
+      "value": 2566
     },
     "superflexValues": {
-      "value": 2633
+      "value": 2556
     }
   },
   {
@@ -1337,10 +1337,10 @@
     "team": "GB",
     "age": 25,
     "oneQBValues": {
-      "value": 3422
+      "value": 3448
     },
     "superflexValues": {
-      "value": 3269
+      "value": 3370
     }
   },
   {
@@ -1349,10 +1349,10 @@
     "team": "DAL",
     "age": 26,
     "oneQBValues": {
-      "value": 1915
+      "value": 1799
     },
     "superflexValues": {
-      "value": 1839
+      "value": 1841
     }
   },
   {
@@ -1361,10 +1361,10 @@
     "team": "PHI",
     "age": 30,
     "oneQBValues": {
-      "value": 1353
+      "value": 1293
     },
     "superflexValues": {
-      "value": 1313
+      "value": 1357
     }
   },
   {
@@ -1373,10 +1373,10 @@
     "team": "PIT",
     "age": 27,
     "oneQBValues": {
-      "value": 1428
+      "value": 1414
     },
     "superflexValues": {
-      "value": 1427
+      "value": 1492
     }
   },
   {
@@ -1385,10 +1385,10 @@
     "team": "IND",
     "age": 23,
     "oneQBValues": {
-      "value": 4803
+      "value": 4627
     },
     "superflexValues": {
-      "value": 5006
+      "value": 4967
     }
   },
   {
@@ -1397,10 +1397,10 @@
     "team": "CHI",
     "age": 21,
     "oneQBValues": {
-      "value": 4091
+      "value": 4477
     },
     "superflexValues": {
-      "value": 4185
+      "value": 4313
     }
   },
   {
@@ -1409,10 +1409,10 @@
     "team": "BAL",
     "age": 25,
     "oneQBValues": {
-      "value": 1693
+      "value": 1768
     },
     "superflexValues": {
-      "value": 1776
+      "value": 1814
     }
   },
   {
@@ -1421,22 +1421,130 @@
     "team": "TB",
     "age": 26,
     "oneQBValues": {
-      "value": 1178
+      "value": 1180
     },
     "superflexValues": {
-      "value": 1217
+      "value": 1212
     }
   },
   {
-    "playerName": "Hunter Henry",
-    "position": "TE",
-    "team": "NE",
-    "age": 31,
+    "playerName": "Justin Fields",
+    "position": "QB",
+    "team": "NYJ",
+    "age": 27,
     "oneQBValues": {
-      "value": 972
+      "value": 1373
     },
     "superflexValues": {
-      "value": 916
+      "value": 2516
+    }
+  },
+  {
+    "playerName": "Daniel Jones",
+    "position": "QB",
+    "team": "IND",
+    "age": 29,
+    "oneQBValues": {
+      "value": 793
+    },
+    "superflexValues": {
+      "value": 1411
+    }
+  },
+  {
+    "playerName": "Tyler Allgeier",
+    "position": "RB",
+    "team": "ATL",
+    "age": 26,
+    "oneQBValues": {
+      "value": 1603
+    },
+    "superflexValues": {
+      "value": 1580
+    }
+  },
+  {
+    "playerName": "Jaylen Wright",
+    "position": "RB",
+    "team": "MIA",
+    "age": 23,
+    "oneQBValues": {
+      "value": 1943
+    },
+    "superflexValues": {
+      "value": 1965
+    }
+  },
+  {
+    "playerName": "Ray Davis",
+    "position": "RB",
+    "team": "BUF",
+    "age": 26,
+    "oneQBValues": {
+      "value": 1156
+    },
+    "superflexValues": {
+      "value": 1139
+    }
+  },
+  {
+    "playerName": "Tank Bigsby",
+    "position": "RB",
+    "team": "JAX",
+    "age": 25,
+    "oneQBValues": {
+      "value": 1211
+    },
+    "superflexValues": {
+      "value": 1236
+    }
+  },
+  {
+    "playerName": "Wan'Dale Robinson",
+    "position": "WR",
+    "team": "NYG",
+    "age": 25,
+    "oneQBValues": {
+      "value": 1401
+    },
+    "superflexValues": {
+      "value": 1539
+    }
+  },
+  {
+    "playerName": "Rashid Shaheed",
+    "position": "WR",
+    "team": "NO",
+    "age": 28,
+    "oneQBValues": {
+      "value": 1124
+    },
+    "superflexValues": {
+      "value": 1145
+    }
+  },
+  {
+    "playerName": "Jalen McMillan",
+    "position": "WR",
+    "team": "TB",
+    "age": 24,
+    "oneQBValues": {
+      "value": 1384
+    },
+    "superflexValues": {
+      "value": 1325
+    }
+  },
+  {
+    "playerName": "Mike Gesicki",
+    "position": "TE",
+    "team": "CIN",
+    "age": 31,
+    "oneQBValues": {
+      "value": 568
+    },
+    "superflexValues": {
+      "value": 561
     }
   }
 ]

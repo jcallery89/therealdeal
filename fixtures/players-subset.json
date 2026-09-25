@@ -1198,5 +1198,125 @@
     "years_exp": 9,
     "injury_status": null,
     "status": "Active"
+  },
+  "p2001": {
+    "player_id": "p2001",
+    "full_name": "Justin Fields",
+    "position": "QB",
+    "team": "NYJ",
+    "age": 27,
+    "years_exp": 7,
+    "injury_status": null,
+    "status": "Active"
+  },
+  "p2002": {
+    "player_id": "p2002",
+    "full_name": "Daniel Jones",
+    "position": "QB",
+    "team": "IND",
+    "age": 29,
+    "years_exp": 7,
+    "injury_status": null,
+    "status": "Active"
+  },
+  "p2003": {
+    "player_id": "p2003",
+    "full_name": "Tyler Allgeier",
+    "position": "RB",
+    "team": "ATL",
+    "age": 26,
+    "years_exp": 4,
+    "injury_status": null,
+    "status": "Active"
+  },
+  "p2004": {
+    "player_id": "p2004",
+    "full_name": "Jaylen Wright",
+    "position": "RB",
+    "team": "MIA",
+    "age": 23,
+    "years_exp": 2,
+    "injury_status": null,
+    "status": "Active"
+  },
+  "p2005": {
+    "player_id": "p2005",
+    "full_name": "Ray Davis",
+    "position": "RB",
+    "team": "BUF",
+    "age": 26,
+    "years_exp": 2,
+    "injury_status": null,
+    "status": "Active"
+  },
+  "p2006": {
+    "player_id": "p2006",
+    "full_name": "Tank Bigsby",
+    "position": "RB",
+    "team": "JAX",
+    "age": 25,
+    "years_exp": 3,
+    "injury_status": null,
+    "status": "Active"
+  },
+  "p2007": {
+    "player_id": "p2007",
+    "full_name": "Wan'Dale Robinson",
+    "position": "WR",
+    "team": "NYG",
+    "age": 25,
+    "years_exp": 4,
+    "injury_status": null,
+    "status": "Active"
+  },
+  "p2008": {
+    "player_id": "p2008",
+    "full_name": "Rashid Shaheed",
+    "position": "WR",
+    "team": "NO",
+    "age": 28,
+    "years_exp": 4,
+    "injury_status": null,
+    "status": "Active"
+  },
+  "p2009": {
+    "player_id": "p2009",
+    "full_name": "Jalen McMillan",
+    "position": "WR",
+    "team": "TB",
+    "age": 24,
+    "years_exp": 2,
+    "injury_status": null,
+    "status": "Active"
+  },
+  "p2010": {
+    "player_id": "p2010",
+    "full_name": "Demario Douglas",
+    "position": "WR",
+    "team": "NE",
+    "age": 25,
+    "years_exp": 3,
+    "injury_status": null,
+    "status": "Active"
+  },
+  "p2011": {
+    "player_id": "p2011",
+    "full_name": "Dalton Schultz",
+    "position": "TE",
+    "team": "HOU",
+    "age": 30,
+    "years_exp": 8,
+    "injury_status": null,
+    "status": "Active"
+  },
+  "p2012": {
+    "player_id": "p2012",
+    "full_name": "Mike Gesicki",
+    "position": "TE",
+    "team": "CIN",
+    "age": 31,
+    "years_exp": 8,
+    "injury_status": null,
+    "status": "Active"
   }
 }

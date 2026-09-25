@@ -158,3 +158,23 @@ test("start/sit page shows matchup, lineup advice, and waivers", async ({ page }
   await expect(page.getByTestId("waiver-watch")).toBeVisible();
   await page.screenshot({ path: `${SHOTS}/8-startsit.png`, fullPage: true });
 });
+
+test("players explorer sorts and filters", async ({ page }) => {
+  await page.goto(`/league/${DYNASTY}/players`);
+  const rows = page.getByTestId("players-table").locator("tbody tr");
+  expect(await rows.count()).toBeGreaterThan(100);
+  const topByValue = await rows.first().locator("td").first().innerText();
+
+  // Sorting by PPG changes the leader.
+  await page.getByTestId("sort-ppg").click();
+  const topByPpg = await rows.first().locator("td").first().innerText();
+  expect(topByPpg).not.toEqual(topByValue);
+
+  // Free-agent filter only shows unrostered players.
+  await page.getByTestId("filter-fa").click();
+  const faCount = await rows.count();
+  expect(faCount).toBeGreaterThanOrEqual(10);
+  expect(faCount).toBeLessThan(20);
+  await expect(page.getByTestId("players-table").getByText("Justin Fields")).toBeVisible();
+  await page.screenshot({ path: `${SHOTS}/14-players.png`, fullPage: true });
+});

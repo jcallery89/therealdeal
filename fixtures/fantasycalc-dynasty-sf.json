@@ -1471,6 +1471,21 @@
   },
   {
     "player": {
+      "id": 20120,
+      "name": "Justin Fields",
+      "position": "QB",
+      "sleeperId": "p2001",
+      "maybeAge": 27,
+      "maybeTeam": "NYJ"
+    },
+    "value": 2600,
+    "overallRank": 99,
+    "positionRank": 23,
+    "trend30Day": -121,
+    "redraftValue": 2900
+  },
+  {
+    "player": {
       "id": 20045,
       "name": "Tony Pollard",
       "position": "RB",
@@ -1479,9 +1494,9 @@
       "maybeTeam": "TEN"
     },
     "value": 2500,
-    "overallRank": 99,
+    "overallRank": 100,
     "positionRank": 27,
-    "trend30Day": -121,
+    "trend30Day": -108,
     "redraftValue": 3500
   },
   {
@@ -1494,9 +1509,9 @@
       "maybeTeam": "BAL"
     },
     "value": 2500,
-    "overallRank": 100,
+    "overallRank": 101,
     "positionRank": 12,
-    "trend30Day": -108,
+    "trend30Day": 102,
     "redraftValue": 3900
   },
   {
@@ -1509,9 +1524,9 @@
       "maybeTeam": "MIN"
     },
     "value": 2400,
-    "overallRank": 101,
+    "overallRank": 102,
     "positionRank": 28,
-    "trend30Day": 102,
+    "trend30Day": -167,
     "redraftValue": 3900
   },
   {
@@ -1524,9 +1539,9 @@
       "maybeTeam": "NYJ"
     },
     "value": 2400,
-    "overallRank": 102,
+    "overallRank": 103,
     "positionRank": 29,
-    "trend30Day": -167,
+    "trend30Day": -198,
     "redraftValue": 1900
   },
   {
@@ -1539,9 +1554,9 @@
       "maybeTeam": "WAS"
     },
     "value": 2300,
-    "overallRank": 103,
+    "overallRank": 104,
     "positionRank": 30,
-    "trend30Day": -198,
+    "trend30Day": 117,
     "redraftValue": 3200
   },
   {
@@ -1554,9 +1569,9 @@
       "maybeTeam": "DEN"
     },
     "value": 2300,
-    "overallRank": 104,
+    "overallRank": 105,
     "positionRank": 40,
-    "trend30Day": 117,
+    "trend30Day": -111,
     "redraftValue": 3600
   },
   {
@@ -1569,9 +1584,9 @@
       "maybeTeam": "TB"
     },
     "value": 2200,
-    "overallRank": 105,
+    "overallRank": 106,
     "positionRank": 31,
-    "trend30Day": -111,
+    "trend30Day": -225,
     "redraftValue": 2800
   },
   {
@@ -1584,9 +1599,9 @@
       "maybeTeam": "TEN"
     },
     "value": 2200,
-    "overallRank": 106,
+    "overallRank": 107,
     "positionRank": 41,
-    "trend30Day": -225,
+    "trend30Day": -112,
     "redraftValue": 3300
   },
   {
@@ -1599,10 +1614,25 @@
       "maybeTeam": "NE"
     },
     "value": 2100,
-    "overallRank": 107,
+    "overallRank": 108,
     "positionRank": 32,
-    "trend30Day": -112,
+    "trend30Day": -275,
     "redraftValue": 2900
+  },
+  {
+    "player": {
+      "id": 20123,
+      "name": "Jaylen Wright",
+      "position": "RB",
+      "sleeperId": "p2004",
+      "maybeAge": 23,
+      "maybeTeam": "MIA"
+    },
+    "value": 2100,
+    "overallRank": 109,
+    "positionRank": 33,
+    "trend30Day": 47,
+    "redraftValue": 1600
   },
   {
     "player": {
@@ -1614,9 +1644,9 @@
       "maybeTeam": "PIT"
     },
     "value": 2000,
-    "overallRank": 108,
-    "positionRank": 33,
-    "trend30Day": -275,
+    "overallRank": 110,
+    "positionRank": 34,
+    "trend30Day": -175,
     "redraftValue": 2700
   },
   {
@@ -1629,9 +1659,9 @@
       "maybeTeam": "DAL"
     },
     "value": 2000,
-    "overallRank": 109,
+    "overallRank": 111,
     "positionRank": 13,
-    "trend30Day": 47,
+    "trend30Day": -11,
     "redraftValue": 2600
   },
   {
@@ -1644,9 +1674,9 @@
       "maybeTeam": "TEN"
     },
     "value": 1900,
-    "overallRank": 110,
-    "positionRank": 34,
-    "trend30Day": -175,
+    "overallRank": 112,
+    "positionRank": 35,
+    "trend30Day": -72,
     "redraftValue": 2200
   },
   {
@@ -1659,9 +1689,9 @@
       "maybeTeam": "NE"
     },
     "value": 1900,
-    "overallRank": 111,
+    "overallRank": 113,
     "positionRank": 42,
-    "trend30Day": -11,
+    "trend30Day": 127,
     "redraftValue": 2900
   },
   {
@@ -1674,9 +1704,9 @@
       "maybeTeam": "BAL"
     },
     "value": 1900,
-    "overallRank": 112,
+    "overallRank": 114,
     "positionRank": 14,
-    "trend30Day": -72,
+    "trend30Day": 248,
     "redraftValue": 2000
   },
   {
@@ -1689,9 +1719,9 @@
       "maybeTeam": "KC"
     },
     "value": 1800,
-    "overallRank": 113,
+    "overallRank": 115,
     "positionRank": 43,
-    "trend30Day": 127,
+    "trend30Day": 187,
     "redraftValue": 2400
   },
   {
@@ -1704,10 +1734,25 @@
       "maybeTeam": "KC"
     },
     "value": 1700,
-    "overallRank": 114,
+    "overallRank": 116,
     "positionRank": 15,
-    "trend30Day": 248,
+    "trend30Day": -36,
     "redraftValue": 3500
+  },
+  {
+    "player": {
+      "id": 20122,
+      "name": "Tyler Allgeier",
+      "position": "RB",
+      "sleeperId": "p2003",
+      "maybeAge": 26,
+      "maybeTeam": "ATL"
+    },
+    "value": 1700,
+    "overallRank": 117,
+    "positionRank": 36,
+    "trend30Day": -208,
+    "redraftValue": 2100
   },
   {
     "player": {
@@ -1719,9 +1764,9 @@
       "maybeTeam": "SEA"
     },
     "value": 1600,
-    "overallRank": 115,
+    "overallRank": 118,
     "positionRank": 44,
-    "trend30Day": 187,
+    "trend30Day": 221,
     "redraftValue": 2600
   },
   {
@@ -1734,10 +1779,25 @@
       "maybeTeam": "PIT"
     },
     "value": 1600,
-    "overallRank": 116,
+    "overallRank": 119,
     "positionRank": 16,
-    "trend30Day": -36,
+    "trend30Day": 15,
     "redraftValue": 2200
+  },
+  {
+    "player": {
+      "id": 20126,
+      "name": "Wan'Dale Robinson",
+      "position": "WR",
+      "sleeperId": "p2007",
+      "maybeAge": 25,
+      "maybeTeam": "NYG"
+    },
+    "value": 1600,
+    "overallRank": 120,
+    "positionRank": 45,
+    "trend30Day": 204,
+    "redraftValue": 2300
   },
   {
     "player": {
@@ -1749,10 +1809,40 @@
       "maybeTeam": "DEN"
     },
     "value": 1500,
-    "overallRank": 117,
+    "overallRank": 121,
     "positionRank": 17,
-    "trend30Day": -208,
+    "trend30Day": 237,
     "redraftValue": 2500
+  },
+  {
+    "player": {
+      "id": 20121,
+      "name": "Daniel Jones",
+      "position": "QB",
+      "sleeperId": "p2002",
+      "maybeAge": 29,
+      "maybeTeam": "IND"
+    },
+    "value": 1500,
+    "overallRank": 122,
+    "positionRank": 24,
+    "trend30Day": -30,
+    "redraftValue": 2400
+  },
+  {
+    "player": {
+      "id": 20128,
+      "name": "Jalen McMillan",
+      "position": "WR",
+      "sleeperId": "p2009",
+      "maybeAge": 24,
+      "maybeTeam": "TB"
+    },
+    "value": 1500,
+    "overallRank": 123,
+    "positionRank": 46,
+    "trend30Day": -212,
+    "redraftValue": 1400
   },
   {
     "player": {
@@ -1764,10 +1854,25 @@
       "maybeTeam": "PHI"
     },
     "value": 1400,
-    "overallRank": 118,
+    "overallRank": 124,
     "positionRank": 18,
-    "trend30Day": 221,
+    "trend30Day": 71,
     "redraftValue": 2300
+  },
+  {
+    "player": {
+      "id": 20125,
+      "name": "Tank Bigsby",
+      "position": "RB",
+      "sleeperId": "p2006",
+      "maybeAge": 25,
+      "maybeTeam": "JAX"
+    },
+    "value": 1400,
+    "overallRank": 125,
+    "positionRank": 37,
+    "trend30Day": 185,
+    "redraftValue": 1500
   },
   {
     "player": {
@@ -1779,10 +1884,55 @@
       "maybeTeam": "TB"
     },
     "value": 1300,
-    "overallRank": 119,
+    "overallRank": 126,
     "positionRank": 19,
-    "trend30Day": 15,
+    "trend30Day": -175,
     "redraftValue": 1800
+  },
+  {
+    "player": {
+      "id": 20127,
+      "name": "Rashid Shaheed",
+      "position": "WR",
+      "sleeperId": "p2008",
+      "maybeAge": 28,
+      "maybeTeam": "NO"
+    },
+    "value": 1300,
+    "overallRank": 127,
+    "positionRank": 47,
+    "trend30Day": -66,
+    "redraftValue": 2000
+  },
+  {
+    "player": {
+      "id": 20124,
+      "name": "Ray Davis",
+      "position": "RB",
+      "sleeperId": "p2005",
+      "maybeAge": 26,
+      "maybeTeam": "BUF"
+    },
+    "value": 1200,
+    "overallRank": 128,
+    "positionRank": 38,
+    "trend30Day": 27,
+    "redraftValue": 1300
+  },
+  {
+    "player": {
+      "id": 20129,
+      "name": "Demario Douglas",
+      "position": "WR",
+      "sleeperId": "p2010",
+      "maybeAge": 25,
+      "maybeTeam": "NE"
+    },
+    "value": 1100,
+    "overallRank": 129,
+    "positionRank": 48,
+    "trend30Day": 291,
+    "redraftValue": 1500
   },
   {
     "player": {
@@ -1794,10 +1944,40 @@
       "maybeTeam": "NE"
     },
     "value": 1000,
-    "overallRank": 120,
+    "overallRank": 130,
     "positionRank": 20,
-    "trend30Day": 204,
+    "trend30Day": -5,
     "redraftValue": 1900
+  },
+  {
+    "player": {
+      "id": 20130,
+      "name": "Dalton Schultz",
+      "position": "TE",
+      "sleeperId": "p2011",
+      "maybeAge": 30,
+      "maybeTeam": "HOU"
+    },
+    "value": 800,
+    "overallRank": 131,
+    "positionRank": 21,
+    "trend30Day": 216,
+    "redraftValue": 1800
+  },
+  {
+    "player": {
+      "id": 20131,
+      "name": "Mike Gesicki",
+      "position": "TE",
+      "sleeperId": "p2012",
+      "maybeAge": 31,
+      "maybeTeam": "CIN"
+    },
+    "value": 600,
+    "overallRank": 132,
+    "positionRank": 22,
+    "trend30Day": 206,
+    "redraftValue": 1500
   },
   {
     "player": {
