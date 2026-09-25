@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { CanonicalPlayer } from "../players/canonical";
 import { SleeperLeagueUser, SleeperMatchup, SleeperRoster } from "../sleeper/types";
-import { buildImagePrompt, summarizeWeek } from "./weeklyReview";
+import { buildImagePrompt, buildTextRecap, summarizeWeek } from "./weeklyReview";
 
 function player(id: string, position: string, value = 1000): CanonicalPlayer {
   return {
@@ -172,5 +172,64 @@ describe("buildImagePrompt", () => {
 
   it("is deterministic for the same week", () => {
     expect(buildImagePrompt(summary)).toEqual(prompt);
+  });
+});
+
+describe("team top scorers", () => {
+  it("records each team's best starter", () => {
+    expect(summary.matchups[0].winner.topScorer).toEqual({ name: "Player a1", points: 60 });
+    expect(summary.matchups[1].loser.topScorer).toEqual({ name: "Player d1", points: 20 });
+  });
+});
+
+describe("buildTextRecap", () => {
+  const chat = buildTextRecap(summary, "chat");
+  const newsletter = buildTextRecap(summary, "newsletter");
+
+  it("chat: one line per matchup plus awards, short enough for league chat", () => {
+    expect(chat.split("\n")[0]).toBe("🏈 THE REAL DEAL — WEEK 3 RECAP");
+    expect(chat).toContain("💥 Zebras 60.00 def. Aardvarks 2.00 — ");
+    expect(chat).toContain("🤡 Moose 20.50 def. Hawks 20.00 — ");
+    expect(chat).toContain("👑 Top dog: Zebras (60.00)");
+    expect(chat).toContain("🧊 Dud: Player b1");
+    expect(chat.split("\n").length).toBeLessThanOrEqual(15);
+  });
+
+  it("chat reuses the image prompt's caption for each matchup", () => {
+    const caption = chat.split("\n")[1].split(" — ")[1];
+    expect(buildImagePrompt(summary)).toContain(`Caption: "${caption}"`);
+  });
+
+  it("newsletter: sections, every team, top scorers, and the malpractice callout", () => {
+    for (const h of ["THE REAL DEAL — WEEK 3 REVIEW", "THE GAMES", "THE SCOREBOARD", "AWARDS"]) {
+      expect(newsletter).toContain(h);
+    }
+    for (const t of ["Zebras", "Aardvarks", "Moose", "Hawks"]) expect(newsletter).toContain(t);
+    expect(newsletter).toContain("Player a1 led Zebras with 60.00");
+    expect(newsletter).toContain("Hawks left 5.00 points on the bench — enough to win.");
+    expect(newsletter).toContain("Coaching malpractice: Hawks' best lineup (25.00) beats Moose");
+    expect(newsletter).toContain("1. Zebras — 60.00 (3-0)");
+  });
+
+  it("calls out a losing team's star who outscored the winner's best", () => {
+    const flipped = {
+      ...summary,
+      matchups: [
+        {
+          ...summary.matchups[1],
+          winner: { ...summary.matchups[1].winner, topScorer: { name: "Winner Guy", points: 12 } },
+          loser: { ...summary.matchups[1].loser, topScorer: { name: "Loser Star", points: 19 } },
+        },
+      ],
+    };
+    expect(buildTextRecap(flipped, "newsletter")).toContain(
+      "Loser Star dropped 19.00 for Hawks, more than anyone on Moose, and it still wasn't enough."
+    );
+  });
+
+  it("is deterministic and empty for unplayed weeks", () => {
+    expect(buildTextRecap(summary, "chat")).toEqual(chat);
+    expect(buildTextRecap(summary, "newsletter")).toEqual(newsletter);
+    expect(buildTextRecap({ ...summary, matchups: [] }, "chat")).toBe("");
   });
 });

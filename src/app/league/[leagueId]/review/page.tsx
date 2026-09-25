@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import WeeklyReview from "@/components/review/WeeklyReview";
-import { buildImagePrompt, summarizeWeek } from "@/lib/analysis/weeklyReview";
+import { buildImagePrompt, buildTextRecap, summarizeWeek } from "@/lib/analysis/weeklyReview";
 import { getLeagueBundle } from "@/lib/bundle";
 import { getMatchups } from "@/lib/sleeper/client";
 import { playerValue } from "@/lib/values/engine";
@@ -46,6 +46,7 @@ export default async function ReviewPage({
       bundle={{ ...bundle, players: {} }}
       summary={summary}
       prompt={summary.matchups.length > 0 ? buildImagePrompt(summary) : ""}
+      recaps={{ chat: buildTextRecap(summary, "chat"), newsletter: buildTextRecap(summary, "newsletter") }}
       currentWeek={currentWeek}
     />
   );

@@ -11,6 +11,8 @@ export interface TeamWeek {
   /** Points left on the bench (optimal - actual, never negative). */
   benchLeft: number;
   record: string | null;
+  /** Highest-scoring starter this week. */
+  topScorer: { name: string; points: number } | null;
 }
 
 export interface MatchupResult {
@@ -80,6 +82,13 @@ export function summarizeWeek(opts: {
     const optimal = optimalLineup(eligible, rosterPositions, players, pts).reduce((s, x) => s + x.projected, 0);
     const points = round2(m.points ?? 0);
     const s = roster?.settings;
+    let topScorer: TeamWeek["topScorer"] = null;
+    for (const id of m.starters ?? []) {
+      const p = players[id];
+      const scored = pts[id];
+      if (!p || scored === undefined) continue;
+      if (!topScorer || scored > topScorer.points) topScorer = { name: p.name, points: round2(scored) };
+    }
     return {
       rosterId: m.roster_id,
       teamName: teamNameOf(users, roster, m.roster_id),
@@ -87,6 +96,7 @@ export function summarizeWeek(opts: {
       optimalPoints: round2(Math.max(optimal, points)),
       benchLeft: round2(Math.max(0, optimal - points)),
       record: includeRecords && s ? `${s.wins}-${s.losses}${s.ties ? `-${s.ties}` : ""}` : null,
+      topScorer,
     };
   };
 
@@ -229,6 +239,24 @@ function storyType(r: MatchupResult): keyof typeof LINES {
 const pts = (n: number) => n.toFixed(2);
 const possessive = (name: string) => (/s$/i.test(name) ? `${name}'` : `${name}'s`);
 
+function matchupVars(r: MatchupResult): Record<string, string> {
+  return {
+    W: r.winner.teamName,
+    L: r.loser.teamName,
+    Wp: possessive(r.winner.teamName),
+    Lp: possessive(r.loser.teamName),
+    M: pts(r.margin),
+    B: pts(r.loser.benchLeft),
+    Wpts: pts(r.winner.points),
+    Lpts: pts(r.loser.points),
+  };
+}
+
+/** The one-line roast for a matchup — shared by the image prompt and recaps. */
+function matchupCaption(r: MatchupResult, week: number): string {
+  return fill(pick(LINES[storyType(r)], `${week}-${r.matchupId}`), matchupVars(r));
+}
+
 /**
  * A ready-to-paste ChatGPT image prompt for a single savage-roast recap
  * graphic. Mascots are the images the user attaches, matched by the listed
@@ -261,15 +289,7 @@ export function buildImagePrompt(summary: WeekSummary): string {
   lines.push("MATCHUP PANELS");
   matchups.forEach((r, i) => {
     const type = storyType(r);
-    const vars = {
-      W: r.winner.teamName,
-      L: r.loser.teamName,
-      Wp: possessive(r.winner.teamName),
-      Lp: possessive(r.loser.teamName),
-      M: pts(r.margin),
-      B: pts(r.loser.benchLeft),
-    };
-    const seed = `${week}-${r.matchupId}`;
+    const vars = matchupVars(r);
     const score = r.tie
       ? `${r.winner.teamName} ${pts(r.winner.points)} TIED ${r.loser.teamName} ${pts(r.loser.points)}`
       : `${r.winner.teamName} ${pts(r.winner.points)} def. ${r.loser.teamName} ${pts(r.loser.points)}`;
@@ -277,8 +297,8 @@ export function buildImagePrompt(summary: WeekSummary): string {
       r.winner.record && r.loser.record ? ` (now ${r.winner.record} vs ${r.loser.record})` : "";
     lines.push(
       `${i + 1}. ${score}${records}`,
-      `   Scene: ${fill(pick(SCENES[type], `${seed}-scene`), vars)}.`,
-      `   Caption: "${fill(pick(LINES[type], seed), vars)}"`
+      `   Scene: ${fill(pick(SCENES[type], `${week}-${r.matchupId}-scene`), vars)}.`,
+      `   Caption: "${matchupCaption(r, week)}"`
     );
   });
   lines.push("");
@@ -324,4 +344,142 @@ export function buildImagePrompt(summary: WeekSummary): string {
     "- Roast the fantasy performance, not real people: no profanity, slurs, or personal insults."
   );
   return lines.join("\n");
+}
+
+// ---------------------------------------------------------------------------
+// Text recaps
+
+export type RecapFormat = "chat" | "newsletter";
+
+const STORY_EMOJI = { blowout: "💥", close: "😬", malpractice: "🤡", normal: "🏈" } as const;
+
+const OPENERS = {
+  blowout: [
+    "{W} beat {L} by {M}, and it wasn't that close.",
+    "{L} lost to {W} by {M}. Thoughts and prayers.",
+    "{W} put up {Wpts} and turned {L} into a cautionary tale.",
+  ],
+  close: [
+    "{W} squeaked past {L} by {M}.",
+    "{L} lost to {W} by {M}. Pain is a flat circle.",
+    "{W} survived {L} by a razor-thin {M}.",
+  ],
+  malpractice: [
+    "{L} lost to {W} by {M} while its own bench quietly had the answer.",
+    "{W} won by {M}, but the real story is {Lp} lineup decisions.",
+  ],
+  normal: [
+    "{W} handled {L}, {Wpts} to {Lpts}.",
+    "{W} took care of business against {L}, winning by {M}.",
+    "{L} fell to {W} by {M} in a game nobody will remember except {L}.",
+  ],
+};
+
+const INTROS = [
+  "Another week, another round of questionable lineup decisions. Here's the damage.",
+  "Week {N} is in the books. Lower your expectations and read on.",
+  "Some of you played fantasy football this week. Others just attended.",
+];
+
+const SIGNOFFS = [
+  "Set your lineups. Or don't — it's funnier for the rest of us.",
+  "See you next week. Bring a better lineup.",
+  "Remember: it's just a game. A game some of you are very bad at.",
+];
+
+function scoreLine(r: MatchupResult): string {
+  const verb = r.tie ? "tied" : "def.";
+  return `${r.winner.teamName} ${pts(r.winner.points)} ${verb} ${r.loser.teamName} ${pts(r.loser.points)}`;
+}
+
+function newsletterParagraph(r: MatchupResult, week: number): string {
+  const vars = matchupVars(r);
+  const sentences = [fill(pick(OPENERS[storyType(r)], `${week}-${r.matchupId}-open`), vars)];
+  const ws = r.winner.topScorer;
+  const ls = r.loser.topScorer;
+  if (ws && ls) {
+    sentences.push(
+      ls.points > ws.points
+        ? `${ls.name} dropped ${pts(ls.points)} for ${r.loser.teamName}, more than anyone on ${r.winner.teamName}, and it still wasn't enough.`
+        : `${ws.name} led ${r.winner.teamName} with ${pts(ws.points)}; ${ls.name} (${pts(ls.points)}) was the best ${r.loser.teamName} could muster.`
+    );
+  }
+  if (r.malpractice) {
+    sentences.push(
+      `${r.loser.teamName} left ${pts(r.loser.benchLeft)} points on the bench — enough to win. Fire the GM.`
+    );
+  } else if (r.loser.benchLeft >= 5) {
+    sentences.push(`${r.loser.teamName} also left ${pts(r.loser.benchLeft)} on the bench, just to twist the knife.`);
+  }
+  if (r.winner.record && r.loser.record) {
+    sentences.push(`${r.winner.teamName} moves to ${r.winner.record}; ${r.loser.teamName} sits at ${r.loser.record}.`);
+  }
+  return sentences.join(" ");
+}
+
+function awardLines(summary: WeekSummary, full: boolean): string[] {
+  const out: string[] = [];
+  if (full && summary.blowout && summary.blowout.margin >= 20) {
+    out.push(`💥 Blowout of the week: ${summary.blowout.winner.teamName} over ${summary.blowout.loser.teamName} by ${pts(summary.blowout.margin)}`);
+  }
+  if (full && summary.nailBiter && summary.nailBiter.margin < 10) {
+    out.push(`😬 Nail-biter: ${summary.nailBiter.winner.teamName} survives ${summary.nailBiter.loser.teamName} by ${pts(summary.nailBiter.margin)}`);
+  }
+  if (summary.topDog) out.push(`👑 Top dog: ${summary.topDog.teamName} (${pts(summary.topDog.points)})`);
+  if (summary.basement) out.push(`🪦 Basement: ${summary.basement.teamName} (${pts(summary.basement.points)})`);
+  if (summary.benchBlunder) {
+    out.push(`🪑 Bench blunder: ${summary.benchBlunder.teamName} left ${pts(summary.benchBlunder.benchLeft)} on the pine`);
+  }
+  if (full) {
+    for (const r of summary.matchups.filter((m) => m.malpractice)) {
+      out.push(`🤡 Coaching malpractice: ${possessive(r.loser.teamName)} best lineup (${pts(r.loser.optimalPoints)}) beats ${r.winner.teamName}`);
+    }
+  }
+  if (summary.mvp) out.push(`⭐ MVP: ${summary.mvp.name} (${pts(summary.mvp.points)}, ${summary.mvp.teamName})`);
+  if (summary.dud) out.push(`🧊 Dud: ${summary.dud.name} (${pts(summary.dud.points)}, ${summary.dud.teamName})`);
+  return out;
+}
+
+/**
+ * Plain-text recap of the week in the same savage voice as the image prompt.
+ * "chat" is a short emoji-led post for the Sleeper league chat; "newsletter"
+ * is a full write-up with ALL-CAPS section headers that pastes cleanly into
+ * email or a blog. Deterministic per week; empty when nothing was scored.
+ */
+export function buildTextRecap(summary: WeekSummary, format: RecapFormat): string {
+  const { leagueName, week, matchups } = summary;
+  if (matchups.length === 0) return "";
+
+  if (format === "chat") {
+    return [
+      `🏈 ${leagueName.toUpperCase()} — WEEK ${week} RECAP`,
+      ...matchups.map((r) => `${STORY_EMOJI[storyType(r)]} ${scoreLine(r)} — ${matchupCaption(r, week)}`),
+      "",
+      ...awardLines(summary, false),
+    ].join("\n");
+  }
+
+  const scoreboard = matchups
+    .flatMap((r) => [r.winner, r.loser])
+    .sort((a, b) => b.points - a.points)
+    .map((t, i) => `${i + 1}. ${t.teamName} — ${pts(t.points)}${t.record ? ` (${t.record})` : ""}`);
+
+  return [
+    `${leagueName.toUpperCase()} — WEEK ${week} REVIEW`,
+    fill(pick(INTROS, `${week}-intro`), { N: String(week) }),
+    "",
+    "THE GAMES",
+    ...matchups.flatMap((r) => [
+      `${STORY_EMOJI[storyType(r)]} ${scoreLine(r)}`,
+      newsletterParagraph(r, week),
+      "",
+    ]),
+    "THE SCOREBOARD",
+    ...scoreboard,
+    "",
+    "AWARDS",
+    ...awardLines(summary, true),
+    "",
+    pick(SIGNOFFS, `${week}-signoff`),
+  ].join("\n");
 }

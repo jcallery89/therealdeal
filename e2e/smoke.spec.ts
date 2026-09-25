@@ -203,3 +203,26 @@ test("weekly review builds a ChatGPT image prompt with every mascot", async ({ p
   expect(await page.evaluate(() => navigator.clipboard.readText())).toEqual(prompt);
   await page.screenshot({ path: `${SHOTS}/15-weekly-review.png`, fullPage: true });
 });
+
+test("weekly review text recap switches between chat and newsletter", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto(`/league/${DYNASTY}/review`);
+  const recap = page.getByTestId("recap-text");
+  await expect(recap).toBeVisible();
+
+  const chat = await recap.inputValue();
+  expect(chat).toContain("WEEK 9 RECAP");
+  expect(chat).toMatch(/\d+\.\d{2} def\. .+ \d+\.\d{2} — /);
+  expect(chat).not.toContain("THE SCOREBOARD");
+
+  await page.getByTestId("recap-format-newsletter").click();
+  await expect(recap).toHaveValue(/THE SCOREBOARD/);
+  const newsletter = await recap.inputValue();
+  expect(newsletter).toContain("THE GAMES");
+  expect(newsletter.length).toBeGreaterThan(chat.length);
+
+  await page.getByTestId("copy-recap").click();
+  await expect(page.getByTestId("copy-recap")).toHaveText(/Copied/);
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toEqual(newsletter);
+  await page.getByTestId("text-recap").screenshot({ path: `${SHOTS}/16-text-recap.png` });
+});

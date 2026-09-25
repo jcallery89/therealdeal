@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import DataSourceBanner from "@/components/DataSourceBanner";
-import { MatchupResult, WeekSummary } from "@/lib/analysis/weeklyReview";
+import { MatchupResult, RecapFormat, WeekSummary } from "@/lib/analysis/weeklyReview";
 import { LeagueBundle } from "@/lib/leagueBundle";
 
 const pts = (n: number) => n.toFixed(2);
@@ -15,34 +15,49 @@ function tagFor(r: MatchupResult, summary: WeekSummary): string | null {
   return null;
 }
 
-export default function WeeklyReview({
-  bundle,
-  summary,
-  prompt,
-  currentWeek,
-}: {
-  bundle: LeagueBundle;
-  summary: WeekSummary;
-  prompt: string;
-  currentWeek: number;
-}) {
-  const router = useRouter();
-  const pathname = usePathname();
+/** Copies `text`; falls back to select-and-copy when the clipboard API is blocked. */
+function CopyButton({ text, targetId, label, testId }: { text: string; targetId: string; label: string; testId: string }) {
   const [copied, setCopied] = useState(false);
-  const [attached, setAttached] = useState<Set<string>>(new Set());
-
   async function copy() {
     try {
-      await navigator.clipboard.writeText(prompt);
+      await navigator.clipboard.writeText(text);
     } catch {
-      // Clipboard can be blocked (e.g. insecure context); select for manual copy.
-      const el = document.getElementById("review-prompt") as HTMLTextAreaElement | null;
+      const el = document.getElementById(targetId) as HTMLTextAreaElement | null;
       el?.select();
       document.execCommand?.("copy");
     }
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
+  return (
+    <button
+      onClick={copy}
+      data-testid={testId}
+      className="rounded-md bg-emerald-500 px-3 py-1.5 text-xs font-medium text-slate-950 hover:bg-emerald-400"
+    >
+      {copied ? "Copied ✓" : label}
+    </button>
+  );
+}
+
+export default function WeeklyReview({
+  bundle,
+  summary,
+  prompt,
+  recaps,
+  currentWeek,
+}: {
+  bundle: LeagueBundle;
+  summary: WeekSummary;
+  prompt: string;
+  recaps: Record<RecapFormat, string>;
+  currentWeek: number;
+}) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [attached, setAttached] = useState<Set<string>>(new Set());
+  const [recapFormat, setRecapFormat] = useState<RecapFormat>("chat");
+  const recap = recaps[recapFormat];
 
   const toggle = (name: string) => {
     const next = new Set(attached);
@@ -182,13 +197,7 @@ export default function WeeklyReview({
                 >
                   Open ChatGPT ↗
                 </a>
-                <button
-                  onClick={copy}
-                  data-testid="copy-prompt"
-                  className="rounded-md bg-emerald-500 px-3 py-1.5 text-xs font-medium text-slate-950 hover:bg-emerald-400"
-                >
-                  {copied ? "Copied ✓" : "Copy prompt"}
-                </button>
+                <CopyButton text={prompt} targetId="review-prompt" label="Copy prompt" testId="copy-prompt" />
               </div>
             </div>
             <textarea
@@ -202,6 +211,53 @@ export default function WeeklyReview({
             <p className="mt-1 text-[11px] text-slate-600">
               {prompt.length.toLocaleString("en-US")} characters · captions are fixed per week, so regenerating
               gives the same prompt.
+            </p>
+          </div>
+
+          <div data-testid="text-recap" className="mt-4 rounded-xl border border-slate-800 bg-slate-900/50 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h3 className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                Text recap
+              </h3>
+              <div className="flex items-center gap-2">
+                <div className="flex overflow-hidden rounded-lg border border-slate-700 text-xs">
+                  {(
+                    [
+                      ["chat", "League chat"],
+                      ["newsletter", "Newsletter"],
+                    ] as const
+                  ).map(([f, label]) => (
+                    <button
+                      key={f}
+                      onClick={() => setRecapFormat(f)}
+                      data-testid={`recap-format-${f}`}
+                      aria-pressed={recapFormat === f}
+                      className={`px-3 py-1.5 font-medium ${
+                        recapFormat === f
+                          ? "bg-emerald-500/20 text-emerald-300"
+                          : "bg-slate-900 text-slate-400 hover:text-slate-200"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <CopyButton text={recap} targetId="recap-text" label="Copy recap" testId="copy-recap" />
+              </div>
+            </div>
+            <textarea
+              id="recap-text"
+              data-testid="recap-text"
+              readOnly
+              value={recap}
+              rows={recapFormat === "chat" ? 14 : 24}
+              className="mt-3 w-full rounded-lg border border-slate-800 bg-slate-950 p-3 text-sm leading-relaxed text-slate-300"
+            />
+            <p className="mt-1 text-[11px] text-slate-600">
+              {recap.length.toLocaleString("en-US")} characters ·{" "}
+              {recapFormat === "chat"
+                ? "short version for the Sleeper league chat"
+                : "full write-up for email or a league blog"}
             </p>
           </div>
         </>

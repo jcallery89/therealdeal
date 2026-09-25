@@ -52,7 +52,8 @@ KeepTradeCut. No API keys are needed — every data source is free and read-only
   image prompt for a savage-roast recap poster: every matchup with exact
   scores and captions, plus awards (blowout, nail-biter, top dog, basement,
   bench blunder, coaching malpractice, MVP, dud). Attach your team mascot
-  images in the listed order and paste the prompt.
+  images in the listed order and paste the prompt. A matching text recap comes
+  in two formats: a short league-chat post and a full newsletter write-up.
 
 Every page has a **Sync** button (sidebar on desktop, top bar on mobile) that
 pulls the latest rosters and transactions from Sleeper on demand.
