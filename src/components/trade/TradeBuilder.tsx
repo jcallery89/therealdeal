@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import DataSourceBanner from "@/components/DataSourceBanner";
+import RosterNotice from "@/components/RosterNotice";
 import { PositionBadge } from "@/components/players/PlayerRow";
 import { starterSlots } from "@/lib/analysis/rosterStrength";
 import {
@@ -10,8 +11,8 @@ import {
   TradeAsset,
 } from "@/lib/analysis/trade";
 import { LeagueBundle, teamName } from "@/lib/leagueBundle";
-import { useSleeperUser } from "@/lib/hooks/useSleeperUser";
-import { draftPickValue, playerValue, ValueSource } from "@/lib/values/engine";
+import { useMyRoster, useValueOf } from "@/lib/hooks/useMyRoster";
+import { draftPickValue, ValueSource } from "@/lib/values/engine";
 import { pickLabel } from "@/lib/values/picks";
 
 interface AssetOption extends TradeAsset {
@@ -34,19 +35,14 @@ export default function TradeBuilder({
   bundle: LeagueBundle;
   prefill?: TradePrefill | null;
 }) {
-  const { user, ready } = useSleeperUser();
   const { leagueConfig, league, rosters, users, players, valueContext, picks, pickValues, teamAnalytics } = bundle;
+  const { user, ready, myRosterId } = useMyRoster(bundle);
+  /** Side A defaults to the user's team, or the first roster if unknown. */
+  const homeRosterId = myRosterId ?? rosters[0]?.roster_id;
+  const firstOther = (id: number) => rosters.find((r) => r.roster_id !== id)?.roster_id ?? id;
 
-  const myRosterId =
-    user?.rosterIdByLeague?.[leagueConfig.id] ??
-    rosters.find((r) => r.owner_id === user?.userId)?.roster_id ??
-    rosters[0]?.roster_id;
-
-  const [teamA, setTeamA] = useState<number>(prefill?.teamA ?? myRosterId);
-  const [teamB, setTeamB] = useState<number>(
-    prefill?.teamB ??
-      (rosters.find((r) => r.roster_id !== (prefill?.teamA ?? myRosterId))?.roster_id ?? myRosterId)
-  );
+  const [teamA, setTeamA] = useState<number>(prefill?.teamA ?? homeRosterId);
+  const [teamB, setTeamB] = useState<number>(prefill?.teamB ?? firstOther(prefill?.teamA ?? homeRosterId));
   const [source, setSource] = useState<ValueSource>(bundle.defaultSource);
   const [sendA, setSendA] = useState<TradeAsset[]>([]);
   const [sendB, setSendB] = useState<TradeAsset[]>([]);
@@ -57,21 +53,19 @@ export default function TradeBuilder({
   useEffect(() => {
     if (defaultApplied.current || prefill || !ready) return;
     defaultApplied.current = true;
-    if (sendA.length === 0 && sendB.length === 0 && teamA !== myRosterId) {
-      setTeamA(myRosterId);
-      setTeamB(rosters.find((r) => r.roster_id !== myRosterId)?.roster_id ?? myRosterId);
+    if (sendA.length === 0 && sendB.length === 0 && teamA !== homeRosterId) {
+      setTeamA(homeRosterId);
+      setTeamB(firstOther(homeRosterId));
     }
-  }, [ready, prefill, myRosterId, teamA, sendA.length, sendB.length, rosters]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, prefill, homeRosterId, teamA, sendA.length, sendB.length]);
 
   const teamNameById = useMemo(
     () => new Map(rosters.map((r) => [r.roster_id, teamName(users, r)])),
     [rosters, users]
   );
 
-  const valueOf = useMemo(
-    () => (p: (typeof players)[string]) => playerValue(p, leagueConfig, source, valueContext),
-    [leagueConfig, source, valueContext]
-  );
+  const valueOf = useValueOf(bundle, source);
 
   const optionsFor = (rosterId: number): AssetOption[] => {
     const roster = rosters.find((r) => r.roster_id === rosterId);
@@ -160,6 +154,7 @@ export default function TradeBuilder({
   const sideColumn = (
     label: "A" | "B",
     rosterId: number,
+    otherRosterId: number,
     setRoster: (id: number) => void,
     sent: TradeAsset[],
     setSent: (a: TradeAsset[]) => void
@@ -168,6 +163,7 @@ export default function TradeBuilder({
       key={label}
       side={label}
       rosterId={rosterId}
+      excludeRosterId={otherRosterId}
       myRosterId={myRosterId}
       rosters={rosters.map((r) => ({ id: r.roster_id, name: teamNameById.get(r.roster_id)! }))}
       onRosterChange={(id) => {
@@ -182,7 +178,8 @@ export default function TradeBuilder({
 
   return (
     <div className="mx-auto max-w-5xl">
-      <DataSourceBanner source={bundle.source} valuesDegraded={bundle.valuesDegraded} />
+      <DataSourceBanner source={bundle.source} valueSources={bundle.valueSources} />
+      <RosterNotice ready={ready} user={user} myRosterId={myRosterId} leagueLabel={leagueConfig.label} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-slate-100">Trade Analyzer</h1>
@@ -193,17 +190,22 @@ export default function TradeBuilder({
         </div>
         {leagueConfig.isDynasty ? (
           <div className="flex overflow-hidden rounded-lg border border-slate-700 text-xs">
-            {(["fc", "ktc", "blend"] as const).map((s) => (
+            {(["fc", "ktc", "blend"] as const).map((s) => {
+              const down = s !== "blend" && bundle.valueSources[s] === "unavailable";
+              return (
               <button
                 key={s}
                 onClick={() => setSource(s)}
-                className={`px-3 py-1.5 font-medium ${
+                disabled={down}
+                title={down ? "This source didn't respond — its values are unavailable right now" : undefined}
+                className={`px-3 py-1.5 font-medium disabled:cursor-not-allowed disabled:opacity-40 ${
                   source === s ? "bg-emerald-500/20 text-emerald-300" : "bg-slate-900 text-slate-400 hover:text-slate-200"
                 }`}
               >
                 {s === "fc" ? "FantasyCalc" : s === "ktc" ? "KeepTradeCut" : "Blend"}
               </button>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <span className="text-[11px] text-slate-600">FantasyCalc redraft values (KTC has no redraft market)</span>
@@ -211,8 +213,8 @@ export default function TradeBuilder({
       </div>
 
       <div className="mt-6 grid gap-4 md:grid-cols-2">
-        {sideColumn("A", teamA, setTeamA, sendA, setSendA)}
-        {sideColumn("B", teamB, setTeamB, sendB, setSendB)}
+        {sideColumn("A", teamA, teamB, setTeamA, sendA, setSendA)}
+        {sideColumn("B", teamB, teamA, setTeamB, sendB, setSendB)}
       </div>
 
       {evaluation && (
@@ -236,7 +238,7 @@ export default function TradeBuilder({
                   <div className="flex items-baseline justify-between">
                     <span className="font-medium text-slate-200">{teamNameById.get(rosterId)}</span>
                     <span className="font-mono text-sm text-slate-300">
-                      receives {Math.round(receivesTotal).toLocaleString()}
+                      receives {Math.round(receivesTotal).toLocaleString("en-US")}
                     </span>
                   </div>
                   <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-700">
@@ -249,7 +251,7 @@ export default function TradeBuilder({
                     {receives.map((a) => (
                       <li key={a.id} className="flex justify-between text-xs text-slate-400">
                         <span>+ {a.label}</span>
-                        <span className="font-mono">{a.value.toLocaleString()}</span>
+                        <span className="font-mono">{a.value.toLocaleString("en-US")}</span>
                       </li>
                     ))}
                     {receives.length === 0 && <li className="text-xs text-slate-600">receives nothing</li>}
@@ -291,6 +293,7 @@ function FitNotes({ notes }: { notes: FitNote[] }) {
 function SideColumn({
   side,
   rosterId,
+  excludeRosterId,
   myRosterId,
   rosters,
   onRosterChange,
@@ -300,7 +303,9 @@ function SideColumn({
 }: {
   side: "A" | "B";
   rosterId: number;
-  myRosterId: number;
+  /** The other side's team — a team can't trade with itself. */
+  excludeRosterId: number;
+  myRosterId: number | null;
   rosters: { id: number; name: string }[];
   onRosterChange: (id: number) => void;
   options: AssetOption[];
@@ -342,7 +347,7 @@ function SideColumn({
           onChange={(e) => onRosterChange(parseInt(e.target.value, 10))}
           className="max-w-[60%] rounded-md border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-slate-200"
         >
-          {rosters.map((r) => (
+          {rosters.filter((r) => r.id !== excludeRosterId).map((r) => (
             <option key={r.id} value={r.id}>
               {r.name}
               {r.id === myRosterId ? " (me)" : ""}
@@ -365,7 +370,7 @@ function SideColumn({
               {a.label}
             </span>
             <span className="flex items-center gap-2">
-              <span className="font-mono text-xs text-slate-400">{a.value.toLocaleString()}</span>
+              <span className="font-mono text-xs text-slate-400">{a.value.toLocaleString("en-US")}</span>
               <button
                 aria-label={`Remove ${a.label}`}
                 onClick={() => setSent(sent.filter((x) => x.id !== a.id))}
@@ -424,7 +429,7 @@ function SideColumn({
                         </span>
                       )}
                     </span>
-                    <span className="font-mono text-xs text-slate-500">{o.value.toLocaleString()}</span>
+                    <span className="font-mono text-xs text-slate-500">{o.value.toLocaleString("en-US")}</span>
                   </button>
                 </li>
               ))}

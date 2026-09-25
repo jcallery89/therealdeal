@@ -10,7 +10,7 @@ import {
   starterSlots,
 } from "@/lib/analysis/rosterStrength";
 import { LeagueBundle, teamName } from "@/lib/leagueBundle";
-import { useSleeperUser } from "@/lib/hooks/useSleeperUser";
+import { useMyRoster } from "@/lib/hooks/useMyRoster";
 import { CanonicalPlayer } from "@/lib/players/canonical";
 import { SleeperDraft, SleeperDraftPick } from "@/lib/sleeper/types";
 import { playerValue, trend30 } from "@/lib/values/engine";
@@ -24,13 +24,9 @@ export default function DraftBoard({
   draft: SleeperDraft | null;
   draftPicks: SleeperDraftPick[];
 }) {
-  const { user } = useSleeperUser();
   const { leagueConfig, league, rosters, users, players, valueContext, picks, state } = bundle;
 
-  const myRosterId =
-    user?.rosterIdByLeague?.[leagueConfig.id] ??
-    rosters.find((r) => r.owner_id === user?.userId)?.roster_id ??
-    rosters[0]?.roster_id;
+  const { user, ready, myRosterId, viewRosterId, setViewRosterId } = useMyRoster(bundle);
 
   const valueOf = useMemo(
     () => (p: CanonicalPlayer) => playerValue(p, leagueConfig, bundle.defaultSource, valueContext),
@@ -46,7 +42,7 @@ export default function DraftBoard({
   const myPicks = useMemo(
     () =>
       picks
-        .filter((p) => p.ownerRosterId === myRosterId && p.season === draftSeason)
+        .filter((p) => p.ownerRosterId === viewRosterId && p.season === draftSeason)
         .map((p) => ({
           pick: p,
           label: formatPick(p.round, slots.get(p.originalRosterId) ?? 0),
@@ -56,7 +52,7 @@ export default function DraftBoard({
               : null,
         }))
         .sort((a, b) => a.label.localeCompare(b.label)),
-    [picks, myRosterId, draftSeason, slots, users, rosters]
+    [picks, viewRosterId, draftSeason, slots, users, rosters]
   );
 
   const draftedBy = useMemo(() => {
@@ -87,7 +83,7 @@ export default function DraftBoard({
   // My weak positions for BPA-vs-need context.
   const needs = useMemo(() => {
     const slotCfg = starterSlots(league.roster_positions);
-    const mine = rosters.find((r) => r.roster_id === myRosterId);
+    const mine = rosters.find((r) => r.roster_id === viewRosterId);
     if (!mine) return [];
     const byRoster = rosters.map((r) => positionalStrength(r.players ?? [], players, valueOf, slotCfg));
     const mineStrength = positionalStrength(mine.players ?? [], players, valueOf, slotCfg);
@@ -95,7 +91,7 @@ export default function DraftBoard({
       const max = Math.max(...byRoster.map((s) => s[pos]), 1);
       return mineStrength[pos] / max < 0.45;
     });
-  }, [league.roster_positions, rosters, myRosterId, players, valueOf]);
+  }, [league.roster_positions, rosters, viewRosterId, players, valueOf]);
 
   const nameById = useMemo(
     () => new Map(rosters.map((r) => [r.roster_id, teamName(users, r)])),
@@ -104,7 +100,7 @@ export default function DraftBoard({
 
   return (
     <div className="mx-auto max-w-5xl">
-      <DataSourceBanner source={bundle.source} valuesDegraded={bundle.valuesDegraded} />
+      <DataSourceBanner source={bundle.source} valueSources={bundle.valueSources} />
 
       <h1 className="text-2xl font-bold text-slate-100">Rookie Draft Board</h1>
       <p className="mt-1 text-sm text-slate-500">
@@ -167,7 +163,7 @@ export default function DraftBoard({
               }`}
             >
               {trend > 0 ? "▲" : trend < 0 ? "▼" : ""}
-              {Math.abs(trend).toLocaleString()}
+              {Math.abs(trend).toLocaleString("en-US")}
             </span>
             <span className="w-32 shrink-0 text-right text-xs">
               {drafted ? (

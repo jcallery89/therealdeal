@@ -112,9 +112,6 @@ export async function getLeagueBundle(
       usersRes.source,
       tradedRes.source
     ),
-    valuesDegraded: {
-      fc: table.meta.sources.fc !== "live",
-      ktc: table.meta.sources.ktc !== "live",
-    },
+    valueSources: table.meta.sources,
   };
 }

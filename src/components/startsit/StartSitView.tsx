@@ -1,11 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import DataSourceBanner from "@/components/DataSourceBanner";
+import RosterNotice from "@/components/RosterNotice";
+import TeamPicker from "@/components/TeamPicker";
 import { PlayerCell, ValueChip } from "@/components/players/PlayerRow";
 import { lineupAdvice } from "@/lib/analysis/lineup";
 import { LeagueBundle, teamName } from "@/lib/leagueBundle";
-import { useSleeperUser } from "@/lib/hooks/useSleeperUser";
+import { useMyRoster } from "@/lib/hooks/useMyRoster";
 import { SleeperMatchup } from "@/lib/sleeper/types";
 
 export default function StartSitView({
@@ -18,16 +20,10 @@ export default function StartSitView({
   projectedPoints: Record<string, number>;
   matchups: SleeperMatchup[];
 }) {
-  const { user } = useSleeperUser();
   const { leagueConfig, league, rosters, users, players, state } = bundle;
 
-  const myRosterId =
-    user?.rosterIdByLeague?.[leagueConfig.id] ??
-    rosters.find((r) => r.owner_id === user?.userId)?.roster_id ??
-    rosters[0]?.roster_id;
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-  const rosterId = selectedId ?? myRosterId;
-  const roster = rosters.find((r) => r.roster_id === rosterId) ?? rosters[0];
+  const { user, ready, myRosterId, viewRosterId, setViewRosterId } = useMyRoster(bundle);
+  const roster = rosters.find((r) => r.roster_id === viewRosterId) ?? rosters[0];
 
   const projMap = projectedPoints;
   const hasProjections = Object.keys(projMap).length > 0;
@@ -92,7 +88,8 @@ export default function StartSitView({
 
   return (
     <div className="mx-auto max-w-5xl">
-      <DataSourceBanner source={bundle.source} valuesDegraded={bundle.valuesDegraded} />
+      <DataSourceBanner source={bundle.source} valueSources={bundle.valueSources} />
+      <RosterNotice ready={ready} user={user} myRosterId={myRosterId} leagueLabel={leagueConfig.label} />
 
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
@@ -102,19 +99,13 @@ export default function StartSitView({
             {league.scoring_settings.bonus_rec_te ? " (TEP included)" : ""}
           </p>
         </div>
-        <select
-          aria-label="View team"
+        <TeamPicker
+          rosters={rosters}
+          users={users}
           value={roster.roster_id}
-          onChange={(e) => setSelectedId(parseInt(e.target.value, 10))}
-          className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-200"
-        >
-          {rosters.map((r) => (
-            <option key={r.roster_id} value={r.roster_id}>
-              {teamName(users, r)}
-              {r.roster_id === myRosterId ? " (me)" : ""}
-            </option>
-          ))}
-        </select>
+          onChange={setViewRosterId}
+          myRosterId={myRosterId}
+        />
       </div>
 
       {!hasProjections && (

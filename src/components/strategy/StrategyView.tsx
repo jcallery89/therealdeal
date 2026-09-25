@@ -2,10 +2,11 @@
 
 import { useMemo } from "react";
 import DataSourceBanner from "@/components/DataSourceBanner";
+import RosterNotice from "@/components/RosterNotice";
 import { PlayerCell, ValueChip } from "@/components/players/PlayerRow";
 import { TeamAnalytics } from "@/lib/analysis/contender";
 import { LeagueBundle, teamName } from "@/lib/leagueBundle";
-import { useSleeperUser } from "@/lib/hooks/useSleeperUser";
+import { useMyRoster } from "@/lib/hooks/useMyRoster";
 import { playerValue } from "@/lib/values/engine";
 import { pickLabel } from "@/lib/values/picks";
 
@@ -17,12 +18,9 @@ const BUCKET_STYLES: Record<TeamAnalytics["bucket"], string> = {
 };
 
 export default function StrategyView({ bundle }: { bundle: LeagueBundle }) {
-  const { user } = useSleeperUser();
   const { leagueConfig, rosters, users, players, valueContext, picks, teamAnalytics, state } = bundle;
 
-  const myRosterId =
-    user?.rosterIdByLeague?.[leagueConfig.id] ??
-    rosters.find((r) => r.owner_id === user?.userId)?.roster_id;
+  const { user, ready, myRosterId } = useMyRoster(bundle);
 
   const nameById = useMemo(
     () => new Map(rosters.map((r) => [r.roster_id, teamName(users, r)])),
@@ -32,11 +30,6 @@ export default function StrategyView({ bundle }: { bundle: LeagueBundle }) {
   const ranked = useMemo(
     () => [...teamAnalytics].sort((a, b) => b.totalValue - a.totalValue),
     [teamAnalytics]
-  );
-
-  const rosteredIds = useMemo(
-    () => new Set(rosters.flatMap((r) => r.players ?? [])),
-    [rosters]
   );
 
   const rookies = useMemo(
@@ -70,7 +63,8 @@ export default function StrategyView({ bundle }: { bundle: LeagueBundle }) {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <DataSourceBanner source={bundle.source} valuesDegraded={bundle.valuesDegraded} />
+      <DataSourceBanner source={bundle.source} valueSources={bundle.valueSources} />
+      <RosterNotice ready={ready} user={user} myRosterId={myRosterId} leagueLabel={leagueConfig.label} />
       <h1 className="text-2xl font-bold text-slate-100">
         {leagueConfig.isDynasty ? "Dynasty Strategy" : "League Strategy"}
       </h1>
@@ -112,15 +106,15 @@ export default function StrategyView({ bundle }: { bundle: LeagueBundle }) {
                     {t.ties ? `-${t.ties}` : ""}
                   </td>
                   <td className="px-4 py-2 text-right font-mono text-slate-300">
-                    {t.playerValue.toLocaleString()}
+                    {t.playerValue.toLocaleString("en-US")}
                   </td>
                   {leagueConfig.isDynasty && (
                     <td className="px-4 py-2 text-right font-mono text-slate-400">
-                      {t.pickValue.toLocaleString()}
+                      {t.pickValue.toLocaleString("en-US")}
                     </td>
                   )}
                   <td className="px-4 py-2 text-right font-mono font-semibold text-slate-200">
-                    {t.totalValue.toLocaleString()}
+                    {t.totalValue.toLocaleString("en-US")}
                   </td>
                   <td className="px-4 py-2 text-right text-slate-400">
                     {t.weightedAge !== null ? t.weightedAge.toFixed(1) : "—"}
@@ -131,7 +125,7 @@ export default function StrategyView({ bundle }: { bundle: LeagueBundle }) {
                     }`}
                   >
                     {t.trend30 > 0 ? "▲" : t.trend30 < 0 ? "▼" : ""}
-                    {Math.abs(t.trend30).toLocaleString()}
+                    {Math.abs(t.trend30).toLocaleString("en-US")}
                   </td>
                   <td className="px-4 py-2 text-right">
                     <span className={`rounded px-1.5 py-0.5 text-[11px] font-medium ${BUCKET_STYLES[t.bucket]}`}>
@@ -290,7 +284,6 @@ export default function StrategyView({ bundle }: { bundle: LeagueBundle }) {
             <p className="py-3 text-sm text-slate-600">No valued rookies found.</p>
           )}
         </div>
-        {!rosteredIds.size && null}
       </div>
     </div>
   );

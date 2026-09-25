@@ -1,47 +1,50 @@
 import { DataSourceKind } from "@/lib/datasource";
 
+const SOURCE_NAMES = { fc: "FantasyCalc", ktc: "KeepTradeCut" } as const;
+
 export default function DataSourceBanner({
   source,
-  valuesDegraded,
+  valueSources,
 }: {
   source: DataSourceKind;
-  valuesDegraded?: { fc: boolean; ktc: boolean };
+  valueSources?: { fc: DataSourceKind; ktc: DataSourceKind };
 }) {
-  if (source !== "live") {
-    const demo = source === "fixture";
+  if (source === "fixture") {
     return (
       <div
         data-testid="source-banner"
-        className={`mb-4 rounded-md border px-3 py-2 text-xs ${
-          demo
-            ? "border-amber-500/40 bg-amber-500/10 text-amber-300"
-            : "border-sky-500/40 bg-sky-500/10 text-sky-300"
-        }`}
+        className="mb-4 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-300"
       >
-        {demo
-          ? "Demo data — live sources are unreachable (or SLEEPER_FIXTURES=1 is set), so you're viewing the built-in sample league."
-          : "Showing cached data — a live source didn't respond, so values may be slightly stale."}
+        Demo data — SLEEPER_FIXTURES=1 is set, so you&apos;re viewing the built-in sample league.
       </div>
     );
   }
-
-  // Rosters are live; only note degraded value sources, softly.
-  if (valuesDegraded && (valuesDegraded.fc || valuesDegraded.ktc)) {
-    const note =
-      valuesDegraded.fc && valuesDegraded.ktc
-        ? "Market values (FantasyCalc & KeepTradeCut) didn't refresh — showing cached values where available."
-        : valuesDegraded.ktc
-          ? "KeepTradeCut didn't respond — values lean on FantasyCalc for now."
-          : "FantasyCalc didn't respond — values lean on KeepTradeCut for now.";
+  if (source !== "live") {
     return (
       <div
-        data-testid="values-note"
-        className="mb-4 rounded-md border border-slate-700 bg-slate-800/40 px-3 py-2 text-xs text-slate-400"
+        data-testid="source-banner"
+        className="mb-4 rounded-md border border-sky-500/40 bg-sky-500/10 px-3 py-2 text-xs text-sky-300"
       >
-        {note} Rosters are live from Sleeper.
+        Showing cached league data — Sleeper didn&apos;t respond just now. Try Sync in a minute.
       </div>
     );
   }
 
-  return null;
+  // Rosters are live; softly note value sources that aren't.
+  const issues = (["fc", "ktc"] as const)
+    .filter((k) => valueSources && valueSources[k] !== "live" && valueSources[k] !== "fixture")
+    .map((k) =>
+      valueSources![k] === "unavailable"
+        ? `${SOURCE_NAMES[k]} didn't respond`
+        : `${SOURCE_NAMES[k]} values are cached`
+    );
+  if (issues.length === 0) return null;
+  return (
+    <div
+      data-testid="values-note"
+      className="mb-4 rounded-md border border-slate-700 bg-slate-800/40 px-3 py-2 text-xs text-slate-400"
+    >
+      {issues.join("; ")} — values lean on what&apos;s available. Rosters are live from Sleeper.
+    </div>
+  );
 }

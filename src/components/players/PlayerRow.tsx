@@ -34,7 +34,7 @@ export function ValueChip({ value, max }: { value: number; max: number }) {
           : "text-slate-500";
   return (
     <span className={`font-mono text-sm tabular-nums ${tone}`}>
-      {value > 0 ? value.toLocaleString() : "—"}
+      {value > 0 ? value.toLocaleString("en-US") : "—"}
     </span>
   );
 }
@@ -51,12 +51,12 @@ export function PlayerBadges({
   return (
     <span className="inline-flex items-center gap-1.5 text-[11px]">
       {player.trending?.add !== undefined && (
-        <span title={`${player.trending.add.toLocaleString()} adds in 24h`} className="text-orange-400">
+        <span title={`${player.trending.add.toLocaleString("en-US")} adds in 24h`} className="text-orange-400">
           🔥{player.trending.add >= 1000 ? `${Math.round(player.trending.add / 1000)}k` : player.trending.add}
         </span>
       )}
       {player.trending?.drop !== undefined && player.trending?.add === undefined && (
-        <span title={`${player.trending.drop.toLocaleString()} drops in 24h`} className="text-slate-500">
+        <span title={`${player.trending.drop.toLocaleString("en-US")} drops in 24h`} className="text-slate-500">
           📉
         </span>
       )}

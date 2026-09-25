@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import DataSourceBanner from "@/components/DataSourceBanner";
+import RosterNotice from "@/components/RosterNotice";
+import TeamPicker from "@/components/TeamPicker";
 import { PositionBadge } from "@/components/players/PlayerRow";
 import { starterSlots } from "@/lib/analysis/rosterStrength";
 import { findTrades } from "@/lib/analysis/tradeFinder";
 import { TradeAsset } from "@/lib/analysis/trade";
 import { LeagueBundle, teamName } from "@/lib/leagueBundle";
-import { useSleeperUser } from "@/lib/hooks/useSleeperUser";
+import { useMyRoster } from "@/lib/hooks/useMyRoster";
 import { CanonicalPlayer } from "@/lib/players/canonical";
 import { draftPickValue, playerValue } from "@/lib/values/engine";
 
@@ -25,19 +27,17 @@ function AssetLine({ asset }: { asset: TradeAsset }) {
         )}
         <span className="truncate">{asset.label}</span>
       </span>
-      <span className="font-mono text-xs text-slate-400">{asset.value.toLocaleString()}</span>
+      <span className="font-mono text-xs text-slate-400">{asset.value.toLocaleString("en-US")}</span>
     </div>
   );
 }
 
 export default function TradeFinder({ bundle }: { bundle: LeagueBundle }) {
-  const { user } = useSleeperUser();
   const { leagueConfig, league, rosters, users, players, valueContext, picks, pickValues, teamAnalytics } = bundle;
 
-  const myRosterId =
-    user?.rosterIdByLeague?.[leagueConfig.id] ??
-    rosters.find((r) => r.owner_id === user?.userId)?.roster_id ??
-    rosters[0]?.roster_id;
+  const { user, ready, myRosterId: mineId, viewRosterId, setViewRosterId } = useMyRoster(bundle);
+  /** The team trades are proposed for (yours by default). */
+  const myRosterId = viewRosterId ?? rosters[0]?.roster_id;
 
   const teamNameById = useMemo(
     () => new Map(rosters.map((r) => [r.roster_id, teamName(users, r)])),
@@ -80,13 +80,26 @@ export default function TradeFinder({ bundle }: { bundle: LeagueBundle }) {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <DataSourceBanner source={bundle.source} valuesDegraded={bundle.valuesDegraded} />
+      <DataSourceBanner source={bundle.source} valueSources={bundle.valueSources} />
+      <RosterNotice ready={ready} user={user} myRosterId={mineId} leagueLabel={leagueConfig.label} />
 
-      <h1 className="text-2xl font-bold text-slate-100">Trade Finder</h1>
-      <p className="mt-1 text-sm text-slate-500">
-        {leagueConfig.label} · scans all {rosters.length - 1} opponents for deals that help both
-        sides — fair value, complementary needs, matching timelines
-      </p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-100">Trade Finder</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            {leagueConfig.label} · scans all {rosters.length - 1} opponents for deals that help both
+            sides — fair value, complementary needs, matching timelines
+          </p>
+        </div>
+        <TeamPicker
+          rosters={rosters}
+          users={users}
+          value={myRosterId}
+          onChange={setViewRosterId}
+          myRosterId={mineId}
+          label="Find trades for"
+        />
+      </div>
 
       <div data-testid="trade-suggestions" className="mt-5 flex flex-col gap-4">
         {suggestions.map((s, i) => (

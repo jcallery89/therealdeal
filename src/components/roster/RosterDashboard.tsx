@@ -1,7 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import DataSourceBanner from "@/components/DataSourceBanner";
+import RosterNotice from "@/components/RosterNotice";
+import TeamPicker from "@/components/TeamPicker";
 import { PlayerCell, ValueChip } from "@/components/players/PlayerRow";
 import {
   CORE_POSITIONS,
@@ -12,36 +14,23 @@ import {
 } from "@/lib/analysis/rosterStrength";
 import { LeagueBundle, teamName } from "@/lib/leagueBundle";
 import { BYE_WEEKS } from "@/lib/config";
-import { useSleeperUser } from "@/lib/hooks/useSleeperUser";
-import { CanonicalPlayer } from "@/lib/players/canonical";
-import { keeperContextValue, playerValue } from "@/lib/values/engine";
+import { useMyRoster, useValueOf } from "@/lib/hooks/useMyRoster";
+import { keeperContextValue } from "@/lib/values/engine";
 
 export default function RosterDashboard({ bundle }: { bundle: LeagueBundle }) {
-  const { user } = useSleeperUser();
   const {
     leagueConfig,
     league,
     rosters,
     users,
     players,
-    valueContext,
     state,
     teamAnalytics,
   } = bundle;
 
-  const myRosterId =
-    user?.rosterIdByLeague?.[leagueConfig.id] ??
-    rosters.find((r) => r.owner_id === user?.userId)?.roster_id ??
-    rosters[0]?.roster_id;
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-  const rosterId = selectedId ?? myRosterId;
-  const roster = rosters.find((r) => r.roster_id === rosterId) ?? rosters[0];
-
-  const valueOf = useMemo(
-    () => (p: CanonicalPlayer) =>
-      playerValue(p, leagueConfig, bundle.defaultSource, valueContext),
-    [leagueConfig, bundle.defaultSource, valueContext]
-  );
+  const { user, ready, myRosterId, viewRosterId, setViewRosterId } = useMyRoster(bundle);
+  const roster = rosters.find((r) => r.roster_id === viewRosterId) ?? rosters[0];
+  const valueOf = useValueOf(bundle);
 
   const slots = useMemo(() => starterSlots(league.roster_positions), [league.roster_positions]);
 
@@ -100,6 +89,11 @@ export default function RosterDashboard({ bundle }: { bundle: LeagueBundle }) {
   }
   const byeCluster = [...byeCounts.entries()].find(([, count]) => count >= 3);
 
+  const topValue = Math.max(
+    1,
+    ...rosters.flatMap((r) => (r.players ?? []).map((id) => (players[id] ? valueOf(players[id]) : 0)))
+  );
+
   const sortByValue = (ids: string[]) =>
     [...ids].sort((a, b) => (players[b] ? valueOf(players[b]) : 0) - (players[a] ? valueOf(players[a]) : 0));
 
@@ -128,13 +122,13 @@ export default function RosterDashboard({ bundle }: { bundle: LeagueBundle }) {
                       className="font-mono text-[11px] text-slate-600"
                       title="KeepTradeCut dynasty 1QB value (keeper context)"
                     >
-                      ktc {keeperContextValue(p)!.toLocaleString()}
+                      ktc {keeperContextValue(p)!.toLocaleString("en-US")}
                     </span>
                   )}
                   {p && (
                     <ValueChip
                       value={valueOf(p)}
-                      max={leagueConfig.isDynasty ? 10500 : valueContext.fcRedMax}
+                      max={topValue}
                     />
                   )}
                 </div>
@@ -147,7 +141,8 @@ export default function RosterDashboard({ bundle }: { bundle: LeagueBundle }) {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <DataSourceBanner source={bundle.source} valuesDegraded={bundle.valuesDegraded} />
+      <DataSourceBanner source={bundle.source} valueSources={bundle.valueSources} />
+      <RosterNotice ready={ready} user={user} myRosterId={myRosterId} leagueLabel={leagueConfig.label} />
 
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
@@ -158,7 +153,7 @@ export default function RosterDashboard({ bundle }: { bundle: LeagueBundle }) {
               {roster.settings.ties ? `-${roster.settings.ties}` : ""}
             </span>
             <span className="text-slate-600">·</span>
-            <span>{Math.round(roster.settings.fpts ?? 0).toLocaleString()} pts</span>
+            <span>{Math.round(roster.settings.fpts ?? 0).toLocaleString("en-US")} pts</span>
             <span className="text-slate-600">·</span>
             <span>Week {state.week}</span>
             {analytics && (
@@ -176,19 +171,13 @@ export default function RosterDashboard({ bundle }: { bundle: LeagueBundle }) {
             ))}
           </div>
         </div>
-        <select
-          aria-label="View team"
+        <TeamPicker
+          rosters={rosters}
+          users={users}
           value={roster.roster_id}
-          onChange={(e) => setSelectedId(parseInt(e.target.value, 10))}
-          className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-200"
-        >
-          {rosters.map((r) => (
-            <option key={r.roster_id} value={r.roster_id}>
-              {teamName(users, r)}
-              {r.roster_id === myRosterId ? " (me)" : ""}
-            </option>
-          ))}
-        </select>
+          onChange={setViewRosterId}
+          myRosterId={myRosterId}
+        />
       </div>
 
       {byeCluster && (
@@ -245,7 +234,7 @@ export default function RosterDashboard({ bundle }: { bundle: LeagueBundle }) {
             <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
               <div className="rounded-lg bg-slate-800/60 p-2.5">
                 <div className="text-[10px] uppercase tracking-wide text-slate-500">Roster value</div>
-                <div className="font-mono text-slate-200">{analytics.playerValue.toLocaleString()}</div>
+                <div className="font-mono text-slate-200">{analytics.playerValue.toLocaleString("en-US")}</div>
               </div>
               <div className="rounded-lg bg-slate-800/60 p-2.5">
                 <div className="text-[10px] uppercase tracking-wide text-slate-500">
@@ -253,8 +242,8 @@ export default function RosterDashboard({ bundle }: { bundle: LeagueBundle }) {
                 </div>
                 <div className="font-mono text-slate-200">
                   {leagueConfig.isDynasty
-                    ? analytics.pickValue.toLocaleString()
-                    : `${analytics.trend30 >= 0 ? "+" : ""}${analytics.trend30.toLocaleString()}`}
+                    ? analytics.pickValue.toLocaleString("en-US")
+                    : `${analytics.trend30 >= 0 ? "+" : ""}${analytics.trend30.toLocaleString("en-US")}`}
                 </div>
               </div>
             </div>
