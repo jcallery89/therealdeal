@@ -40,9 +40,22 @@ KeepTradeCut. No API keys are needed — every data source is free and read-only
   out for BPA-vs-need decisions.
 - **Start/Sit & matchups** — weekly lineup optimizer scored with your league's
   actual scoring settings (TE premium included), start/sit recommendations vs
-  your current lineup, this week's matchup preview with projected totals, and
-  a waiver watch of trending unrostered players. Projections come from
+  your current lineup (ruled-out players are never started and are flagged if
+  they're in your lineup), this week's matchup preview with projected totals,
+  and a waiver watch of trending unrostered players. Projections come from
   Sleeper's best-effort feed and degrade gracefully out of season.
+- **Players & stats explorer** — every fantasy-relevant player (free agents
+  included) with season points and PPG scored under your league's settings,
+  this week's projection, market value and positional rank, trend, age, and
+  owner. Sortable columns, position/availability filters, and search.
+- **Weekly Review** — turns a week's results into a ready-to-paste ChatGPT
+  image prompt for a savage-roast recap poster: every matchup with exact
+  scores and captions, plus awards (blowout, nail-biter, top dog, basement,
+  bench blunder, coaching malpractice, MVP, dud). Attach your team mascot
+  images in the listed order and paste the prompt.
+
+Every page has a **Sync** button (sidebar on desktop, top bar on mobile) that
+pulls the latest rosters and transactions from Sleeper on demand.
 
 ## Running it
 
@@ -57,21 +70,33 @@ your teams in both leagues (stored in localStorage only).
 Deploy: push to GitHub and import into [Vercel](https://vercel.com) — no
 environment variables required.
 
+### New season: league renewals
+
+Sleeper gives each league a **new league ID every season** when it renews.
+When that happens, set these in Vercel (Project → Settings → Environment
+Variables) and redeploy — no code change needed:
+
+| Variable | League |
+|---|---|
+| `NEXT_PUBLIC_LEAGUE_ID_KEEPER` | The Real Deal |
+| `NEXT_PUBLIC_LEAGUE_ID_DYNASTY` | Dynasty League |
+
 ### Demo / offline mode
 
 ```bash
 SLEEPER_FIXTURES=1 npm run dev
 ```
 
-Serves a committed 120-player sample world instead of live APIs (an amber banner
-marks demo data). Useful for development without network access and for the
+Serves a committed 132-player sample world (including free agents) instead of
+live APIs (an amber banner marks demo data). Useful for development without network access and for the
 Playwright suite. Regenerate the sample data with `npm run fixtures`. Without
 the env var the app is always live — `.env` files are gitignored, so a fresh
 clone starts in live mode.
 
-If a live source fails at runtime (e.g. the KeepTradeCut page changes), the app
-degrades to cached data, then fixtures — with a visible banner, never a blank
-page.
+If a live source fails at runtime, the app never substitutes demo data for your
+real league: Sleeper failures fall back to the last cached copy (with a banner)
+or an error page with a retry button; FantasyCalc/KeepTradeCut failures just
+note that the source is unavailable and values lean on whichever one responded.
 
 ## Data sources
 
@@ -86,15 +111,17 @@ see `src/lib/config.ts`.
 
 ## Seasonal maintenance
 
-- **Bye weeks**: update `BYE_WEEKS` in `src/lib/config.ts` when the NFL schedule
-  drops each spring.
+- **Bye weeks**: update `BYE_WEEKS` (currently the 2026 schedule) in
+  `src/lib/config.ts` when the NFL schedule drops each May.
+- **League IDs**: set the two `NEXT_PUBLIC_LEAGUE_ID_*` variables after your
+  leagues renew (see above).
 - **KTC name aliases**: if `/api/values` reports `ktcUnmatched` players, add
   aliases to `src/lib/players/normalize.ts`.
 
 ## Development
 
 ```bash
-npm test           # vitest unit tests (name matching, trade math, picks, KTC parser)
+npm test           # vitest unit tests (values, picks, trades, lineups, stats, weekly review…)
 npm run e2e        # Playwright smoke suite (runs the app in fixture mode)
 npm run build      # production build + typecheck
 ```

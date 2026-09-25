@@ -37,6 +37,8 @@ test("trade analyzer evaluates a player-plus-pick swap", async ({ page }) => {
   // The full asset browser lists every rostered player (12 in the fixture,
   // taxi/IR included) plus the complete pick inventory — no truncation.
   const listA = page.getByTestId("asset-list-A");
+  // Pages stream behind a loading skeleton; wait for real content first.
+  await expect(listA.getByRole("listitem").first()).toBeVisible();
   const optionCount = await listA.getByRole("listitem").count();
   expect(optionCount).toBeGreaterThanOrEqual(24);
   await expect(listA.getByText("Draft picks")).toBeVisible();
@@ -129,6 +131,7 @@ test("rookie draft board shows the class and my pick slots", async ({ page }) =>
 test("trade finder suggests deals and hands off to the analyzer", async ({ page }) => {
   await page.goto(`/league/${DYNASTY}/tradefinder`);
   const cards = page.getByTestId("trade-suggestions").locator("> div");
+  await expect(cards.first()).toBeVisible();
   expect(await cards.count()).toBeGreaterThanOrEqual(1);
   await page.screenshot({ path: `${SHOTS}/10-tradefinder.png`, fullPage: true });
 
@@ -162,6 +165,7 @@ test("start/sit page shows matchup, lineup advice, and waivers", async ({ page }
 test("players explorer sorts and filters", async ({ page }) => {
   await page.goto(`/league/${DYNASTY}/players`);
   const rows = page.getByTestId("players-table").locator("tbody tr");
+  await expect(rows.first()).toBeVisible();
   expect(await rows.count()).toBeGreaterThan(100);
   const topByValue = await rows.first().locator("td").first().innerText();
 
