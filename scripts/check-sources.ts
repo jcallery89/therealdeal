@@ -6,23 +6,15 @@
  *   npx tsx scripts/check-sources.ts
  */
 const TARGETS: Record<string, string[]> = {
-  dynastydealer: [
-    "https://www.dynastydealer.com/api/player-values",
-    "https://www.dynastydealer.com/api/player-values?isSuperflex=true",
-    "https://www.dynastydealer.com/api/player-values?isSuperflex=true&isTePremium=true",
-    "https://www.dynastydealer.com/api/player-values?superflex=1",
-    "https://www.dynastydealer.com/api/player-values?sf=true",
-    "https://www.dynastydealer.com/api/player-values?scoring=superflex",
-    "https://www.dynastydealer.com/api/player-values?league_type=superflex",
-    "https://www.dynastydealer.com/api/player-values?type=sf",
-    "https://www.dynastydealer.com/api",
-    "https://www.dynastydealer.com/api/pick-values",
-    "https://www.dynastydealer.com/api/player-values/superflex",
-  ],
+  dynastydealer: ["https://www.dynastydealer.com/api/player-values"],
   dynastytradevalues: [
-    "https://dynastytradevalues.com/wp-json/dtc/v1/public/player-values?limit=5",
-    "https://www.dynastytradevalues.com/wp-json/dtc/v1/public/player-values?limit=5",
-    "https://dynastytradevalues.com/",
+    "https://dynastytradevalues.com/wp-json/dtc/v1/public/player-values?limit=2000",
+    "https://dynastytradevalues.com/wp-json/dtc/v1/public/player-values?limit=40&format=sf",
+    "https://dynastytradevalues.com/wp-json/dtc/v1/public/player-values?limit=40&format=superflex",
+    "https://dynastytradevalues.com/wp-json/dtc/v1/public/player-values?limit=40&format=2qb",
+    "https://dynastytradevalues.com/wp-json/dtc/v1/public/player-values?limit=40&superflex=1",
+    "https://dynastytradevalues.com/wp-json/dtc/v1/public/pick-values?limit=100",
+    "https://dynastytradevalues.com/wp-json/dtc/v1/public/pick-values?limit=100&format=sf",
   ],
 };
 
@@ -64,6 +56,9 @@ async function main() {
             for (const r of all) positions[r.position ?? "?"] = (positions[r.position ?? "?"] ?? 0) + 1;
             const qb = all.filter((r) => r.position === "QB").slice(0, 3).map((r) => `${r.name} ${r.current_value}`);
             console.log("positions:", JSON.stringify(positions), "top QBs:", qb.join(", "));
+            const top = all.filter((r) => r.position !== "PICK").slice(0, 40);
+            console.log("QBs in top 12/24/40:", [12, 24, 40].map((n) => top.slice(0, n).filter((r) => r.position === "QB").length).join("/"), "count:", all.length);
+            console.log("top 16:", top.slice(0, 16).map((r) => `${r.name} ${r.position} ${r.current_value ?? (r as { value?: number }).value}`).join(" | "));
             console.log("picks:", JSON.stringify(all.filter((r) => !["QB", "RB", "WR", "TE"].includes(r.position ?? "")).slice(0, 6)).slice(0, 700));
           }
         } catch {
