@@ -35,9 +35,7 @@ export default function MobileNav() {
         <Link href="/" className="text-base font-bold text-slate-100">
           🏈 League HQ
         </Link>
-        <div className="-mr-3">
-          <SyncButton />
-        </div>
+        <SyncButton compact />
       </header>
 
       {open && (

@@ -8,7 +8,7 @@ import { useState, useTransition } from "react";
  * instance's cache, then re-renders the current page with a cache-bypassing
  * ?sync= param so the render is guaranteed fresh even on serverless hosting.
  */
-export default function SyncButton() {
+export default function SyncButton({ compact = false }: { compact?: boolean }) {
   const router = useRouter();
   const pathname = usePathname();
   const [busy, setBusy] = useState(false);
@@ -38,7 +38,7 @@ export default function SyncButton() {
 
   const spinning = busy || isPending;
   return (
-    <div className="flex items-center gap-2 px-3">
+    <div className={`flex items-center gap-2 ${compact ? "" : "px-3"}`}>
       <button
         onClick={sync}
         disabled={spinning}
@@ -49,7 +49,8 @@ export default function SyncButton() {
         <span className={spinning ? "inline-block animate-spin" : ""}>⟳</span>
         {spinning ? "Syncing…" : "Sync"}
       </button>
-      {syncedAt && !spinning && (
+      {/* The timestamp crowds the phone top bar, so compact mode drops it. */}
+      {syncedAt && !spinning && !compact && (
         <span className="text-[10px] text-slate-600">at {syncedAt}</span>
       )}
     </div>

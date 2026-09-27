@@ -187,7 +187,8 @@ export async function buildCanonicalTable(): Promise<CanonicalTable> {
       },
     },
   };
-  const degraded = table.meta.sources.fc !== "live" || table.meta.sources.ktc !== "live";
+  const failed = (s: DataSourceKind) => s === "stale" || s === "unavailable";
+  const degraded = failed(table.meta.sources.fc) || failed(table.meta.sources.ktc);
   cache.set("canonical", table, degraded && table.meta.source !== "fixture" ? DEGRADED_TTL_MS : TTL.canonical);
   return table;
 }

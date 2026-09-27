@@ -2,8 +2,14 @@ import { promises as fs } from "fs";
 import path from "path";
 import { cache } from "./cache";
 
-/** "unavailable": an optional source failed live with nothing cached. */
-export type DataSourceKind = "live" | "cache" | "fixture" | "unavailable";
+/**
+ * - "live": fetched just now.
+ * - "cache": healthy — served from a recent fetch still within its TTL.
+ * - "stale": the live fetch FAILED, so an older cached copy is being served.
+ * - "fixture": demo mode (SLEEPER_FIXTURES=1).
+ * - "unavailable": an optional source failed live with nothing cached.
+ */
+export type DataSourceKind = "live" | "cache" | "stale" | "fixture" | "unavailable";
 
 export interface Sourced<T> {
   data: T;
@@ -73,7 +79,7 @@ export async function fetchWithFixture<T>(opts: FetchOptions<T>): Promise<Source
     return { data, source: "live", fetchedAt: Date.now() };
   } catch (err) {
     if (cached) {
-      return { data: cached.data, source: "cache", fetchedAt: cached.fetchedAt };
+      return { data: cached.data, source: "stale", fetchedAt: cached.fetchedAt };
     }
     throw new SourceUnavailableError(opts.key, err);
   }
@@ -86,10 +92,11 @@ export class SourceUnavailableError extends Error {
   }
 }
 
-/** Merge source metadata: live < cache < fixture < unavailable (most degraded wins). */
+/** Merge source metadata: live < cache < stale < fixture < unavailable (most degraded wins). */
 export function worstSource(...sources: DataSourceKind[]): DataSourceKind {
   if (sources.includes("unavailable")) return "unavailable";
   if (sources.includes("fixture")) return "fixture";
+  if (sources.includes("stale")) return "stale";
   if (sources.includes("cache")) return "cache";
   return "live";
 }
