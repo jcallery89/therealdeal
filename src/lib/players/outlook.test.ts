@@ -19,6 +19,16 @@ describe("computeOutlook", () => {
     expect(o).toMatchObject({ status: "season", label: "Out for season", missShare: 1, longTermFactor: 0.85 });
   });
 
+  it("dates the injury from the first injury story, not the season-ending one", () => {
+    const o = computeOutlook(
+      { injuryStatus: "IR" },
+      [news("Winston takes over for the rest of the season", "", 1), news("Dart scheduled for left knee surgery", "", 2)],
+      opts
+    );
+    expect(o?.since).toBe(NOW - 2 * 86400000);
+    expect(computeOutlook({ injuryStatus: "IR" }, [], opts)?.since).toBeNull();
+  });
+
   it("nets the long-term discount against FantasyCalc's own drop", () => {
     const o = computeOutlook({ injuryStatus: "IR" }, [news("Out for the season")], { ...opts, marketDrop: 0.1 });
     expect(o?.fcLongTermFactor).toBeCloseTo(0.95);

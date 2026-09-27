@@ -7,6 +7,7 @@ import {
   draftPickValue,
   playerValue,
   sourceAvailable,
+  staleFor,
   ValueContext,
 } from "./engine";
 
@@ -66,12 +67,34 @@ describe("injury outlook", () => {
   const hurt = {
     ...mid,
     injuryStatus: "IR",
-    outlook: { status: "season" as const, label: "Out for season", reason: null, missShare: 1, longTermFactor: 0.8, fcLongTermFactor: 0.9 },
+    outlook: { status: "season" as const, label: "Out for season", reason: null, missShare: 1, longTermFactor: 0.8, fcLongTermFactor: 0.9, since: null },
   };
   it("zeroes this-season value and discounts long-term value per source", () => {
     expect(playerValue(hurt, keeper, { horizon: "season", source: "consensus" }, ctx)).toBe(0);
     expect(playerValue(hurt, dynasty, { horizon: "dynasty", source: "fc" }, ctx)).toBe(4500); // 5000 x 0.9
     expect(playerValue(hurt, dynasty, { horizon: "dynasty", source: "dp" }, ctx)).toBe(2000); // 2500 x 0.8
+  });
+
+  it("leaves sources that predate the injury news out of his consensus", () => {
+    const newsAt = Date.parse("2026-09-25T18:00:00Z");
+    const hurtSince = { ...hurt, outlook: { ...hurt.outlook, since: newsAt } };
+    const dated = computeValueContext(players, { mid: 4, star: 8 }, {
+      fc: Date.parse("2026-09-27T12:00:00Z"),
+      dp: Date.parse("2026-09-23T12:00:00Z"), // before the news
+    });
+    expect(staleFor(hurtSince, "dp", dated)).toBe(true);
+    expect(staleFor(hurtSince, "fc", dated)).toBe(false);
+    // Consensus = FC only (4500); DP's pre-injury 2000 sits out.
+    expect(playerValue(hurtSince, dynasty, { horizon: "dynasty", source: "consensus" }, dated)).toBe(4500);
+    // Healthy players and undated sources are unaffected.
+    expect(staleFor(mid, "dp", dated)).toBe(false);
+    expect(staleFor(hurtSince, "dd", dated)).toBe(false);
+  });
+
+  it("falls back to every source when none has caught up", () => {
+    const hurtSince = { ...hurt, outlook: { ...hurt.outlook, since: Date.parse("2026-09-30T00:00:00Z") } };
+    const dated = computeValueContext(players, {}, { fc: Date.parse("2026-09-27T00:00:00Z"), dp: Date.parse("2026-09-27T00:00:00Z") });
+    expect(playerValue(hurtSince, dynasty, { horizon: "dynasty", source: "consensus" }, dated)).toBe(3250); // (4500+2000)/2
   });
 });
 

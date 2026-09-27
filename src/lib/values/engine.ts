@@ -59,6 +59,8 @@ export interface ValueContext {
   maxes: Record<string, number>;
   /** player_id -> this-season PPG over replacement (league-scored). */
   production: Record<string, number>;
+  /** When each source's numbers were produced (ms), where known. */
+  sourceDates?: Partial<Record<SingleSource, number>>;
 }
 
 const SCALE = 10000;
@@ -87,9 +89,10 @@ function rawValue(p: CanonicalPlayer, horizon: ValueHorizon, source: SingleSourc
 
 export function computeValueContext(
   players: Record<string, CanonicalPlayer>,
-  production: Record<string, number> = {}
+  production: Record<string, number> = {},
+  sourceDates: Partial<Record<SingleSource, number>> = {}
 ): ValueContext {
-  const ctx: ValueContext = { maxes: {}, production };
+  const ctx: ValueContext = { maxes: {}, production, sourceDates };
   for (const h of Object.keys(HORIZON_SOURCES) as ValueHorizon[]) {
     for (const s of HORIZON_SOURCES[h]) {
       let max = 1;
@@ -119,6 +122,16 @@ export function injuryFactor(p: CanonicalPlayer, horizon: ValueHorizon, source: 
   return source === "fc" ? o.fcLongTermFactor : o.longTermFactor;
 }
 
+/**
+ * A source hasn't caught up with this player's injury: its numbers were
+ * produced before the injury news broke.
+ */
+export function staleFor(p: CanonicalPlayer, source: SingleSource, ctx: ValueContext): boolean {
+  const since = p.outlook?.since;
+  const produced = ctx.sourceDates?.[source];
+  return since !== null && since !== undefined && produced !== undefined && produced < since;
+}
+
 /** One source's opinion on the shared 0-10,000 scale (share of its top player). */
 export function sourceValue(
   p: CanonicalPlayer,
@@ -136,8 +149,9 @@ function tepAdjust(value: number, position: string): number {
 
 /**
  * A player's value under a mode. Consensus averages every source that has an
- * opinion on the player (a source that doesn't list them, or is down, simply
- * doesn't vote). TE premium applies in both leagues.
+ * opinion on the player (a source that doesn't list them, is down, or hasn't
+ * caught up with his injury simply doesn't vote). TE premium applies in both
+ * leagues.
  */
 export function playerValue(
   p: CanonicalPlayer,
@@ -147,9 +161,12 @@ export function playerValue(
 ): number {
   let v: number;
   if (mode.source === "consensus") {
-    const votes = HORIZON_SOURCES[mode.horizon]
-      .map((s) => sourceValue(p, mode.horizon, s, ctx))
-      .filter((x) => x > 0);
+    const all = HORIZON_SOURCES[mode.horizon]
+      .map((s) => ({ v: sourceValue(p, mode.horizon, s, ctx), stale: staleFor(p, s, ctx) }))
+      .filter((x) => x.v > 0);
+    // Sources that predate his injury news sit out, unless none are current.
+    const fresh = all.filter((x) => !x.stale);
+    const votes = (fresh.length ? fresh : all).map((x) => x.v);
     v = votes.length ? votes.reduce((a, b) => a + b, 0) / votes.length : 0;
   } else {
     v = sourceValue(p, mode.horizon, mode.source, ctx);

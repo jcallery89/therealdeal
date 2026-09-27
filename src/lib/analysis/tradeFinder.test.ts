@@ -176,7 +176,7 @@ describe("season-ending injuries", () => {
   const out = (p: CanonicalPlayer): CanonicalPlayer => ({
     ...p,
     injuryStatus: "IR",
-    outlook: { status: "season", label: "Out for season", reason: null, missShare: 1, longTermFactor: 0.85, fcLongTermFactor: 0.85 },
+    outlook: { status: "season", label: "Out for season", reason: null, missShare: 1, longTermFactor: 0.85, fcLongTermFactor: 0.85, since: null },
   });
 
   it("an injured player doesn't fill a starting spot this season", () => {

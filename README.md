@@ -170,7 +170,10 @@ plus recent ESPN headlines ("rest of the season", "season-ending", torn ACL…):
 *this-season* values drop by the share of the season he'll miss (all of it
 when he's out for the year; ~4 weeks for IR), and *long-term* values take a
 15% lost-season discount (less for FantasyCalc when its market already fell).
-The Trade Finder won't count an injured player as filling a need, steers
+Sources whose numbers predate the injury news (e.g. a list last refreshed
+before the surgery was reported) are left out of that player's consensus until
+they update, and the analyzer's per-source verdicts flag them as "pre-injury
+data". The Trade Finder won't count an injured player as filling a need, steers
 contenders away from him, and flags him as an injury-discount buy for
 rebuilders; the Edge feed adds "buy the injury discount", "sell a lost season"
 and "move to IR" alerts.

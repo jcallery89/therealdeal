@@ -16,6 +16,7 @@ import {
   playerValue,
   SOURCE_LABELS,
   sourceValue,
+  staleFor,
   ValueHorizon,
 } from "../src/lib/values/engine";
 
@@ -25,7 +26,8 @@ async function main() {
   console.log("players matched per source:", JSON.stringify(table.meta.counts));
   console.log(`picks: dd ${table.ddPicks.length}, dtv ${table.dtvPicks.length}, dp ${table.dpPicks.length}`);
 
-  const ctx = computeValueContext(table.players);
+  const ctx = computeValueContext(table.players, {}, table.meta.sourceDates);
+  console.log("source dates:", JSON.stringify(Object.fromEntries(Object.entries(table.meta.sourceDates).map(([k, v]) => [k, new Date(v).toISOString()]))));
   const players = Object.values(table.players);
   for (const horizon of ["dynasty", "keeper"] as ValueHorizon[]) {
     const league = LEAGUES.find((l) => l.isDynasty === (horizon === "dynasty"))!;
@@ -60,7 +62,9 @@ async function inspectPlayer(name: string) {
     console.log("sleeper fields:", JSON.stringify(Object.fromEntries(keys.map((k) => [k, r[k]]))));
     console.log("values:", JSON.stringify(p.values));
     console.log("outlook:", JSON.stringify(p.outlook ?? null));
-    const ctx = computeValueContext(table.players);
+    const ctx = computeValueContext(table.players, {}, table.meta.sourceDates);
+    const stale = (["fc", "dp", "dd", "dtv"] as const).filter((s) => staleFor(p, s, ctx));
+    console.log("sources predating his injury news (ignored in consensus):", stale.join(", ") || "none");
     for (const league of LEAGUES) {
       for (const horizon of (league.isDynasty ? ["dynasty"] : ["season", "keeper"]) as ValueHorizon[]) {
         const mode = { horizon, source: "consensus" as const };

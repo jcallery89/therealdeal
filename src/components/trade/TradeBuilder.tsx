@@ -20,6 +20,7 @@ import {
   playerValue,
   SOURCE_LABELS,
   sourceAvailable,
+  staleFor,
   ValueMode,
 } from "@/lib/values/engine";
 import { pickLabel } from "@/lib/values/picks";
@@ -194,7 +195,11 @@ export default function TradeBuilder({
           { rosterId: teamB, assets: revalue(sendB) },
           names
         );
-        return { source: s, verdict: e.verdict, favors: e.favors, deltaPct: e.deltaPct };
+        // Players whose injury news this source hasn't caught up with.
+        const stale = [...sendA, ...sendB]
+          .filter((a) => a.kind === "player" && players[a.id] && staleFor(players[a.id], s, valueContext))
+          .map((a) => a.label);
+        return { source: s, verdict: e.verdict, favors: e.favors, deltaPct: e.deltaPct, stale };
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sendA, sendB, teamA, teamB, mode.horizon, valueContext, teamNameById]);
@@ -269,7 +274,17 @@ export default function TradeBuilder({
               <ul className="mt-1 grid gap-x-4 gap-y-0.5 text-xs sm:grid-cols-2">
                 {breakdown.map((b) => (
                   <li key={b.source} className="flex justify-between gap-2">
-                    <span className="text-slate-400">{SOURCE_LABELS[b.source]}</span>
+                    <span className="text-slate-400">
+                      {SOURCE_LABELS[b.source]}
+                      {b.stale.length > 0 && (
+                        <span
+                          className="ml-1 text-[10px] text-amber-400"
+                          title="This source's numbers predate the injury news, so it's left out of the consensus for these players"
+                        >
+                          pre-injury data: {b.stale.join(", ")}
+                        </span>
+                      )}
+                    </span>
                     <span className={b.favors ? "text-slate-200" : "text-emerald-300"}>
                       {b.verdict}
                       {b.favors ? ` (${Math.round(b.deltaPct)}%)` : ""}

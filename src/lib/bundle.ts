@@ -74,7 +74,7 @@ export async function getLeagueBundle(
       seasonProjections: projections.data,
     });
   }
-  const valueContext = computeValueContext(table.players, production);
+  const valueContext = computeValueContext(table.players, production, table.meta.sourceDates);
   const rostered = new Set(
     rostersRes.data.flatMap((r) => [
       ...(r.players ?? []),

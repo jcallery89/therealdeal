@@ -17,6 +17,11 @@ export interface Outlook {
   longTermFactor: number;
   /** Same for FantasyCalc, net of the drop its market already shows. */
   fcLongTermFactor: number;
+  /**
+   * When the injury news broke (ms), if known. Value sources published
+   * before this haven't seen it and sit out his consensus.
+   */
+  since: number | null;
 }
 
 export interface OutlookNews {
@@ -27,6 +32,8 @@ export interface OutlookNews {
 
 const SEASON_OUT =
   /(rest|remainder) of the (\d{4} )?(regular )?season|season[- ]ending|out for the (\d{4} )?season|miss(es|ing)? the (\d{4} )?season|torn (acl|achilles)|(acl|achilles) (tear|rupture)/i;
+const INJURY_NEWS =
+  /injur|surgery|ruled out|injured reserve|\bIR\b|torn|tear|sprain|strain|fracture|concussion|knee|ankle|hamstring|achilles|acl|mcl|meniscus|out for/i;
 const MULTI_WEEK_STATUSES = new Set(["IR", "PUP", "NFI", "Sus", "Suspended"]);
 const WEEK_STATUSES = new Set(["Out", "Doubtful"]);
 /** News older than this doesn't decide anything. */
@@ -53,6 +60,11 @@ export function computeOutlook(
     return age >= 0 && age <= NEWS_WINDOW_MS;
   });
   const seasonNews = recent.find((n) => SEASON_OUT.test(`${n.headline} ${n.description}`));
+  // The first injury-related story is when the market could have known.
+  const injuryDates = recent
+    .filter((n) => INJURY_NEWS.test(`${n.headline} ${n.description}`))
+    .map((n) => Date.parse(n.published));
+  const since = injuryDates.length ? Math.min(...injuryDates) : null;
   const seasonNote = p.injuryNotes && SEASON_OUT.test(p.injuryNotes) ? p.injuryNotes : null;
   // Season-ending news only counts once Sleeper also lists him as injured.
   if (p.injuryStatus && (seasonNews || seasonNote)) {
@@ -64,6 +76,7 @@ export function computeOutlook(
       missShare: 1,
       longTermFactor: 1 - SEASON_OUT_LONG_TERM,
       fcLongTermFactor: 1 - Math.max(0, SEASON_OUT_LONG_TERM - alreadyPriced),
+      since,
     };
   }
   if (p.injuryStatus && MULTI_WEEK_STATUSES.has(p.injuryStatus)) {
@@ -74,6 +87,7 @@ export function computeOutlook(
       missShare: Math.min(1, IR_MIN_WEEKS / remaining),
       longTermFactor: 1,
       fcLongTermFactor: 1,
+      since,
     };
   }
   if (p.injuryStatus && WEEK_STATUSES.has(p.injuryStatus)) {
@@ -84,6 +98,7 @@ export function computeOutlook(
       missShare: Math.min(1, 1 / remaining),
       longTermFactor: 1,
       fcLongTermFactor: 1,
+      since,
     };
   }
   return null;

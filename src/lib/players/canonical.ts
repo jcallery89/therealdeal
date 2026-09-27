@@ -78,6 +78,8 @@ export interface CanonicalTable {
     source: DataSourceKind;
     /** Per-value-source health, so optional sources can degrade softly. */
     sources: ValueSourceHealth;
+    /** When each source's numbers were produced (ms), where known. */
+    sourceDates: Partial<Record<"fc" | "dp" | "dd" | "dtv", number>>;
     fetchedAt: number;
     counts: {
       players: number;
@@ -119,6 +121,15 @@ async function optional<T>(p: Promise<Sourced<T>>, empty: T): Promise<Sourced<T>
 const EMPTY_DP: DpValues = { players: [], picks: [] };
 const EMPTY_DD: DdValues = { players: [], picks: [] };
 const EMPTY_DTV: DtvValues = { players: [], format: "1qb", generatedAt: null };
+
+function sourceDates(raw: Record<string, number | string | null>): CanonicalTable["meta"]["sourceDates"] {
+  const out: CanonicalTable["meta"]["sourceDates"] = {};
+  for (const [k, v] of Object.entries(raw)) {
+    const ms = typeof v === "number" ? v : v ? Date.parse(v) : NaN;
+    if (Number.isFinite(ms)) out[k as keyof typeof out] = ms;
+  }
+  return out;
+}
 
 /** Degraded tables are retried soon instead of sticking for the full TTL. */
 const DEGRADED_TTL_MS = 2 * 60 * 1000;
@@ -293,6 +304,13 @@ export async function buildCanonicalTable(): Promise<CanonicalTable> {
         dtv: worstSource(dtv1Res.source, dtvSfRes.source),
       },
       fetchedAt: Date.now(),
+      sourceDates: sourceDates({
+        fc: fcDynRes.data.length ? fcDynRes.fetchedAt : null,
+        dp: dpRes.data.scrapeDate ? `${dpRes.data.scrapeDate}T12:00:00Z` : null,
+        dd: ddRes.data.updatedAt ?? null,
+        // "2026-09-23 14:22:27", published in UTC.
+        dtv: dtvSfRes.data.generatedAt ? `${dtvSfRes.data.generatedAt.replace(" ", "T")}Z` : null,
+      }),
       counts: {
         players: Object.keys(players).length,
         fcDynastySf: fcDynCount,

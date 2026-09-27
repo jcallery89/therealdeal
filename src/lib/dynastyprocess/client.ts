@@ -29,6 +29,8 @@ export interface DpPick {
 export interface DpValues {
   players: DpPlayer[];
   picks: DpPick[];
+  /** When DynastyProcess last scraped the rankings (YYYY-MM-DD). */
+  scrapeDate?: string | null;
 }
 
 const num = (s: string | undefined) => {
@@ -44,7 +46,9 @@ export function parseDpValues(raw: unknown): DpValues {
   }
   const players: DpPlayer[] = [];
   const picks: DpPick[] = [];
+  let scrapeDate: string | null = null;
   for (const r of rows) {
+    if (present(r.scrape_date) && (!scrapeDate || r.scrape_date > scrapeDate)) scrapeDate = r.scrape_date;
     if (r.pos === "PICK") {
       picks.push({ name: r.player, value1qb: num(r.value_1qb), value2qb: num(r.value_2qb) });
     } else if (present(r.fp_id)) {
@@ -58,7 +62,7 @@ export function parseDpValues(raw: unknown): DpValues {
       });
     }
   }
-  return { players, picks };
+  return { players, picks, scrapeDate };
 }
 
 /** Other providers' player ids -> Sleeper id, from db_playerids.csv. */

@@ -23,6 +23,8 @@ export interface DdValues {
   players: DdPlayer[];
   /** Draft picks, e.g. { name: "2027 Early 1st", value }. */
   picks: { name: string; value: number }[];
+  /** Latest row update (ISO), i.e. how fresh the values are. */
+  updatedAt?: string | null;
 }
 
 interface RawRow {
@@ -32,6 +34,7 @@ interface RawRow {
   team?: string | null;
   base_value?: number;
   current_value?: number;
+  updated_at?: string;
 }
 
 const ORDINAL = ["", "1st", "2nd", "3rd", "4th", "5th"];
@@ -39,8 +42,9 @@ const ORDINAL = ["", "1st", "2nd", "3rd", "4th", "5th"];
 export function parseDdValues(raw: unknown): DdValues {
   const doc = raw as { players?: RawRow[] } | null;
   if (!doc || !Array.isArray(doc.players)) throw new SyntaxError("Dynasty Dealer values have an unexpected format");
-  const out: DdValues = { players: [], picks: [] };
+  const out: DdValues = { players: [], picks: [], updatedAt: null };
   for (const r of doc.players) {
+    if (r.updated_at && (!out.updatedAt || r.updated_at > out.updatedAt)) out.updatedAt = r.updated_at;
     const value = r.current_value ?? r.base_value;
     if (r.sleeper_id === undefined || r.sleeper_id === null || !r.name || typeof value !== "number") continue;
     const id = String(r.sleeper_id);
