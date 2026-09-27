@@ -9,7 +9,8 @@
     "lint": "eslint",
     "test": "vitest run",
     "e2e": "playwright test",
-    "fixtures": "node scripts/generate-fixtures.mjs"
+    "fixtures": "node scripts/generate-fixtures.mjs",
+    "alerts": "tsx scripts/alerts.ts"
   },
   "dependencies": {
     "next": "15.5.26",
@@ -26,6 +27,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.26",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5",
     "vitest": "^4.1.10"
   },

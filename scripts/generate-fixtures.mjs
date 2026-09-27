@@ -527,20 +527,14 @@ writeFileSync(
 // --- Projections (best-effort endpoint fixture; pts_ppr + rec exercise the
 // fallback scoring path with TE premium) ---
 const RECEPTIONS = { QB: 0, RB: 2.5, WR: 5, TE: 4.5 };
-writeFileSync(
-  path.join(ROOT, "projections-week.json"),
-  JSON.stringify(
-    allPlayers.map((p) => ({
-      player_id: p.id,
-      stats: {
-        pts_ppr: Math.round((p.red / 400 + rand() * 8) * 10) / 10,
-        rec: Math.round((RECEPTIONS[p.pos] ?? 0) * (0.6 + rand() * 0.8) * 10) / 10,
-      },
-    })),
-    null,
-    2
-  )
-);
+const weekProjections = allPlayers.map((p) => ({
+  player_id: p.id,
+  stats: {
+    pts_ppr: Math.round((p.red / 400 + rand() * 8) * 10) / 10,
+    rec: Math.round((RECEPTIONS[p.pos] ?? 0) * (0.6 + rand() * 0.8) * 10) / 10,
+  },
+}));
+writeFileSync(path.join(ROOT, "projections-week.json"), JSON.stringify(weekProjections, null, 2));
 
 // --- Season-to-date stats: Sleeper's object-map shape {player_id: stats}
 // (the projections fixture uses the array shape; both are normalized). ---
@@ -623,6 +617,210 @@ const dpIds = {};
 dpPlayers.forEach((p, i) => {
   if (i % 17 !== 5) dpIds[p.fpId] = p.fpId.slice(2);
 });
-writeFileSync(path.join(ROOT, "dp-ids.json"), JSON.stringify(dpIds, null, 2));
+// dpIds feeds the id crosswalk written with the edge fixtures below.
+
+
+// --- Edge engine sources (nflverse, FantasyPros weekly, Sleeper ownership,
+// ESPN news). Scenarios baked in: James Cook goes down so his FA backup Ray
+// Davis is "next man up"; Chris Godwin's absence lifts Jalen McMillan's snaps;
+// Rashid Shaheed is a low-owned target-share riser; Garrett Wilson is a
+// buy-low (volume without points); my dynasty WR1 is running TD-hot. ---
+const byName = Object.fromEntries(allPlayers.map((p) => [p.name, p]));
+byName["James Cook"].injury = "Out";
+byName["James Cook"].bodyPart = "Ankle";
+byName["Rashee Rice"].bodyPart = "Knee";
+byName["Chris Godwin"].bodyPart = "Fibula";
+
+// Depth charts: order within team+position by redraft value.
+const depthGroups = {};
+for (const p of allPlayers) (depthGroups[`${p.team}:${p.pos}`] ??= []).push(p);
+for (const list of Object.values(depthGroups)) {
+  list.sort((a, b) => b.red - a.red).forEach((p, i) => { p.depth = i + 1; });
+}
+// Rewrite the player database with depth charts and the new injury.
+for (const p of allPlayers) {
+  Object.assign(playersMap[p.id], {
+    injury_status: p.injury === "IR" ? "Out" : p.injury,
+    status: p.injury === "IR" ? "Inactive" : "Active",
+    depth_chart_order: p.depth,
+    depth_chart_position: p.pos,
+    injury_body_part: p.bodyPart ?? null,
+    news_updated: null,
+  });
+}
+writeFileSync(path.join(ROOT, "players-subset.json"), JSON.stringify(playersMap, null, 2));
+for (const row of weekProjections) {
+  if (row.player_id === byName["James Cook"].id) row.stats.pts_ppr = 0;
+  if (row.player_id === byName["Ray Davis"].id) row.stats.pts_ppr = 14.6;
+}
+writeFileSync(path.join(ROOT, "projections-week.json"), JSON.stringify(weekProjections, null, 2));
+
+// Schedule: all 32 teams, weeks 1-18, byes from the bye map.
+const ALL_TEAMS = ["ARI","ATL","BAL","BUF","CAR","CHI","CIN","CLE","DAL","DEN","DET","GB","HOU","IND","JAX","KC","LAC","LAR","LV","MIA","MIN","NE","NO","NYG","NYJ","PHI","PIT","SEA","SF","TB","TEN","WAS"];
+const BYES = { KC: 5, CAR: 5, CIN: 6, DET: 6, MIA: 6, MIN: 6, BUF: 7, JAX: 7, LAC: 7, WAS: 7, HOU: 8, NO: 8, NYG: 8, SF: 8, PIT: 9, TEN: 9, CHI: 10, DEN: 10, PHI: 10, TB: 10, ATL: 11, CLE: 11, GB: 11, LAR: 11, NE: 11, SEA: 11, BAL: 13, IND: 13, LV: 13, NYJ: 13, ARI: 14, DAL: 14 };
+const sunday = (w) => new Date(Date.UTC(2025, 8, 7 + 7 * (w - 1)));
+const ymd = (d) => d.toISOString().slice(0, 10);
+const schedule = [];
+const oppOf = {}; // `${week}:${team}` -> opponent
+for (let w = 1; w <= 18; w++) {
+  const teams = ALL_TEAMS.filter((t) => BYES[t] !== w);
+  for (let i = teams.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [teams[i], teams[j]] = [teams[j], teams[i]];
+  }
+  for (let g = 0; g + 1 < teams.length; g += 2) {
+    const [away, home] = [teams[g], teams[g + 1]];
+    const sun = sunday(w);
+    const slot = g === 0 ? [-3, "20:15"] : g === teams.length - 2 ? [1, "20:15"] : g === teams.length - 4 ? [0, "20:20"] : g % 6 === 2 ? [0, "16:25"] : [0, "13:00"];
+    const day = new Date(sun.getTime() + slot[0] * 86400000);
+    const spread = Math.round((rand() * 2 - 1) * 9 * 2) / 2;
+    const total = 38 + Math.round(rand() * 28) / 2;
+    const played = w < WEEK;
+    schedule.push({
+      gameId: `${SEASON}_${String(w).padStart(2, "0")}_${away}_${home}`,
+      week: w,
+      kickoff: `${ymd(day)}T${slot[1]}`,
+      away, home,
+      awayScore: played ? Math.round((total - spread) / 2 + (rand() - 0.5) * 14) : null,
+      homeScore: played ? Math.round((total + spread) / 2 + (rand() - 0.5) * 14) : null,
+      spread, total,
+    });
+    oppOf[`${w}:${away}`] = home;
+    oppOf[`${w}:${home}`] = away;
+  }
+}
+writeFileSync(path.join(ROOT, "schedule.json"), JSON.stringify(schedule, null, 2));
+
+// Weekly usage (nflverse shape), weeks 1..WEEK-1.
+const myDynastyRoster = distribute("dyn", dynastyOrder)[0];
+const hotHand = myDynastyRoster.filter((p) => p.pos === "WR").sort((a, b) => b.dyn - a.dyn)[0];
+const ROLE = {
+  QB: [{ att: 34, car: 4, snap: 0.99 }, { att: 0, car: 0, snap: 0.02 }],
+  RB: [{ car: 16, tgt: 3.5, snap: 0.66 }, { car: 7, tgt: 2, snap: 0.36 }, { car: 2, tgt: 1, snap: 0.12 }],
+  WR: [{ tgt: 8.5, snap: 0.9 }, { tgt: 6.5, snap: 0.84 }, { tgt: 4.5, snap: 0.7 }, { tgt: 2.5, snap: 0.42 }],
+  TE: [{ tgt: 5.5, snap: 0.82 }, { tgt: 2, snap: 0.4 }],
+};
+const absent = (p, w) => (p.injury === "IR" && w >= 5) || (p.injury === "Out" && w >= 8);
+const weekly = [];
+const snapRows = [];
+for (let w = 1; w < WEEK; w++) {
+  for (const p of allPlayers) {
+    if (!oppOf[`${w}:${p.team}`] || absent(p, w)) continue;
+    const group = depthGroups[`${p.team}:${p.pos}`];
+    // Injured teammates ahead of him bump him up the depth chart.
+    const ahead = group.filter((t) => t.depth < p.depth && !absent(t, w)).length;
+    let role = ROLE[p.pos][Math.min(ahead, ROLE[p.pos].length - 1)];
+    const boost = 1 + (p.red - 3000) / 20000;
+    let tgt = Math.max(0, (role.tgt ?? 0) * boost + (rand() - 0.5) * 3);
+    let car = Math.max(0, (role.car ?? 0) * boost + (rand() - 0.5) * 4);
+    let snap = Math.min(1, Math.max(0.05, role.snap + (rand() - 0.5) * 0.1));
+    const att = Math.max(0, (role.att ?? 0) + (rand() - 0.5) * 8);
+    if (p.name === "Rashid Shaheed" && w >= WEEK - 2) { tgt = 9 + rand() * 2; snap = 0.86; }
+    if (p.name === "Garrett Wilson") tgt = 10.5 + rand() * 2;
+    const catchRate = p.pos === "RB" ? 0.78 : p.pos === "TE" ? 0.7 : 0.64;
+    const rec = Math.round(tgt * catchRate);
+    const eff = p.name === "Garrett Wilson" ? 0.55 : 1;
+    const recYds = Math.round(rec * (p.pos === "RB" ? 7.5 : 11.5) * eff * (0.8 + rand() * 0.4));
+    const rushYds = Math.round(car * (p.pos === "QB" ? 5.5 : 4.3) * (0.7 + rand() * 0.6));
+    const tdRoll = (chance) => (rand() < chance ? 1 : 0);
+    let recTd = tdRoll(tgt * 0.045 * eff);
+    if (p === hotHand) recTd = 1 + tdRoll(0.6);
+    const rushTd = tdRoll(car * 0.03);
+    const passYds = Math.round(att * 7.1 * (0.85 + rand() * 0.3));
+    const passTd = att ? Math.round(att * 0.045 + (rand() - 0.5) * 2) : 0;
+    const passInt = att ? tdRoll(0.6) : 0;
+    const ppr = rec + recYds / 10 + 6 * recTd + rushYds / 10 + 6 * rushTd + passYds / 25 + 4 * Math.max(0, passTd) - 2 * passInt;
+    const ts = tgt / 34;
+    weekly.push({
+      gsisId: `00-${p.id}`, name: p.name, position: p.pos, team: p.team, opponent: oppOf[`${w}:${p.team}`], week: w,
+      passAtt: Math.round(att), passYds, passTd: Math.max(0, passTd), passInt,
+      carries: Math.round(car), rushYds, rushTd,
+      targets: Math.round(tgt), receptions: rec, recYds, recTd,
+      airYards: Math.round(tgt * 8.5), targetShare: Math.round(ts * 1000) / 1000,
+      airYardsShare: Math.round(ts * 1.05 * 1000) / 1000, wopr: Math.round((1.5 * ts + 0.7 * ts * 1.05) * 1000) / 1000,
+      pprPoints: Math.round(ppr * 10) / 10,
+    });
+    snapRows.push({ pfrId: `PFR${p.id}`, name: p.name, position: p.pos, team: p.team, week: w, offensePct: Math.round(snap * 100) / 100 });
+  }
+}
+writeFileSync(path.join(ROOT, "nflverse-weekly.json"), JSON.stringify(weekly));
+writeFileSync(path.join(ROOT, "nflverse-snaps.json"), JSON.stringify(snapRows));
+
+writeFileSync(
+  path.join(ROOT, "nflverse-injuries.json"),
+  JSON.stringify(
+    [
+      ["James Cook", "Out", "Ankle", "Did Not Participate In Practice"],
+      ["Chris Godwin", "Out", "Fibula", "Did Not Participate In Practice"],
+      ["Rashee Rice", "Questionable", "Knee", "Limited Participation in Practice"],
+    ].map(([name, status, injury, practice]) => ({
+      gsisId: `00-${byName[name].id}`, name, team: byName[name].team, week: WEEK, status, injury, practice,
+    })),
+    null,
+    2
+  )
+);
+
+// Id crosswalk (DynastyProcess db_playerids shape): a few players are left
+// out of each map to exercise the name fallback.
+const crosswalk = { fp: dpIds, gsis: {}, pfr: {}, espn: {} };
+allPlayers.forEach((p, i) => {
+  if (i % 23 !== 7) crosswalk.gsis[`00-${p.id}`] = p.id;
+  if (i % 19 !== 3) crosswalk.pfr[`PFR${p.id}`] = p.id;
+  crosswalk.espn[`e${p.id}`] = p.id;
+});
+writeFileSync(path.join(ROOT, "id-crosswalk.json"), JSON.stringify(crosswalk, null, 2));
+
+// FantasyPros weekly ECR: positional ranks from this week's projections, jittered.
+const projById = Object.fromEntries(weekProjections.map((r) => [r.player_id, r.stats.pts_ppr]));
+const fpWeekly = [];
+for (const pos of ["QB", "RB", "WR", "TE"]) {
+  allPlayers
+    .filter((p) => p.pos === pos && !(p.injury === "IR" || p.injury === "Out"))
+    .map((p) => ({ p, score: projById[p.id] * (0.85 + rand() * 0.3) }))
+    .sort((a, b) => b.score - a.score)
+    .forEach(({ p, score }, i) => {
+      const sd = Math.round((0.5 + rand() * 4) * 100) / 100;
+      const grades = ["A+", "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D", "F"];
+      fpWeekly.push({
+        fpId: `fp${p.id}`, name: p.name, position: pos, team: p.team, rank: i + 1,
+        best: Math.max(1, i + 1 - Math.round(sd * 2)), worst: i + 1 + Math.round(sd * 2), sd,
+        grade: grades[Math.min(grades.length - 1, Math.floor(i / 3))],
+        projection: Math.round(score * 10) / 10, scrapeDate: "2025-11-04",
+      });
+    });
+}
+writeFileSync(path.join(ROOT, "fp-weekly.json"), JSON.stringify(fpWeekly, null, 2));
+
+// Sleeper ownership / start rates.
+const ownership = {};
+for (const p of allPlayers) {
+  const owned = Math.min(99.9, Math.round((p.red / 75 + rand() * 10) * 10) / 10);
+  ownership[p.id] = { owned, started: Math.round(owned * (p.depth === 1 ? 0.8 : 0.3) * 10) / 10 };
+}
+ownership[byName["Rashid Shaheed"].id] = { owned: 17.5, started: 4.1 };
+ownership[byName["Ray Davis"].id] = { owned: 31.2, started: 12.8 };
+writeFileSync(path.join(ROOT, "ownership.json"), JSON.stringify(ownership, null, 2));
+
+// ESPN news (parsed shape), published the day before the pinned "now".
+writeFileSync(
+  path.join(ROOT, "espn-news.json"),
+  JSON.stringify(
+    [
+      ["James Cook", "Bills' James Cook ruled out with ankle sprain; Ray Davis in line for lead role"],
+      ["Ray Davis", "Ray Davis set for bell-cow work with Cook sidelined"],
+      ["Rashid Shaheed", "Shaheed's role growing: 20 targets over the last two weeks"],
+      ["Rashee Rice", "Rashee Rice limited in practice with knee soreness"],
+    ].map(([name, headline], i) => ({
+      headline,
+      description: headline,
+      published: `2025-11-03T${String(14 + i).padStart(2, "0")}:00:00Z`,
+      url: null,
+      espnIds: [`e${byName[name].id}`],
+    })),
+    null,
+    2
+  )
+);
 
 console.log(`Generated fixtures for ${allPlayers.length} players (${faPlayers.length} free agents) in ${ROOT}`);

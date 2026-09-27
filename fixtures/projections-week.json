@@ -247,7 +247,7 @@
   {
     "player_id": "p1036",
     "stats": {
-      "pts_ppr": 16.4,
+      "pts_ppr": 0,
       "rec": 2.5
     }
   },
@@ -870,7 +870,7 @@
   {
     "player_id": "p2005",
     "stats": {
-      "pts_ppr": 8.9,
+      "pts_ppr": 14.6,
       "rec": 3.2
     }
   },

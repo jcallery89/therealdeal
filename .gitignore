@@ -43,3 +43,6 @@ e2e/screenshots/
 test-results/
 playwright-report/
 !.env.example
+
+# alert de-duplication state (kept in the Actions cache)
+.alerts-state.json

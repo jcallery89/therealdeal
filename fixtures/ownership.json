@@ -1,0 +1,530 @@
+{
+  "p1001": {
+    "owned": 99.9,
+    "started": 79.9
+  },
+  "p1002": {
+    "owned": 99.9,
+    "started": 79.9
+  },
+  "p1003": {
+    "owned": 99.3,
+    "started": 79.4
+  },
+  "p1004": {
+    "owned": 96,
+    "started": 76.8
+  },
+  "p1005": {
+    "owned": 91.4,
+    "started": 73.1
+  },
+  "p1006": {
+    "owned": 98.1,
+    "started": 78.5
+  },
+  "p1007": {
+    "owned": 72.3,
+    "started": 57.8
+  },
+  "p1008": {
+    "owned": 70.2,
+    "started": 56.2
+  },
+  "p1009": {
+    "owned": 71.7,
+    "started": 57.4
+  },
+  "p1010": {
+    "owned": 73.5,
+    "started": 58.8
+  },
+  "p1011": {
+    "owned": 69,
+    "started": 55.2
+  },
+  "p1012": {
+    "owned": 74.1,
+    "started": 59.3
+  },
+  "p1013": {
+    "owned": 69.4,
+    "started": 55.5
+  },
+  "p1014": {
+    "owned": 68.1,
+    "started": 54.5
+  },
+  "p1015": {
+    "owned": 56.7,
+    "started": 45.4
+  },
+  "p1016": {
+    "owned": 58.7,
+    "started": 47
+  },
+  "p1017": {
+    "owned": 55.5,
+    "started": 44.4
+  },
+  "p1018": {
+    "owned": 51.4,
+    "started": 41.1
+  },
+  "p1019": {
+    "owned": 55.3,
+    "started": 44.2
+  },
+  "p1020": {
+    "owned": 52.8,
+    "started": 42.2
+  },
+  "p1021": {
+    "owned": 62.7,
+    "started": 50.2
+  },
+  "p1022": {
+    "owned": 59.9,
+    "started": 47.9
+  },
+  "p1023": {
+    "owned": 99.9,
+    "started": 79.9
+  },
+  "p1024": {
+    "owned": 99.9,
+    "started": 79.9
+  },
+  "p1025": {
+    "owned": 99.1,
+    "started": 79.3
+  },
+  "p1026": {
+    "owned": 99.9,
+    "started": 79.9
+  },
+  "p1027": {
+    "owned": 88,
+    "started": 70.4
+  },
+  "p1028": {
+    "owned": 98.6,
+    "started": 78.9
+  },
+  "p1029": {
+    "owned": 95.4,
+    "started": 76.3
+  },
+  "p1030": {
+    "owned": 87.7,
+    "started": 70.2
+  },
+  "p1031": {
+    "owned": 87.8,
+    "started": 70.2
+  },
+  "p1032": {
+    "owned": 99.9,
+    "started": 79.9
+  },
+  "p1033": {
+    "owned": 97.6,
+    "started": 78.1
+  },
+  "p1034": {
+    "owned": 83.3,
+    "started": 66.6
+  },
+  "p1035": {
+    "owned": 71.3,
+    "started": 57
+  },
+  "p1036": {
+    "owned": 78.4,
+    "started": 62.7
+  },
+  "p1037": {
+    "owned": 79.4,
+    "started": 63.5
+  },
+  "p1038": {
+    "owned": 71.9,
+    "started": 57.5
+  },
+  "p1039": {
+    "owned": 71.9,
+    "started": 57.5
+  },
+  "p1040": {
+    "owned": 49.3,
+    "started": 39.4
+  },
+  "p1041": {
+    "owned": 63.9,
+    "started": 51.1
+  },
+  "p1042": {
+    "owned": 73.2,
+    "started": 58.6
+  },
+  "p1043": {
+    "owned": 89.2,
+    "started": 71.4
+  },
+  "p1044": {
+    "owned": 58.8,
+    "started": 47
+  },
+  "p1045": {
+    "owned": 42,
+    "started": 12.6
+  },
+  "p1046": {
+    "owned": 53.4,
+    "started": 42.7
+  },
+  "p1047": {
+    "owned": 57.6,
+    "started": 17.3
+  },
+  "p1048": {
+    "owned": 51.2,
+    "started": 41
+  },
+  "p1049": {
+    "owned": 52.5,
+    "started": 42
+  },
+  "p1050": {
+    "owned": 43.1,
+    "started": 34.5
+  },
+  "p1051": {
+    "owned": 44,
+    "started": 13.2
+  },
+  "p1052": {
+    "owned": 48.6,
+    "started": 14.6
+  },
+  "p1053": {
+    "owned": 42.9,
+    "started": 34.3
+  },
+  "p1054": {
+    "owned": 30.2,
+    "started": 9.1
+  },
+  "p1055": {
+    "owned": 41.4,
+    "started": 12.4
+  },
+  "p1056": {
+    "owned": 26.3,
+    "started": 7.9
+  },
+  "p1057": {
+    "owned": 99.9,
+    "started": 79.9
+  },
+  "p1058": {
+    "owned": 99.9,
+    "started": 79.9
+  },
+  "p1059": {
+    "owned": 99.9,
+    "started": 79.9
+  },
+  "p1060": {
+    "owned": 99.9,
+    "started": 79.9
+  },
+  "p1061": {
+    "owned": 99.9,
+    "started": 79.9
+  },
+  "p1062": {
+    "owned": 99.9,
+    "started": 79.9
+  },
+  "p1063": {
+    "owned": 87.6,
+    "started": 70.1
+  },
+  "p1064": {
+    "owned": 99.9,
+    "started": 79.9
+  },
+  "p1065": {
+    "owned": 98.6,
+    "started": 78.9
+  },
+  "p1066": {
+    "owned": 99.9,
+    "started": 79.9
+  },
+  "p1067": {
+    "owned": 99.9,
+    "started": 79.9
+  },
+  "p1068": {
+    "owned": 96.6,
+    "started": 77.3
+  },
+  "p1069": {
+    "owned": 87.5,
+    "started": 70
+  },
+  "p1070": {
+    "owned": 78.3,
+    "started": 23.5
+  },
+  "p1071": {
+    "owned": 99.9,
+    "started": 79.9
+  },
+  "p1072": {
+    "owned": 94.7,
+    "started": 75.8
+  },
+  "p1073": {
+    "owned": 81.5,
+    "started": 65.2
+  },
+  "p1074": {
+    "owned": 65.1,
+    "started": 19.5
+  },
+  "p1075": {
+    "owned": 75.5,
+    "started": 60.4
+  },
+  "p1076": {
+    "owned": 86.4,
+    "started": 69.1
+  },
+  "p1077": {
+    "owned": 76.5,
+    "started": 23
+  },
+  "p1078": {
+    "owned": 77.6,
+    "started": 23.3
+  },
+  "p1079": {
+    "owned": 75.8,
+    "started": 60.6
+  },
+  "p1080": {
+    "owned": 77.2,
+    "started": 61.8
+  },
+  "p1081": {
+    "owned": 59,
+    "started": 17.7
+  },
+  "p1082": {
+    "owned": 72.6,
+    "started": 58.1
+  },
+  "p1083": {
+    "owned": 82.2,
+    "started": 65.8
+  },
+  "p1084": {
+    "owned": 70.3,
+    "started": 21.1
+  },
+  "p1085": {
+    "owned": 75.3,
+    "started": 22.6
+  },
+  "p1086": {
+    "owned": 79.2,
+    "started": 23.8
+  },
+  "p1087": {
+    "owned": 69.3,
+    "started": 20.8
+  },
+  "p1088": {
+    "owned": 65,
+    "started": 52
+  },
+  "p1089": {
+    "owned": 69.6,
+    "started": 20.9
+  },
+  "p1090": {
+    "owned": 81.2,
+    "started": 24.4
+  },
+  "p1091": {
+    "owned": 38.1,
+    "started": 11.4
+  },
+  "p1092": {
+    "owned": 38.8,
+    "started": 31
+  },
+  "p1093": {
+    "owned": 51.7,
+    "started": 41.4
+  },
+  "p1094": {
+    "owned": 47.1,
+    "started": 37.7
+  },
+  "p1095": {
+    "owned": 48.1,
+    "started": 38.5
+  },
+  "p1096": {
+    "owned": 37.4,
+    "started": 11.2
+  },
+  "p1097": {
+    "owned": 58.6,
+    "started": 46.9
+  },
+  "p1098": {
+    "owned": 64.5,
+    "started": 19.3
+  },
+  "p1099": {
+    "owned": 41,
+    "started": 12.3
+  },
+  "p1100": {
+    "owned": 40.5,
+    "started": 12.2
+  },
+  "p1101": {
+    "owned": 99.9,
+    "started": 79.9
+  },
+  "p1102": {
+    "owned": 92.4,
+    "started": 73.9
+  },
+  "p1103": {
+    "owned": 82.7,
+    "started": 66.2
+  },
+  "p1104": {
+    "owned": 77,
+    "started": 61.6
+  },
+  "p1105": {
+    "owned": 59,
+    "started": 47.2
+  },
+  "p1106": {
+    "owned": 55.8,
+    "started": 44.6
+  },
+  "p1107": {
+    "owned": 48.8,
+    "started": 39
+  },
+  "p1108": {
+    "owned": 58.1,
+    "started": 46.5
+  },
+  "p1109": {
+    "owned": 47.2,
+    "started": 37.8
+  },
+  "p1110": {
+    "owned": 38,
+    "started": 30.4
+  },
+  "p1111": {
+    "owned": 46.5,
+    "started": 37.2
+  },
+  "p1112": {
+    "owned": 53.1,
+    "started": 42.5
+  },
+  "p1113": {
+    "owned": 42.3,
+    "started": 33.8
+  },
+  "p1114": {
+    "owned": 33.5,
+    "started": 26.8
+  },
+  "p1115": {
+    "owned": 32.8,
+    "started": 26.2
+  },
+  "p1116": {
+    "owned": 59.8,
+    "started": 47.8
+  },
+  "p1117": {
+    "owned": 46.1,
+    "started": 36.9
+  },
+  "p1118": {
+    "owned": 35.4,
+    "started": 10.6
+  },
+  "p1119": {
+    "owned": 24.7,
+    "started": 19.8
+  },
+  "p1120": {
+    "owned": 25.7,
+    "started": 20.6
+  },
+  "p2001": {
+    "owned": 46.1,
+    "started": 36.9
+  },
+  "p2002": {
+    "owned": 35.1,
+    "started": 28.1
+  },
+  "p2003": {
+    "owned": 36.6,
+    "started": 11
+  },
+  "p2004": {
+    "owned": 23.1,
+    "started": 6.9
+  },
+  "p2005": {
+    "owned": 31.2,
+    "started": 12.8
+  },
+  "p2006": {
+    "owned": 22.5,
+    "started": 18
+  },
+  "p2007": {
+    "owned": 40.4,
+    "started": 12.1
+  },
+  "p2008": {
+    "owned": 17.5,
+    "started": 4.1
+  },
+  "p2009": {
+    "owned": 21.2,
+    "started": 6.4
+  },
+  "p2010": {
+    "owned": 22.9,
+    "started": 6.9
+  },
+  "p2011": {
+    "owned": 25.5,
+    "started": 20.4
+  },
+  "p2012": {
+    "owned": 23.7,
+    "started": 19
+  }
+}

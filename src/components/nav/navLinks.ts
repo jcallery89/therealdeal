@@ -1,6 +1,7 @@
 /** Per-league pages, in-season essentials first. Shared by every nav surface. */
 export const LEAGUE_LINKS = [
   { slug: "", label: "Roster" },
+  { slug: "/edge", label: "Edge" },
   { slug: "/startsit", label: "Start/Sit" },
   { slug: "/players", label: "Players" },
   { slug: "/trade", label: "Trade Analyzer" },

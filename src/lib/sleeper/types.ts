@@ -100,6 +100,12 @@ export interface SlimPlayer {
   years_exp: number | null;
   injury_status: string | null;
   status: string | null;
+  /** 1 = starter on the team's depth chart. */
+  depth_chart_order?: number | null;
+  depth_chart_position?: string | null;
+  injury_body_part?: string | null;
+  /** When Sleeper last attached news to the player (ms). */
+  news_updated?: number | null;
 }
 
 export type PlayersMap = Record<string, SlimPlayer>;

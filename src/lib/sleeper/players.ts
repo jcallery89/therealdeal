@@ -18,6 +18,10 @@ interface RawPlayer {
   years_exp?: number | null;
   injury_status?: string | null;
   status?: string | null;
+  depth_chart_order?: number | null;
+  depth_chart_position?: string | null;
+  injury_body_part?: string | null;
+  news_updated?: number | null;
 }
 
 function slimPlayers(raw: unknown): PlayersMap {
@@ -36,13 +40,17 @@ function slimPlayers(raw: unknown): PlayersMap {
       years_exp: p.years_exp ?? null,
       injury_status: p.injury_status ?? null,
       status: p.status ?? null,
+      depth_chart_order: p.depth_chart_order ?? null,
+      depth_chart_position: p.depth_chart_position ?? null,
+      injury_body_part: p.injury_body_part ?? null,
+      news_updated: p.news_updated ?? null,
     };
     out[id] = slim;
   }
   return out;
 }
 
-const FILE_CACHE = path.join(os.tmpdir(), "therealdeal-players.json");
+const FILE_CACHE = path.join(os.tmpdir(), "therealdeal-players-v2.json");
 
 /**
  * The 5MB players blob is fetched at most daily; the slimmed (~300KB) result

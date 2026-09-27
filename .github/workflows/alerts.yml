@@ -1,0 +1,70 @@
+# Pushes League HQ edges (waiver gems, buy-lows, lineup & injury alerts,
+# rival intel) to your phone through ntfy. Setup: README → "Phone alerts".
+name: Fantasy alerts
+
+on:
+  schedule:
+    # Times are UTC; comments are US Eastern (EDT, one hour earlier in EST).
+    - cron: "10 1 * * 3"   # Tue 9:10pm   waiver & trade rundown
+    - cron: "5 14 * * *"   # daily 10:05am sweep for new edges
+    - cron: "45 22 * * 4"  # Thu 6:45pm   before Thursday Night Football
+    - cron: "35 16 * * 0"  # Sun 12:35pm  after early-game inactives
+    - cron: "50 19 * * 0"  # Sun 3:50pm   before the late games
+    - cron: "10 23 * * 0"  # Sun 7:10pm   before Sunday Night Football
+    - cron: "15 22 * * 1"  # Mon 6:15pm   before Monday Night Football
+  workflow_dispatch:
+    inputs:
+      run:
+        description: Which alert run
+        type: choice
+        options: [daily, waivers, gameday]
+        default: daily
+      dry_run:
+        description: Print instead of sending
+        type: boolean
+        default: false
+
+concurrency:
+  group: fantasy-alerts
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  alerts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      RUN_KIND: >-
+        ${{ github.event_name == 'workflow_dispatch' && inputs.run
+          || github.event.schedule == '10 1 * * 3' && 'waivers'
+          || github.event.schedule == '5 14 * * *' && 'daily'
+          || 'gameday' }}
+      NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+      SLEEPER_USERNAME: ${{ vars.SLEEPER_USERNAME || 'LubeyGolfGloves' }}
+      APP_URL: ${{ vars.APP_URL || 'https://therealdeal-ebon.vercel.app' }}
+      NEXT_PUBLIC_LEAGUE_ID_KEEPER: ${{ vars.NEXT_PUBLIC_LEAGUE_ID_KEEPER }}
+      NEXT_PUBLIC_LEAGUE_ID_DYNASTY: ${{ vars.NEXT_PUBLIC_LEAGUE_ID_DYNASTY }}
+      ALERTS_STATE: .alerts-state.json
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Remember which alerts were already sent so nothing repeats.
+      - uses: actions/cache/restore@v4
+        with:
+          path: .alerts-state.json
+          key: alerts-state-${{ github.run_id }}
+          restore-keys: alerts-state-
+      - name: Send alerts
+        run: npx tsx scripts/alerts.ts --run="$RUN_KIND" ${{ inputs.dry_run && '--dry-run' || '' }}
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: .alerts-state.json
+          key: alerts-state-${{ github.run_id }}

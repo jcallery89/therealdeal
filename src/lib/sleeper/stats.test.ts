@@ -32,3 +32,13 @@ describe("normalizeStatLines", () => {
     expect(normalizeStatLines(42)).toEqual({});
   });
 });
+
+describe("parseOwnership", () => {
+  it("keeps numeric owned/started and ignores junk", async () => {
+    const { parseOwnership } = await import("./stats");
+    expect(parseOwnership({ "1": { owned: 55.2, started: 20 }, "2": { owned: "x" }, "3": null })).toEqual({
+      "1": { owned: 55.2, started: 20 },
+    });
+    expect(parseOwnership([1, 2])).toEqual({});
+  });
+});

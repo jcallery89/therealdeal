@@ -1,7 +1,14 @@
 import { cache } from "../cache";
 import { TTL } from "../config";
 import { DataSourceKind, Sourced, worstSource } from "../datasource";
-import { DpPick, DpValues, getDpIds, getDpValues } from "../dynastyprocess/client";
+import {
+  DpPick,
+  DpValues,
+  EMPTY_CROSSWALK,
+  getDpIds,
+  getDpValues,
+  IdCrosswalk,
+} from "../dynastyprocess/client";
 import { getFcValues } from "../fantasycalc/client";
 import { FcEntry } from "../fantasycalc/types";
 import { getKtcValues } from "../ktc/scrape";
@@ -18,6 +25,11 @@ export interface CanonicalPlayer {
   age: number | null;
   yearsExp: number | null;
   injuryStatus: string | null;
+  /** Sleeper depth chart: 1 = starter. */
+  depthOrder?: number | null;
+  injuryBodyPart?: string | null;
+  /** When Sleeper last attached news (ms). */
+  newsUpdated?: number | null;
   values: {
     fcDynastySf?: { value: number; overallRank: number; positionRank: number | null; trend30Day: number | null };
     fcRedraft?: { value: number; overallRank: number; positionRank: number | null; trend30Day: number | null };
@@ -43,6 +55,10 @@ export interface CanonicalTable {
   fcPicks: { dynastySf: FcEntry[]; dynasty1qb: FcEntry[]; redraft: FcEntry[] };
   /** DynastyProcess pick values (1QB and superflex). */
   dpPicks: DpPick[];
+  /** Other providers' ids -> Sleeper id (nflverse, ESPN). */
+  ids: IdCrosswalk;
+  /** Normalized-name lookup for rows the crosswalk misses. */
+  matchByName: (name: string, position: string, team: string | null) => string | undefined;
   meta: {
     source: DataSourceKind;
     /** Per-value-source health, so optional sources can degrade softly. */
@@ -103,7 +119,7 @@ export async function buildCanonicalTable(): Promise<CanonicalTable> {
       optional(getFcValues("redraft_1qb"), []),
       optional(getKtcValues(), []),
       optional(getDpValues(), EMPTY_DP),
-      optional(getDpIds(), {}),
+      optional(getDpIds(), EMPTY_CROSSWALK),
       optional(getTrending("add"), []),
       optional(getTrending("drop"), []),
     ]);
@@ -118,6 +134,9 @@ export async function buildCanonicalTable(): Promise<CanonicalTable> {
       age: p.age,
       yearsExp: p.years_exp,
       injuryStatus: p.injury_status,
+      depthOrder: p.depth_chart_order ?? null,
+      injuryBodyPart: p.injury_body_part ?? null,
+      newsUpdated: p.news_updated ?? null,
       values: {},
     };
   }
@@ -168,7 +187,7 @@ export async function buildCanonicalTable(): Promise<CanonicalTable> {
   // DynastyProcess: FantasyPros id -> Sleeper id crosswalk, name fallback.
   let dpCount = 0;
   for (const d of dpRes.data.players) {
-    const viaId = dpIdsRes.data[d.fpId];
+    const viaId = dpIdsRes.data.fp[d.fpId];
     const id = viaId && players[viaId] ? viaId : matchByName(d.name, d.position, d.team);
     if (id) {
       players[id].values.dp = { sf: d.value2qb, oneQb: d.value1qb };
@@ -204,6 +223,8 @@ export async function buildCanonicalTable(): Promise<CanonicalTable> {
     players,
     fcPicks,
     dpPicks: dpRes.data.picks,
+    ids: dpIdsRes.data,
+    matchByName,
     meta: {
       source: worstSource(playersRes.source, fcDynRes.source, fcRedRes.source, dpRes.source),
       sources: {

@@ -12,6 +12,24 @@ is free and read-only.
 
 ## Features
 
+- **Edge** — the "leg up" feed. Blends every source below into ranked,
+  league-specific edges, each showing the evidence and which sources back it:
+  - *Waiver gems*: players unrostered in your league with rising snap share or
+    target/carry share, a hurt starter ahead of them on the depth chart
+    ("next man up"), accelerating Sleeper adds, low ownership ("sneaky add"),
+    soft upcoming or fantasy-playoff schedules, and fit with your thin spots —
+    with a drop candidate.
+  - *Buy low / sell high*: opportunity-based expected points vs actual points
+    (volume without production = buy; touchdown-driven overperformance = sell),
+    30-day market moves, dynasty age cliffs, and players the value sources
+    disagree on.
+  - *Lineup & injury*: starters who are out, doubtful, questionable (with
+    practice participation) or on bye, the best bench or waiver replacement,
+    and consensus-backed start/sit swaps — only for games not yet kicked off.
+  - *Rival intel*: your opponent's injured starters (plus "block" pickups of
+    their handcuffs), rivals who just lost a starter at a position where you
+    have surplus, and rebuilders holding productive veterans.
+  - *Stashes*: free-agent handcuffs for your starting RBs.
 - **Roster dashboard** — starters/bench/taxi/IR with market values, positional
   strength vs the league, value-weighted age profile, injury/trending/bye badges,
   and bye-week cluster warnings. View any of the 10 teams.
@@ -41,7 +59,10 @@ is free and read-only.
   players grayed out during live drafts, and your thinnest positions called
   out for BPA-vs-need decisions.
 - **Start/Sit & matchups** — weekly lineup optimizer scored with your league's
-  actual scoring settings (TE premium included), start/sit recommendations vs
+  actual scoring settings (TE premium included) and driven by a **consensus
+  start/sit**: FantasyPros expert rankings (40%), Sleeper projections (35%) and
+  the crowd — the share of Sleeper leagues starting each player (25%) — mapped
+  onto your league's scoring, with a "split" flag when they disagree; start/sit recommendations vs
   your current lineup (ruled-out players are never started and are flagged if
   they're in your lineup), this week's matchup preview with projected totals,
   and a waiver watch of trending unrostered players. Projections come from
@@ -112,6 +133,21 @@ one (if any) is failing, with the error and timing.
 | [DynastyProcess](https://github.com/dynastyprocess/data) | dynasty values (1QB + SF) derived from FantasyPros expert rankings, pick values | open CSVs on GitHub, joined via their FantasyPros→Sleeper id crosswalk |
 | Sleeper projections | season stats + rest-of-season projections, scored with your league's settings | points per game over replacement at each position |
 | [KeepTradeCut](https://keeptradecut.com) | crowdsourced dynasty values (1QB + SF) — optional | server-side scrape, name-matched; skipped silently when blocked |
+| [FantasyPros](https://www.fantasypros.com) via DynastyProcess | weekly expert consensus rankings (~100 experts: rank, best/worst, grade) | daily CSV mirror on GitHub |
+| [nflverse](https://github.com/nflverse) | weekly usage (targets, target share, air yards, WOPR, carries), snap counts, official injury reports with practice status | CSV releases on GitHub, nightly in season |
+| [nfldata](https://github.com/nflverse/nfldata) | schedule, spreads and totals (→ implied team totals, byes, kickoffs) | `games.csv` on GitHub |
+| Sleeper research | % of Sleeper leagues rostering / starting each player | public JSON (best-effort) |
+| ESPN | NFL news headlines tagged with players | public JSON (best-effort) |
+
+Providers' player ids are joined to Sleeper's through DynastyProcess's id
+crosswalk (FantasyPros, GSIS, PFR, ESPN) with a name fallback. Every source
+beyond Sleeper's league data is optional: if one is down, edges simply use the
+others. Open `/api/health` to see each one's status.
+
+*Why not Reddit?* Reddit's API requires a registered app since 2023, blocks
+most cloud servers (Vercel, GitHub Actions), and its start/sit threads are
+free-form comments. The expert consensus plus Sleeper's start rates give the
+same "what is everyone doing" signal from structured data.
 
 **Value horizons.** Each source is normalized to 0–10,000 (share of its top
 player) so they're comparable; *Consensus* averages whichever sources list the
@@ -126,6 +162,33 @@ player.
 The Real Deal's two horizons are never blended — the trade tools have a
 This season / Keeper toggle. TEs get a small TE-premium multiplier (both leagues
 are TEP); see `src/lib/config.ts`.
+
+## Phone alerts (ntfy)
+
+The Edge feed is pushed to your phone by a scheduled GitHub Action
+(`.github/workflows/alerts.yml`) using [ntfy](https://ntfy.sh) — free, no account.
+
+1. Install the **ntfy** app (iOS / Android) and subscribe to a topic with a
+   hard-to-guess name, e.g. `lhq-7f3k9q2m` (anyone who knows the name can read it).
+2. In GitHub: **Settings → Secrets and variables → Actions → New repository
+   secret**: `NTFY_TOPIC` = that topic name.
+3. Optional repository *variables*: `SLEEPER_USERNAME` (default
+   `LubeyGolfGloves`), `APP_URL` (default the Vercel URL), and the two
+   `NEXT_PUBLIC_LEAGUE_ID_*` ids after your leagues renew.
+4. Test it: **Actions → Fantasy alerts → Run workflow** (tick *dry run* to
+   print instead of sending).
+
+| When (US Eastern) | Run | What you get |
+|---|---|---|
+| Tue 9:10pm | waivers | one digest per league: waiver gems, stashes, buy-lows, sell-highs, rival intel |
+| Daily 10:05am | daily | any new strong edge, plus lineup emergencies |
+| Thu 6:45pm, Sun 12:35pm / 3:50pm / 7:10pm, Mon 6:15pm | gameday | injured, doubtful, questionable or bye starters and consensus lineup swaps for games not yet started |
+
+Each edge is sent once (the sent list lives in the Actions cache), and a
+worsening status (Questionable → Out) alerts again. Locally:
+`NTFY_TOPIC=… npm run alerts -- --run=daily` (or `--dry-run`). GitHub pauses
+scheduled workflows after 60 days without repository activity; re-enable it
+from the Actions tab if that happens.
 
 ## Seasonal maintenance
 

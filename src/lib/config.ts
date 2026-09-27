@@ -63,6 +63,9 @@ export const TTL = {
   state: 15 * 60 * 1000,
   projections: 6 * 60 * 60 * 1000,
   canonical: 60 * 60 * 1000,
+  nflverse: 6 * 60 * 60 * 1000,
+  news: 30 * 60 * 1000,
+  ownership: 6 * 60 * 60 * 1000,
 } as const;
 
 /**

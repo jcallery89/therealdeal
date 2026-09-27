@@ -82,3 +82,35 @@ export async function getSeasonProjections(season: string): Promise<Sourced<Stat
     return { data: {}, source: "unavailable", fetchedAt: Date.now() };
   }
 }
+
+/**
+ * Share of Sleeper leagues rostering / starting each player (0-100), from
+ * Sleeper's research endpoint. Undocumented and best-effort: empty on failure.
+ */
+export type Ownership = Record<string, { owned: number; started: number }>;
+
+export function parseOwnership(raw: unknown): Ownership {
+  const out: Ownership = {};
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return out;
+  for (const [id, v] of Object.entries(raw as Record<string, unknown>)) {
+    const r = v as { owned?: unknown; started?: unknown } | null;
+    if (r && typeof r.owned === "number") {
+      out[id] = { owned: r.owned, started: typeof r.started === "number" ? r.started : 0 };
+    }
+  }
+  return out;
+}
+
+export async function getOwnership(season: string, week: number): Promise<Sourced<Ownership>> {
+  try {
+    return await fetchWithFixture<Ownership>({
+      key: `sleeper:research:${season}:${week}`,
+      url: `https://api.sleeper.app/players/nfl/research/regular/${season}/${week}`,
+      fixture: "ownership.json",
+      ttlMs: TTL.ownership,
+      parse: parseOwnership,
+    });
+  } catch {
+    return { data: {}, source: "unavailable", fetchedAt: Date.now() };
+  }
+}

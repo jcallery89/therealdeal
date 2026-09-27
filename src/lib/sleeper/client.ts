@@ -89,7 +89,7 @@ export function getMatchups(leagueId: string, week: number, fresh = false): Prom
 export function getTrending(type: "add" | "drop"): Promise<Sourced<TrendingEntry[]>> {
   return fetchWithFixture({
     key: `sleeper:trending:${type}`,
-    url: `${BASE}/players/nfl/trending/${type}?lookback_hours=24&limit=25`,
+    url: `${BASE}/players/nfl/trending/${type}?lookback_hours=24&limit=50`,
     fixture: `trending-${type}.json`,
     ttlMs: TTL.trending,
   });

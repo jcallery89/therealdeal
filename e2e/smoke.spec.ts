@@ -196,6 +196,37 @@ test("start/sit page shows matchup, lineup advice, and waivers", async ({ page }
   await page.screenshot({ path: `${SHOTS}/8-startsit.png`, fullPage: true });
 });
 
+test("edge feed blends sources into waiver, trade, lineup and rival edges", async ({ page }) => {
+  await page.goto(`/league/${DYNASTY}/edge`);
+  const feed = page.getByTestId("edge-feed");
+  await expect(feed.locator("> div").first()).toBeVisible();
+  // Demo scenario: James Cook is out, his backup is on waivers.
+  await expect(feed.getByText("Next man up: Ray Davis (RB, BUF)")).toBeVisible();
+  await expect(page.getByTestId("edge-sources")).toContainText("FantasyPros experts");
+
+  await page.getByTestId("edge-filter-trade").click();
+  await expect(feed.getByText(/^Buy low:/).first()).toBeVisible();
+  await expect(feed.getByText("Next man up: Ray Davis (RB, BUF)")).toHaveCount(0);
+  await page.screenshot({ path: `${SHOTS}/16-edge-trade.png`, fullPage: true });
+
+  await page.getByTestId("edge-filter-all").click();
+  await page.screenshot({ path: `${SHOTS}/15-edge.png`, fullPage: true });
+  // Buy-lows hand off to the analyzer, pre-filled.
+  await page.getByTestId("edge-filter-trade").click();
+  await feed.getByRole("link", { name: /Open in analyzer/ }).first().click();
+  await page.waitForURL("**/trade?*");
+  await expect(page.getByTestId("trade-side-B").getByRole("button", { name: /^Remove / }).first()).toBeVisible();
+});
+
+test("start/sit shows the experts + projections + crowd consensus", async ({ page }) => {
+  await page.goto(`/league/${KEEPER}/startsit`);
+  const panel = page.getByTestId("consensus-startsit");
+  await expect(panel).toBeVisible();
+  expect(await panel.locator("tbody tr").count()).toBeGreaterThanOrEqual(8);
+  await expect(panel.getByText(/Must start|Start|Flex|Sit/).first()).toBeVisible();
+  await page.screenshot({ path: `${SHOTS}/17-consensus.png`, fullPage: true });
+});
+
 test("players explorer sorts and filters", async ({ page }) => {
   await page.goto(`/league/${DYNASTY}/players`);
   const rows = page.getByTestId("players-table").locator("tbody tr");

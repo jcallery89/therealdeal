@@ -1,0 +1,29 @@
+[
+  {
+    "gsisId": "00-p1036",
+    "name": "James Cook",
+    "team": "BUF",
+    "week": 10,
+    "status": "Out",
+    "injury": "Ankle",
+    "practice": "Did Not Participate In Practice"
+  },
+  {
+    "gsisId": "00-p1081",
+    "name": "Chris Godwin",
+    "team": "TB",
+    "week": 10,
+    "status": "Out",
+    "injury": "Fibula",
+    "practice": "Did Not Participate In Practice"
+  },
+  {
+    "gsisId": "00-p1076",
+    "name": "Rashee Rice",
+    "team": "KC",
+    "week": 10,
+    "status": "Questionable",
+    "injury": "Knee",
+    "practice": "Limited Participation in Practice"
+  }
+]

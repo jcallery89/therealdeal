@@ -9,15 +9,26 @@ import { isUnavailable, lineupAdvice } from "@/lib/analysis/lineup";
 import { LeagueBundle, teamName } from "@/lib/leagueBundle";
 import { useMyRoster } from "@/lib/hooks/useMyRoster";
 import { SleeperMatchup } from "@/lib/sleeper/types";
+import type { StartConsensus } from "@/lib/edge/consensus";
+
+const TIER_STYLES: Record<StartConsensus["tier"], string> = {
+  "Must start": "bg-emerald-500/20 text-emerald-300",
+  Start: "bg-emerald-500/10 text-emerald-300",
+  Flex: "bg-sky-500/10 text-sky-300",
+  Sit: "bg-slate-800 text-slate-400",
+};
 
 export default function StartSitView({
   bundle,
   projectedPoints,
+  consensus = {},
   matchups,
 }: {
   bundle: LeagueBundle;
   /** player_id -> projected points under this league's scoring (server-scored). */
   projectedPoints: Record<string, number>;
+  /** Experts + projections + crowd blend per player (see lib/edge/consensus). */
+  consensus?: Record<string, StartConsensus>;
   matchups: SleeperMatchup[];
 }) {
   const { leagueConfig, league, rosters, users, players, state } = bundle;
@@ -95,7 +106,11 @@ export default function StartSitView({
         <div>
           <h1 className="text-2xl font-bold text-slate-100">Start/Sit — Week {state.week}</h1>
           <p className="mt-1 text-sm text-slate-500">
-            {leagueConfig.label} · projections scored with your league&apos;s settings
+            {leagueConfig.label} ·{" "}
+            {Object.keys(consensus).length > 0
+              ? "consensus of FantasyPros experts, Sleeper projections and Sleeper start rates"
+              : "projections"}{" "}
+            scored with your league&apos;s settings
             {league.scoring_settings.bonus_rec_te ? " (TEP included)" : ""}
           </p>
         </div>
@@ -208,6 +223,77 @@ export default function StartSitView({
         <div data-testid="lineup-advice" className="mt-4 rounded-md border border-emerald-500/30 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-300">
           Your current lineup is already optimal for week {state.week}. Projected:{" "}
           {advice.currentTotal.toFixed(1)} pts.
+        </div>
+      )}
+
+      {/* Consensus start/sit */}
+      {Object.keys(consensus).length > 0 && (
+        <div data-testid="consensus-startsit" className="mt-5 rounded-xl border border-slate-800 bg-slate-900/50 p-4">
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+            Consensus start/sit
+          </h3>
+          <p className="mt-0.5 text-[11px] text-slate-600">
+            Experts (FantasyPros ECR, ~100 rankers) 40% · Sleeper projections 35% · the crowd (% of
+            Sleeper leagues starting him) 25%. &ldquo;Split&rdquo; = the sources disagree — your call.
+          </p>
+          <div className="mt-2 overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="text-left text-[10px] uppercase tracking-wide text-slate-500">
+                  <th className="py-1 pr-2 font-medium">Player</th>
+                  <th className="py-1 pr-2 font-medium">Verdict</th>
+                  <th className="py-1 pr-2 text-right font-medium">Pts</th>
+                  <th className="hidden py-1 pr-2 text-right font-medium sm:table-cell">Experts</th>
+                  <th className="hidden py-1 pr-2 text-right font-medium sm:table-cell">Proj</th>
+                  <th className="hidden py-1 text-right font-medium sm:table-cell">Started</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800/60">
+                {(roster.players ?? [])
+                  .filter((id) => consensus[id] && !taxiSet.has(id) && !irSet.has(id))
+                  .sort((a, b) => consensus[b].points - consensus[a].points)
+                  .map((id) => {
+                    const c = consensus[id];
+                    const p = players[id];
+                    return (
+                      <tr key={id}>
+                        <td className="py-1.5 pr-2">
+                          <PlayerCell player={p} playerId={id} currentWeek={state.week} />
+                        </td>
+                        <td className="py-1.5 pr-2">
+                          <span className={`rounded px-1.5 py-0.5 text-[10px] font-semibold ${TIER_STYLES[c.tier]}`}>
+                            {c.tier}
+                          </span>
+                          {c.agreement === "split" && (
+                            <span className="ml-1 text-[10px] text-amber-400" title="Experts, projections and the crowd disagree">
+                              split
+                            </span>
+                          )}
+                          {starterSet.has(id) ? null : c.tier !== "Sit" && (
+                            <span className="ml-1 text-[10px] text-slate-500">bench</span>
+                          )}
+                        </td>
+                        <td className="py-1.5 pr-2 text-right font-mono text-slate-200">
+                          {c.points.toFixed(1)}
+                          <span className="ml-1 text-[10px] text-slate-500">{p?.position}{c.rank}</span>
+                        </td>
+                        <td className="hidden py-1.5 pr-2 text-right font-mono text-slate-400 sm:table-cell">
+                          {c.experts
+                            ? `${p?.position}${c.experts.rank} (${c.experts.best}–${c.experts.worst})`
+                            : "—"}
+                        </td>
+                        <td className="hidden py-1.5 pr-2 text-right font-mono text-slate-400 sm:table-cell">
+                          {c.projection !== undefined ? c.projection.toFixed(1) : "—"}
+                        </td>
+                        <td className="hidden py-1.5 text-right font-mono text-slate-400 sm:table-cell">
+                          {c.started !== undefined ? `${Math.round(c.started)}%` : "—"}
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 

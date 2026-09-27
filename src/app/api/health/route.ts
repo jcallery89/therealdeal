@@ -11,6 +11,10 @@ import {
   getTradedPicks,
 } from "@/lib/sleeper/client";
 import { getPlayersMap } from "@/lib/sleeper/players";
+import { getDpIds, getDpValues, getFpWeekly } from "@/lib/dynastyprocess/client";
+import { getEspnNews } from "@/lib/espn/news";
+import { getInjuryReports, getSchedule, getSnapCounts, getWeeklyStats } from "@/lib/nflverse/client";
+import { getOwnership, getWeekProjections } from "@/lib/sleeper/stats";
 
 export const dynamic = "force-dynamic";
 
@@ -50,6 +54,9 @@ async function check(name: string, run: () => Promise<Sourced<unknown>>): Promis
  * Open /api/health in a browser when a "didn't respond" banner appears.
  */
 export async function GET() {
+  const state = await getState().catch(() => null);
+  const season = state?.data.season ?? String(new Date().getFullYear());
+  const week = state?.data.week ?? 1;
   const checks = await Promise.all([
     check("sleeper: state", () => getState(true)),
     check("sleeper: players database", () => getPlayersMap()),
@@ -61,7 +68,17 @@ export async function GET() {
     ]),
     check("fantasycalc: dynasty superflex", () => getFcValues("dynasty_sf")),
     check("fantasycalc: redraft", () => getFcValues("redraft_1qb")),
-    check("keeptradecut", () => getKtcValues()),
+    check("keeptradecut (optional)", () => getKtcValues()),
+    check("dynastyprocess: values", () => getDpValues()),
+    check("dynastyprocess: id crosswalk", () => getDpIds()),
+    check("fantasypros: weekly expert rankings", () => getFpWeekly()),
+    check("nflverse: weekly usage", () => getWeeklyStats(season)),
+    check("nflverse: snap counts", () => getSnapCounts(season)),
+    check("nflverse: injury reports", () => getInjuryReports(season)),
+    check("nfldata: schedule & lines", () => getSchedule(season)),
+    check("sleeper: weekly projections", () => getWeekProjections(season, week)),
+    check("sleeper: ownership & start rates", () => getOwnership(season, week)),
+    check("espn: news", () => getEspnNews()),
   ]);
   return NextResponse.json(
     { ok: checks.every((c) => c.ok), checkedAt: new Date().toISOString(), checks },

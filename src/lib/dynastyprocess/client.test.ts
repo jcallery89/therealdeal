@@ -7,11 +7,11 @@ const VALUES = `"player","pos","team","age","draft_year","ecr_1qb","ecr_2qb","ec
 "2026 Pick 1.01","PICK",NA,NA,NA,22.4,16.6,NA,7300,7100,"2026-09-25",NA
 "Free Guy","WR",NA,24,2024,300,300,99,10,12,"2026-09-25","99999"`;
 
-const IDS = `mfl_id,fantasypros_id,sleeper_id,name
-1,19788,7564,Ja'Marr Chase
-2,17298,4984,Josh Allen
-3,NA,1234,No FP id
-4,55555,NA,No Sleeper id`;
+const IDS = `mfl_id,fantasypros_id,gsis_id,sleeper_id,espn_id,pfr_id,name
+1,19788,00-0036900,7564,4362628,ChasJa00,Ja'Marr Chase
+2,17298,00-0034857,4984,3918298,AlleJo02,Josh Allen
+3,NA,00-0099999,1234,NA,NA,No FP id
+4,55555,00-0011111,NA,1,Nobo00,No Sleeper id`;
 
 describe("parseDpValues", () => {
   const dp = parseDpValues(VALUES);
@@ -39,7 +39,27 @@ describe("parseDpValues", () => {
 });
 
 describe("parseDpIds", () => {
-  it("maps FantasyPros ids to Sleeper ids, skipping incomplete rows", () => {
-    expect(parseDpIds(IDS)).toEqual({ "19788": "7564", "17298": "4984" });
+  it("maps each provider's ids to Sleeper ids, skipping incomplete rows", () => {
+    const ids = parseDpIds(IDS);
+    expect(ids.fp).toEqual({ "19788": "7564", "17298": "4984" });
+    expect(ids.gsis).toEqual({ "00-0036900": "7564", "00-0034857": "4984", "00-0099999": "1234" });
+    expect(ids.pfr).toEqual({ ChasJa00: "7564", AlleJo02: "4984" });
+    expect(ids.espn).toEqual({ "4362628": "7564", "3918298": "4984" });
+  });
+});
+
+const FP_WEEKLY = `"page","page_pos","scrape_date","fantasypros_id","player_name","pos","team","rank","ecr","sd","best","worst","pos_rank","start_sit_grade","r2p_pts"
+"qb","QB",2026-09-27,"17298","Josh Allen","QB","BUF",1,1,0,1,1,"QB1","A+","24.5"
+"ppr-wr","WR",2026-09-27,"19788","Ja'Marr Chase","WR","CIN",1,1.2,0.4,1,2,"WR1","A",NA
+"k","K",2026-09-27,"1","Some Kicker","K","BUF",1,1,0,1,1,"K1","A","9"
+"ppr-te","TE",2026-09-27,NA,"No Id","TE","BUF",9,9,1,8,10,"TE9",NA,NA`;
+
+describe("parseFpWeekly", () => {
+  it("keeps skill positions with positional rank, spread, grade and projection", async () => {
+    const { parseFpWeekly } = await import("./client");
+    const rows = parseFpWeekly(FP_WEEKLY);
+    expect(rows).toHaveLength(2);
+    expect(rows[0]).toMatchObject({ fpId: "17298", position: "QB", rank: 1, grade: "A+", projection: 24.5 });
+    expect(rows[1]).toMatchObject({ position: "WR", rank: 1, sd: 0.4, projection: null });
   });
 });
