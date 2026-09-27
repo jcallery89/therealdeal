@@ -4,6 +4,11 @@ name: Source check
 
 on:
   workflow_dispatch:
+    inputs:
+      player:
+        description: Optional player name to inspect (e.g. Jaxson Dart)
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -22,3 +27,5 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx tsx scripts/check-sources.ts
+        env:
+          PLAYER: ${{ inputs.player }}

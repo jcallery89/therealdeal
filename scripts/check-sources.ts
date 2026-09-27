@@ -7,6 +7,8 @@
  *   npx tsx scripts/check-sources.ts
  */
 import { LEAGUES } from "../src/lib/config";
+import { getEspnNews } from "../src/lib/espn/news";
+import { getInjuryReports } from "../src/lib/nflverse/client";
 import { buildCanonicalTable } from "../src/lib/players/canonical";
 import {
   computeValueContext,
@@ -46,7 +48,34 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+/** PLAYER="Name" prints everything every source knows about one player. */
+async function inspectPlayer(name: string) {
+  const table = await buildCanonicalTable();
+  const matches = Object.values(table.players).filter((p) => p.name.toLowerCase() === name.toLowerCase());
+  console.log(`\n=== ${name}: ${matches.length} match(es)`);
+  const raw = (await (await fetch("https://api.sleeper.app/v1/players/nfl")).json()) as Record<string, Record<string, unknown>>;
+  for (const p of matches) {
+    const r = raw[p.sleeperId] ?? {};
+    const keys = Object.keys(r).filter((k) => /injur|status|practice|news|depth|team|active/i.test(k));
+    console.log("sleeper fields:", JSON.stringify(Object.fromEntries(keys.map((k) => [k, r[k]]))));
+    console.log("values:", JSON.stringify(p.values));
+    const espnIds = Object.entries(table.ids.espn).filter(([, sid]) => sid === p.sleeperId).map(([e]) => e);
+    const gsis = Object.entries(table.ids.gsis).filter(([, sid]) => sid === p.sleeperId).map(([g]) => g);
+    const news = await getEspnNews().catch(() => null);
+    for (const n of news?.data ?? []) {
+      if (n.espnIds.some((e) => espnIds.includes(e)) || n.headline.includes(p.name.split(" ").pop()!)) {
+        console.log("espn news:", n.published, "|", n.headline, "|", n.description.slice(0, 200));
+      }
+    }
+    const season = String(new Date().getFullYear());
+    const reports = await getInjuryReports(season).catch(() => null);
+    for (const r of reports?.data ?? []) if (gsis.includes(r.gsisId)) console.log("injury report:", JSON.stringify(r));
+  }
+}
+
+main()
+  .then(() => (process.env.PLAYER ? inspectPlayer(process.env.PLAYER) : undefined))
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
