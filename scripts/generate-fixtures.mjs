@@ -6,7 +6,7 @@
  * league, with value files for every market source that reference the same
  * players. Run `node scripts/generate-fixtures.mjs` to regenerate.
  */
-import { mkdirSync, writeFileSync } from "fs";
+import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import path from "path";
 
 const ROOT = path.join(import.meta.dirname, "..", "fixtures");
@@ -866,5 +866,26 @@ for (const round of [1, 2, 3]) {
   }
 }
 writeFileSync(path.join(ROOT, "dtv-picks.json"), JSON.stringify(dtvPicks, null, 2));
+
+// --- Season-ending injury scenario (like a real mid-season surgery): the
+// player database and news are updated last so the usage history above keeps
+// his healthy weeks. ---
+const lostSeason = byName["J.J. McCarthy"];
+Object.assign(playersMap[lostSeason.id], {
+  injury_status: "IR",
+  status: "Inactive",
+  injury_body_part: "Knee - Meniscus",
+  injury_notes: "Surgery",
+});
+writeFileSync(path.join(ROOT, "players-subset.json"), JSON.stringify(playersMap, null, 2));
+const news = JSON.parse(readFileSync(path.join(ROOT, "espn-news.json"), "utf8"));
+news.push({
+  headline: "Vikings' offense to shift with McCarthy out for the rest of the season",
+  description: "Minnesota turns to its backup after J.J. McCarthy's knee surgery.",
+  published: "2025-11-03T19:00:00Z",
+  url: null,
+  espnIds: [],
+});
+writeFileSync(path.join(ROOT, "espn-news.json"), JSON.stringify(news, null, 2));
 
 console.log(`Generated fixtures for ${allPlayers.length} players (${faPlayers.length} free agents) in ${ROOT}`);

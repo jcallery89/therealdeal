@@ -22,6 +22,18 @@ export function PositionBadge({ position }: { position: string }) {
   );
 }
 
+/** Injury outlook badge ("Out for season", "IR", ...). */
+export function InjuryTag({ label }: { label: string }) {
+  return (
+    <span
+      title="Injury outlook — values are adjusted for the time he'll miss"
+      className="shrink-0 rounded bg-rose-500/15 px-1 py-0.5 text-[9px] font-semibold uppercase text-rose-300"
+    >
+      {label}
+    </span>
+  );
+}
+
 export function ValueChip({ value, max }: { value: number; max: number }) {
   const share = max > 0 ? value / max : 0;
   const tone =
@@ -60,7 +72,11 @@ export function PlayerBadges({
           📉
         </span>
       )}
-      {injury && injury !== "Healthy" && (
+      {player.outlook?.status === "season" ? (
+        <span className="font-semibold text-rose-400" title={player.outlook.reason ?? undefined}>
+          OUT FOR SEASON
+        </span>
+      ) : injury && injury !== "Healthy" && (
         <span className="font-semibold text-rose-400">
           {injury === "Questionable" ? "Q" : injury === "Doubtful" ? "D" : injury === "Out" ? "O" : injury}
         </span>

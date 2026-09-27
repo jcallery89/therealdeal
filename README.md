@@ -164,6 +164,17 @@ player.
 | The Real Deal | This season (default) | FantasyCalc redraft, Sleeper projections |
 | The Real Deal | Keeper (Cutdown planner, "keep" column) | FantasyCalc 1QB dynasty, DynastyProcess 1QB, DynastyTradeValues 1QB |
 
+**Injuries.** Markets react to injuries slowly (some sources refresh weekly),
+so each injured player gets an outlook from Sleeper's injury status and notes
+plus recent ESPN headlines ("rest of the season", "season-ending", torn ACL…):
+*this-season* values drop by the share of the season he'll miss (all of it
+when he's out for the year; ~4 weeks for IR), and *long-term* values take a
+15% lost-season discount (less for FantasyCalc when its market already fell).
+The Trade Finder won't count an injured player as filling a need, steers
+contenders away from him, and flags him as an injury-discount buy for
+rebuilders; the Edge feed adds "buy the injury discount", "sell a lost season"
+and "move to IR" alerts.
+
 The Real Deal's two horizons are never blended — the trade tools have a
 This season / Keeper toggle. TEs get a small TE-premium multiplier (both leagues
 are TEP); see `src/lib/config.ts`.

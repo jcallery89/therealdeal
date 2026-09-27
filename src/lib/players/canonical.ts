@@ -16,6 +16,10 @@ import { DtvValues, getDtvPicks, getDtvValues } from "../dynastytradevalues/clie
 import { getTrending } from "../sleeper/client";
 import { getPlayersMap } from "../sleeper/players";
 import { normalizeName } from "./normalize";
+import { computeOutlook, newsMentions, Outlook } from "./outlook";
+import { getEspnNews, NewsItem } from "../espn/news";
+import { getState } from "../sleeper/client";
+import { fixturesMode } from "../datasource";
 import { isPickName } from "../values/picks";
 
 export interface CanonicalPlayer {
@@ -29,6 +33,9 @@ export interface CanonicalPlayer {
   /** Sleeper depth chart: 1 = starter. */
   depthOrder?: number | null;
   injuryBodyPart?: string | null;
+  injuryNotes?: string | null;
+  /** Expected missed time (IR, out for season, ...), when injured. */
+  outlook?: Outlook;
   /** When Sleeper last attached news (ms). */
   newsUpdated?: number | null;
   values: {
@@ -137,6 +144,10 @@ export async function buildCanonicalTable(): Promise<CanonicalTable> {
       optional(getTrending("add"), []),
       optional(getTrending("drop"), []),
     ]);
+  const [newsRes, stateRes] = await Promise.all([
+    optional(getEspnNews(), [] as NewsItem[]),
+    getState().catch(() => null),
+  ]);
 
   const players: Record<string, CanonicalPlayer> = {};
   for (const p of Object.values(playersRes.data)) {
@@ -150,6 +161,7 @@ export async function buildCanonicalTable(): Promise<CanonicalTable> {
       injuryStatus: p.injury_status,
       depthOrder: p.depth_chart_order ?? null,
       injuryBodyPart: p.injury_body_part ?? null,
+      injuryNotes: p.injury_notes ?? null,
       newsUpdated: p.news_updated ?? null,
       values: {},
     };
@@ -239,6 +251,29 @@ export async function buildCanonicalTable(): Promise<CanonicalTable> {
   for (const t of trendDropRes.data) {
     const p = players[t.player_id];
     if (p) p.trending = { ...p.trending, drop: t.count };
+  }
+
+  // Injury outlook for everyone Sleeper lists as hurt, using recent news.
+  const espnBySleeper = new Map<string, string[]>();
+  for (const [espnId, sleeperId] of Object.entries(dpIdsRes.data.espn)) {
+    espnBySleeper.set(sleeperId, [...(espnBySleeper.get(sleeperId) ?? []), espnId]);
+  }
+  // Fantasy playoffs end in week 17.
+  const remainingWeeks = Math.max(1, 17 - (stateRes?.data.week ?? 1) + 1);
+  // Demo news is dated to the demo season; judge it from the day after the latest item.
+  const now = fixturesMode()
+    ? Math.max(0, ...newsRes.data.map((n) => Date.parse(n.published))) + 24 * 3600 * 1000
+    : Date.now();
+  for (const p of Object.values(players)) {
+    if (!p.injuryStatus) continue;
+    const news = newsRes.data.filter((n) => newsMentions(n, p, espnBySleeper.get(p.sleeperId) ?? []));
+    const fc = p.values.fcDynastySf;
+    const outlook = computeOutlook(p, news, {
+      remainingWeeks,
+      now,
+      marketDrop: fc && fc.value > 0 && fc.trend30Day ? -fc.trend30Day / fc.value : 0,
+    });
+    if (outlook) p.outlook = outlook;
   }
 
   const table: CanonicalTable = {

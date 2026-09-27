@@ -62,6 +62,19 @@ describe("playerValue", () => {
   });
 });
 
+describe("injury outlook", () => {
+  const hurt = {
+    ...mid,
+    injuryStatus: "IR",
+    outlook: { status: "season" as const, label: "Out for season", reason: null, missShare: 1, longTermFactor: 0.8, fcLongTermFactor: 0.9 },
+  };
+  it("zeroes this-season value and discounts long-term value per source", () => {
+    expect(playerValue(hurt, keeper, { horizon: "season", source: "consensus" }, ctx)).toBe(0);
+    expect(playerValue(hurt, dynasty, { horizon: "dynasty", source: "fc" }, ctx)).toBe(4500); // 5000 x 0.9
+    expect(playerValue(hurt, dynasty, { horizon: "dynasty", source: "dp" }, ctx)).toBe(2000); // 2500 x 0.8
+  });
+});
+
 describe("sourceAvailable", () => {
   it("reports which sources have data for a horizon", () => {
     expect(sourceAvailable("dynasty", "dd", ctx)).toBe(true);

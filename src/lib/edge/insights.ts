@@ -515,7 +515,7 @@ function lineupAndInjuries(c: Ctx): Insight[] {
     const report = c.inputs.injuryReports[id];
     const practice = report?.practice ? ` · practice: ${report.practice.replace(/ in Practice$/i, "").replace("Did Not Participate", "DNP")}` : "";
     const onBye = c.playing.size > 0 && p.team !== null && !c.playing.has(p.team);
-    const status = onBye ? "Bye" : p.injuryStatus;
+    const status = onBye ? "Bye" : p.outlook?.status === "season" ? p.outlook.label : p.injuryStatus;
     if (!status) continue;
     const severe = onBye || isUnavailable(p) || status === "Doubtful";
     if (!severe && status !== "Questionable") continue;
@@ -695,6 +695,80 @@ function stashes(c: Ctx): Insight[] {
   return out;
 }
 
+
+/** Season-ending injuries create mismatched incentives between contenders and rebuilders. */
+function injuryEdges(c: Ctx): Insight[] {
+  const out: Insight[] = [];
+  const league = c.bundle.leagueConfig.id;
+  const analytics = new Map(c.bundle.teamAnalytics.map((t) => [t.rosterId, t]));
+  const me = c.myRosterId !== null ? analytics.get(c.myRosterId) : undefined;
+  const iContend = me ? me.contenderScore >= 0 : false;
+  const longTerm = (p: CanonicalPlayer) =>
+    playerValue(p, c.bundle.leagueConfig, c.bundle.planningMode, c.valueCtx);
+
+  for (const [id, owner] of c.ownerOf) {
+    const p = c.players[id];
+    if (!p?.outlook) continue;
+    const o = p.outlook;
+    const reason: Signal = { source: "Injury report", text: `${o.label}${o.reason ? ` — ${o.reason}` : ""}` };
+
+    if (o.status === "season" && owner !== c.myRosterId && me && !iContend && (p.age ?? 99) <= 26 && longTerm(p) >= 2500) {
+      const ownerPosture = analytics.get(owner);
+      if (!ownerPosture || ownerPosture.contenderScore < 0) continue;
+      out.push({
+        id: `buy:${league}:injury:${id}`,
+        kind: "buy",
+        score: clamp(45 + longTerm(p) / 400),
+        title: `Buy the injury discount: ${label(p)}`,
+        detail: `${c.teamNameById.get(owner)} is contending and gets nothing from him this year; you're building for next year.`,
+        signals: [
+          reason,
+          { source: "Market", text: `Long-term value ${fmt(longTerm(p))} after a 15% lost-season discount` },
+          { source: "Roster fit", text: `${c.teamNameById.get(owner)}: ${ownerPosture.bucket} · you: ${me.bucket}` },
+        ],
+        playerIds: [id],
+        href: tradeHref(c, { b: owner, sendB: [id] }),
+      });
+    }
+
+    if (owner === c.myRosterId && o.status === "season" && iContend && longTerm(p) >= 1500) {
+      const buyers = c.bundle.teamAnalytics
+        .filter((t) => t.rosterId !== c.myRosterId && t.contenderScore < -25)
+        .map((t) => c.teamNameById.get(t.rosterId));
+      out.push({
+        id: `sell:${league}:injury:${id}`,
+        kind: "sell",
+        score: clamp(40 + longTerm(p) / 500),
+        title: `${p.name} is out for the season — turn him into this-year help`,
+        detail: `You're contending; he can't help until next year.${buyers.length ? ` Rebuilders who might pay: ${buyers.slice(0, 2).join(", ")}.` : ""}`,
+        signals: [reason, { source: "Market", text: `Long-term value still ${fmt(longTerm(p))}` }],
+        playerIds: [id],
+        href: `${c.hrefBase}/tradefinder`,
+      });
+    }
+  }
+
+  // Free a roster spot: injured players sitting outside an open IR slot.
+  const mine = c.bundle.rosters.find((r) => r.roster_id === c.myRosterId);
+  const irSlots = c.bundle.league.settings.reserve_slots ?? 0;
+  if (mine && irSlots > (mine.reserve ?? []).length) {
+    for (const id of mine.players ?? []) {
+      const p = c.players[id];
+      if (!p?.outlook || p.outlook.status === "week" || (mine.reserve ?? []).includes(id)) continue;
+      out.push({
+        id: `lineup:${league}:ir:${id}:${p.outlook.status}`,
+        kind: "lineup",
+        score: 58,
+        title: `Move ${p.name} to IR`,
+        detail: `You have ${irSlots - (mine.reserve ?? []).length} open IR slot(s) — stash him there and use the roster spot on a waiver pickup.`,
+        signals: [{ source: "Injury report", text: `${p.outlook.label}${p.outlook.reason ? ` — ${p.outlook.reason}` : ""}` }],
+        playerIds: [id],
+      });
+    }
+  }
+  return out.sort((a, b) => b.score - a.score).slice(0, 6);
+}
+
 /** Every edge for a league, highest priority first. */
 export function buildInsights(bundle: LeagueBundle, inputs: EdgeInputs, myRosterId: number | null): Insight[] {
   const c = makeCtx(bundle, inputs, myRosterId);
@@ -703,6 +777,7 @@ export function buildInsights(bundle: LeagueBundle, inputs: EdgeInputs, myRoster
     ...waiverGems(c),
     ...buyLowSellHigh(c),
     ...rivalIntel(c),
+    ...injuryEdges(c),
     ...stashes(c),
   ].sort((a, b) => Number(b.urgent ?? false) - Number(a.urgent ?? false) || b.score - a.score);
 }

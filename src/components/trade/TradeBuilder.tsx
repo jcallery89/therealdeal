@@ -23,6 +23,7 @@ import {
   ValueMode,
 } from "@/lib/values/engine";
 import { pickLabel } from "@/lib/values/picks";
+import { InjuryTag } from "@/components/players/PlayerRow";
 
 interface AssetOption extends TradeAsset {
   search: string;
@@ -107,6 +108,8 @@ export default function TradeBuilder({
         value: valueOf(p),
         position: p.position,
         age: p.age,
+        injury: p.outlook?.label,
+        lostSeason: p.outlook?.status === "season",
         search: p.name.toLowerCase(),
         tag: taxiSet.has(p.sleeperId)
           ? ("TAXI" as const)
@@ -419,6 +422,7 @@ function SideColumn({
                 </span>
               )}
               {a.label}
+              {a.injury && <InjuryTag label={a.injury} />}
             </span>
             <span className="flex items-center gap-2">
               <span className="font-mono text-xs text-slate-400">{a.value.toLocaleString("en-US")}</span>
@@ -468,6 +472,7 @@ function SideColumn({
                         </span>
                       )}
                       <span className="truncate">{o.label}</span>
+                      {o.injury && o.injury !== o.tag && <InjuryTag label={o.injury} />}
                       {o.tag && (
                         <span
                           className={`shrink-0 rounded px-1 py-0.5 text-[9px] font-semibold ${

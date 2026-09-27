@@ -6,7 +6,7 @@ import DataSourceBanner from "@/components/DataSourceBanner";
 import RosterNotice from "@/components/RosterNotice";
 import TeamPicker from "@/components/TeamPicker";
 import ValueModePicker from "@/components/ValueModePicker";
-import { PositionBadge } from "@/components/players/PlayerRow";
+import { InjuryTag, PositionBadge } from "@/components/players/PlayerRow";
 import { starterSlots } from "@/lib/analysis/rosterStrength";
 import { findTrades } from "@/lib/analysis/tradeFinder";
 import { TradeAsset } from "@/lib/analysis/trade";
@@ -26,6 +26,7 @@ function AssetLine({ asset }: { asset: TradeAsset }) {
           </span>
         )}
         <span className="truncate">{asset.label}</span>
+        {asset.injury && <InjuryTag label={asset.injury} />}
       </span>
       <span className="font-mono text-xs text-slate-400">{asset.value.toLocaleString("en-US")}</span>
     </div>

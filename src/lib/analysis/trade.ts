@@ -16,6 +16,10 @@ export interface TradeAsset {
   value: number;
   position?: string;
   age?: number | null;
+  /** Injury outlook badge, e.g. "Out for season" or "IR". */
+  injury?: string;
+  /** Won't play again this season. */
+  lostSeason?: boolean;
 }
 
 export interface TradeSide {

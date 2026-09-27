@@ -171,3 +171,51 @@ describe("diversify", () => {
     expect(diversify(ranked, 3)).toHaveLength(3);
   });
 });
+
+describe("season-ending injuries", () => {
+  const out = (p: CanonicalPlayer): CanonicalPlayer => ({
+    ...p,
+    injuryStatus: "IR",
+    outlook: { status: "season", label: "Out for season", reason: null, missShare: 1, longTermFactor: 0.85, fcLongTermFactor: 0.85 },
+  });
+
+  it("an injured player doesn't fill a starting spot this season", () => {
+    const players = { q1: out(makePlayer("q1", "QB", 5000)), q2: makePlayer("q2", "QB", 4000) };
+    // QB demand is 2 (QB + SF): only the healthy QB counts.
+    expect(positionBalance(["q1", "q2"], players, slots).QB).toBe(2 + 1 - 1);
+  });
+
+  it("contenders aren't sold injured players as filling a need", () => {
+    // I'm contending and QB-poor; they offer an injured QB for my surplus WRs.
+    const players: Record<string, CanonicalPlayer> = {
+      myW1: makePlayer("myW1", "WR", 3000),
+      myW2: makePlayer("myW2", "WR", 2900),
+      myW3: makePlayer("myW3", "WR", 2800),
+      myW4: makePlayer("myW4", "WR", 2700),
+      myW5: makePlayer("myW5", "WR", 2600),
+      opQ1: out(makePlayer("opQ1", "QB", 3000, 23)),
+      opQ2: makePlayer("opQ2", "QB", 2000),
+      opQ3: makePlayer("opQ3", "QB", 1900),
+    };
+    const run = (myScore: number) =>
+      findTrades({
+        league: LEAGUES[1],
+        myRosterId: 1,
+        rosters: [roster(1, ["myW1", "myW2", "myW3", "myW4", "myW5"]), roster(2, ["opQ1", "opQ2", "opQ3"])],
+        players,
+        valueOf,
+        slots,
+        teamAnalytics: [analytics(1, myScore), analytics(2, -40)],
+        picks: [],
+        pickValueOf: () => 0,
+        teamNameById: new Map([[1, "Me"], [2, "Them"]]),
+      });
+    const receivesInjured = (s: TradeSuggestion[]) => s.filter((t) => t.receive.some((a) => a.id === "opQ1"));
+    expect(receivesInjured(run(40))).toEqual([]);
+    // A rebuilder may still buy him, flagged as an injury discount.
+    const rebuild = receivesInjured(run(-40));
+    for (const t of rebuild) {
+      expect(t.myNotes.join(" ")).not.toContain("Fills a need at QB (P-opQ1)");
+    }
+  });
+});

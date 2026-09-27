@@ -106,6 +106,19 @@ export function sourceAvailable(horizon: ValueHorizon, source: ValueSource, ctx:
   return HORIZON_SOURCES[horizon].includes(source) && (ctx.maxes[key(horizon, source)] ?? 1) > 1;
 }
 
+/**
+ * Injury adjustment on top of a source's number (markets react slowly):
+ * this-season values lose the share of the season he'll miss; long-term
+ * values take a smaller hit for a lost season, net of any drop FantasyCalc's
+ * market already shows.
+ */
+export function injuryFactor(p: CanonicalPlayer, horizon: ValueHorizon, source: SingleSource): number {
+  const o = p.outlook;
+  if (!o) return 1;
+  if (horizon === "season") return 1 - o.missShare;
+  return source === "fc" ? o.fcLongTermFactor : o.longTermFactor;
+}
+
 /** One source's opinion on the shared 0-10,000 scale (share of its top player). */
 export function sourceValue(
   p: CanonicalPlayer,
@@ -114,7 +127,7 @@ export function sourceValue(
   ctx: ValueContext
 ): number {
   const raw = rawValue(p, horizon, source, ctx);
-  return raw > 0 ? (raw / (ctx.maxes[key(horizon, source)] ?? 1)) * SCALE : 0;
+  return raw > 0 ? (raw / (ctx.maxes[key(horizon, source)] ?? 1)) * SCALE * injuryFactor(p, horizon, source) : 0;
 }
 
 function tepAdjust(value: number, position: string): number {

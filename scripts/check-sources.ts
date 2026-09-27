@@ -59,6 +59,15 @@ async function inspectPlayer(name: string) {
     const keys = Object.keys(r).filter((k) => /injur|status|practice|news|depth|team|active/i.test(k));
     console.log("sleeper fields:", JSON.stringify(Object.fromEntries(keys.map((k) => [k, r[k]]))));
     console.log("values:", JSON.stringify(p.values));
+    console.log("outlook:", JSON.stringify(p.outlook ?? null));
+    const ctx = computeValueContext(table.players);
+    for (const league of LEAGUES) {
+      for (const horizon of (league.isDynasty ? ["dynasty"] : ["season", "keeper"]) as ValueHorizon[]) {
+        const mode = { horizon, source: "consensus" as const };
+        const before = playerValue({ ...p, outlook: undefined }, league, mode, ctx);
+        console.log(`${league.label} ${horizon}: ${before} -> ${playerValue(p, league, mode, ctx)} after injury outlook`);
+      }
+    }
     const espnIds = Object.entries(table.ids.espn).filter(([, sid]) => sid === p.sleeperId).map(([e]) => e);
     const gsis = Object.entries(table.ids.gsis).filter(([, sid]) => sid === p.sleeperId).map(([g]) => g);
     const news = await getEspnNews().catch(() => null);

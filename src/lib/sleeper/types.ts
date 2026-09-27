@@ -104,6 +104,8 @@ export interface SlimPlayer {
   depth_chart_order?: number | null;
   depth_chart_position?: string | null;
   injury_body_part?: string | null;
+  /** Sleeper's short injury note, e.g. "Surgery". */
+  injury_notes?: string | null;
   /** When Sleeper last attached news to the player (ms). */
   news_updated?: number | null;
 }

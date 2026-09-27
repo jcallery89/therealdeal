@@ -63,7 +63,10 @@ export function positionBalance(
 ): Record<CorePosition, number> {
   const out = { QB: 0, RB: 0, WR: 0, TE: 0 };
   for (const pos of CORE_POSITIONS) {
-    const atPos = playerIds.map((id) => players[id]).filter((p) => p?.position === pos);
+    // A player out for the season doesn't fill a starting spot this year.
+    const atPos = playerIds
+      .map((id) => players[id])
+      .filter((p) => p?.position === pos && p.outlook?.status !== "season");
     if (valueOf && replacement) {
       const startable = atPos.filter((p) => valueOf(p!) >= replacement[pos]).length;
       out[pos] = neededAtPosition(slots, pos) - startable;
@@ -110,6 +113,16 @@ function fitScore(
       } else if (ctx.contenderScore > 25) score -= 1;
       continue;
     }
+    if (a.lostSeason) {
+      // Out for the season: no help now, a discounted long-term piece.
+      if (ctx.contenderScore >= 0) {
+        score -= 2;
+        notes.push(`Out for the season — no help this year (${a.label})`);
+      } else {
+        notes.push(`Injury discount on a long-term piece (${a.label})`);
+      }
+      continue;
+    }
     if (isCore(a.position)) {
       if (ctx.balance[a.position] > 0) {
         score += 2;
@@ -129,6 +142,13 @@ function fitScore(
     }
   }
   for (const a of send) {
+    if (a.lostSeason) {
+      if (ctx.contenderScore >= 0) {
+        score += 1;
+        notes.push(`Moves a player who can't help this season (${a.label})`);
+      }
+      continue;
+    }
     if (a.kind === "player" && isCore(a.position)) {
       if (ctx.balance[a.position] < 0) score += 1; // dealing from surplus
       else if (ctx.balance[a.position] > 0) {
@@ -179,6 +199,8 @@ export function findTrades(opts: {
         value: valueOf(p),
         position: p.position,
         age: p.age,
+        injury: p.outlook?.label,
+        lostSeason: p.outlook?.status === "season",
       }))
       .filter((a) => a.value > 0)
       .sort((a, b) => b.value - a.value)

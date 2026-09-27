@@ -258,12 +258,13 @@
     "team": "MIN",
     "age": 22,
     "years_exp": 1,
-    "injury_status": null,
-    "status": "Active",
+    "injury_status": "IR",
+    "status": "Inactive",
     "depth_chart_order": 1,
     "depth_chart_position": "QB",
-    "injury_body_part": null,
-    "news_updated": null
+    "injury_body_part": "Knee - Meniscus",
+    "news_updated": null,
+    "injury_notes": "Surgery"
   },
   "p1020": {
     "player_id": "p1020",
