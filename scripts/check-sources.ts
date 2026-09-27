@@ -8,18 +8,21 @@
 const TARGETS: Record<string, string[]> = {
   dynastydealer: [
     "https://www.dynastydealer.com/api/player-values",
-    "https://www.dynastydealer.com/api/player-values?format=superflex",
-    "https://www.dynastydealer.com/api/player-values?format=1qb",
-    "https://www.dynastydealer.com/api/player-values?superflex=true",
-    "https://www.dynastydealer.com/api/player-values?qb=1",
+    "https://www.dynastydealer.com/api/player-values?isSuperflex=true",
+    "https://www.dynastydealer.com/api/player-values?isSuperflex=true&isTePremium=true",
+    "https://www.dynastydealer.com/api/player-values?superflex=1",
+    "https://www.dynastydealer.com/api/player-values?sf=true",
+    "https://www.dynastydealer.com/api/player-values?scoring=superflex",
+    "https://www.dynastydealer.com/api/player-values?league_type=superflex",
+    "https://www.dynastydealer.com/api/player-values?type=sf",
+    "https://www.dynastydealer.com/api",
+    "https://www.dynastydealer.com/api/pick-values",
+    "https://www.dynastydealer.com/api/player-values/superflex",
   ],
   dynastytradevalues: [
     "https://dynastytradevalues.com/wp-json/dtc/v1/public/player-values?limit=5",
-    "https://dynastytradevalues.com/wp-json/dtc/v1/public/player-values?limit=5&format=superflex",
-    "https://dynastytradevalues.com/wp-json/dtc/v1/public/player-values?limit=5&format=1qb",
-    "https://dynastytradevalues.com/wp-json/dtc/v1/public/player-values?limit=5&superflex=1",
-    "https://dynastytradevalues.com/wp-json/dtc/v1/public/pick-values?limit=5",
-    "https://dynastytradevalues.com/wp-json/dtc/v1/public",
+    "https://www.dynastytradevalues.com/wp-json/dtc/v1/public/player-values?limit=5",
+    "https://dynastytradevalues.com/",
   ],
 };
 
@@ -52,13 +55,23 @@ async function main() {
         console.log(`\n${res.status} ${url} (${text.length} bytes, ${res.headers.get("content-type")})`);
         try {
           const json = JSON.parse(text);
-          console.log("shape:", shape(json).slice(0, 1500));
-          console.log("rows:", JSON.stringify(firstRows(json)).slice(0, 1500));
+          console.log("shape:", shape(json).slice(0, 600));
+          const rows = firstRows(json);
+          console.log("rows:", JSON.stringify(rows).slice(0, 600));
+          const all = (json?.players ?? (Array.isArray(json) ? json : [])) as { name?: string; position?: string; current_value?: number }[];
+          if (all.length) {
+            const positions: Record<string, number> = {};
+            for (const r of all) positions[r.position ?? "?"] = (positions[r.position ?? "?"] ?? 0) + 1;
+            const qb = all.filter((r) => r.position === "QB").slice(0, 3).map((r) => `${r.name} ${r.current_value}`);
+            console.log("positions:", JSON.stringify(positions), "top QBs:", qb.join(", "));
+            console.log("picks:", JSON.stringify(all.filter((r) => !["QB", "RB", "WR", "TE"].includes(r.position ?? "")).slice(0, 6)).slice(0, 700));
+          }
         } catch {
           console.log("not JSON:", text.slice(0, 300).replace(/\s+/g, " "));
         }
       } catch (err) {
-        console.log(`ERR ${url}: ${err instanceof Error ? err.message : err}`);
+        const cause = err instanceof Error && err.cause ? ` (${String((err.cause as Error).message ?? err.cause)})` : "";
+        console.log(`ERR ${url}: ${err instanceof Error ? err.message : err}${cause}`);
       }
     }
   }
