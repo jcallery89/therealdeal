@@ -47,7 +47,7 @@ export interface LeagueBundle {
   /** Sleeper requests that failed and are showing an earlier copy. */
   sourceIssues: SourceIssue[];
   /** Health of each value source (live / cache / fixture / unavailable). */
-  valueSources: { fc: DataSourceKind; ktc: DataSourceKind; dp: DataSourceKind; proj: DataSourceKind };
+  valueSources: { fc: DataSourceKind; dp: DataSourceKind; dd: DataSourceKind; dtv: DataSourceKind; proj: DataSourceKind };
   /** Every source behind the default view failed — values are missing. */
   valuesUnavailable: boolean;
 }

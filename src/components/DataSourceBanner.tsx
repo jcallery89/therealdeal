@@ -49,8 +49,8 @@ export default function DataSourceBanner({
     );
   }
 
-  // Individual value providers (e.g. KeepTradeCut, which often blocks cloud
-  // hosts) drop out of the consensus silently; only warn when all of them fail.
+  // Individual value providers drop out of the consensus silently; only warn
+  // when all of them fail.
   if (!valuesUnavailable) return null;
   return (
     <div

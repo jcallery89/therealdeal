@@ -32,7 +32,8 @@ export default function PlayersExplorer({ bundle, rows }: { bundle: LeagueBundle
     [
       ["vFc", "FC", "FantasyCalc"],
       ["vDp", "DP", "DynastyProcess (FantasyPros consensus)"],
-      ["vKtc", "KTC", "KeepTradeCut"],
+      ["vDd", "DD", "Dynasty Dealer (real Sleeper trades)"],
+      ["vDtv", "DTV", "DynastyTradeValues"],
       ["vProj", "Proj", "Sleeper projections, your league's scoring"],
       ["keeper", "Keeper", "Long-term 1QB keeper value (consensus)"],
     ] as const

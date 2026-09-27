@@ -11,7 +11,8 @@ import {
 } from "../dynastyprocess/client";
 import { getFcValues } from "../fantasycalc/client";
 import { FcEntry } from "../fantasycalc/types";
-import { getKtcValues } from "../ktc/scrape";
+import { DdValues, getDdValues } from "../dynastydealer/client";
+import { DtvValues, getDtvPicks, getDtvValues } from "../dynastytradevalues/client";
 import { getTrending } from "../sleeper/client";
 import { getPlayersMap } from "../sleeper/players";
 import { normalizeName } from "./normalize";
@@ -35,7 +36,10 @@ export interface CanonicalPlayer {
     fcRedraft?: { value: number; overallRank: number; positionRank: number | null; trend30Day: number | null };
     /** FantasyCalc dynasty 1QB — the keeper horizon for the 1QB league. */
     fcDynasty1qb?: { value: number; overallRank: number; positionRank: number | null; trend30Day: number | null };
-    ktc?: { sf: number; oneQb: number };
+    /** Dynasty Dealer: real Sleeper trades + community votes (one, superflex-leaning, value set). */
+    dd?: { value: number };
+    /** DynastyTradeValues: algorithmic ADP/market values, 1QB and superflex. */
+    dtv?: { sf: number; oneQb: number };
     /** DynastyProcess (FantasyPros expert consensus) dynasty values. */
     dp?: { sf: number; oneQb: number };
   };
@@ -45,8 +49,9 @@ export interface CanonicalPlayer {
 /** Health of each market-value provider. */
 export interface ValueSourceHealth {
   fc: DataSourceKind;
-  ktc: DataSourceKind;
   dp: DataSourceKind;
+  dd: DataSourceKind;
+  dtv: DataSourceKind;
 }
 
 export interface CanonicalTable {
@@ -55,6 +60,9 @@ export interface CanonicalTable {
   fcPicks: { dynastySf: FcEntry[]; dynasty1qb: FcEntry[]; redraft: FcEntry[] };
   /** DynastyProcess pick values (1QB and superflex). */
   dpPicks: DpPick[];
+  /** Dynasty Dealer and DynastyTradeValues pick values. */
+  ddPicks: { name: string; value: number }[];
+  dtvPicks: { name: string; value: number }[];
   /** Other providers' ids -> Sleeper id (nflverse, ESPN). */
   ids: IdCrosswalk;
   /** Normalized-name lookup for rows the crosswalk misses. */
@@ -64,14 +72,14 @@ export interface CanonicalTable {
     /** Per-value-source health, so optional sources can degrade softly. */
     sources: ValueSourceHealth;
     fetchedAt: number;
-    ktcUnmatched: string[];
     counts: {
       players: number;
       fcDynastySf: number;
       fcDynasty1qb: number;
       fcRedraft: number;
-      ktc: number;
       dp: number;
+      dd: number;
+      dtv: number;
     };
   };
 }
@@ -87,8 +95,9 @@ function fcValueShape(e: FcEntry) {
 
 /**
  * Joins Sleeper players (source of truth, keyed by player_id) with
- * FantasyCalc (direct via sleeperId) and KTC (normalized-name match with
- * position/team disambiguation). Cached for an hour.
+ * FantasyCalc and Dynasty Dealer (direct via sleeperId) and DynastyProcess
+ * (FantasyPros id crosswalk, then normalized-name match with position/team
+ * disambiguation). Cached for an hour.
  */
 /** Optional sources degrade to an empty value rather than failing the page. */
 async function optional<T>(p: Promise<Sourced<T>>, empty: T): Promise<Sourced<T>> {
@@ -101,6 +110,8 @@ async function optional<T>(p: Promise<Sourced<T>>, empty: T): Promise<Sourced<T>
 }
 
 const EMPTY_DP: DpValues = { players: [], picks: [] };
+const EMPTY_DD: DdValues = { players: [], picks: [] };
+const EMPTY_DTV: DtvValues = { players: [], format: "1qb", generatedAt: null };
 
 /** Degraded tables are retried soon instead of sticking for the full TTL. */
 const DEGRADED_TTL_MS = 2 * 60 * 1000;
@@ -111,13 +122,16 @@ export async function buildCanonicalTable(): Promise<CanonicalTable> {
 
   // The player database is required (throws -> error page); value and
   // trending sources are optional.
-  const [playersRes, fcDynRes, fcDyn1Res, fcRedRes, ktcRes, dpRes, dpIdsRes, trendAddRes, trendDropRes] =
+  const [playersRes, fcDynRes, fcDyn1Res, fcRedRes, ddRes, dtv1Res, dtvSfRes, dtvPicksRes, dpRes, dpIdsRes, trendAddRes, trendDropRes] =
     await Promise.all([
       getPlayersMap(),
       optional(getFcValues("dynasty_sf"), []),
       optional(getFcValues("dynasty_1qb"), []),
       optional(getFcValues("redraft_1qb"), []),
-      optional(getKtcValues(), []),
+      optional(getDdValues(), EMPTY_DD),
+      optional(getDtvValues("1qb"), EMPTY_DTV),
+      optional(getDtvValues("sf"), EMPTY_DTV),
+      optional(getDtvPicks(), []),
       optional(getDpValues(), EMPTY_DP),
       optional(getDpIds(), EMPTY_CROSSWALK),
       optional(getTrending("add"), []),
@@ -141,7 +155,7 @@ export async function buildCanonicalTable(): Promise<CanonicalTable> {
     };
   }
 
-  // Name index for KTC matching: normalized name -> sleeper ids.
+  // Name index for sources without a usable id: normalized name -> sleeper ids.
   const byName = new Map<string, string[]>();
   for (const p of Object.values(players)) {
     const key = normalizeName(p.name);
@@ -195,20 +209,28 @@ export async function buildCanonicalTable(): Promise<CanonicalTable> {
     }
   }
 
-  const ktcUnmatched: string[] = [];
-  let ktcCount = 0;
-  for (const k of ktcRes.data) {
-    const matchId = matchByName(k.playerName, k.position, k.team);
-    if (matchId) {
-      players[matchId].values.ktc = {
-        sf: k.superflexValues?.value ?? 0,
-        oneQb: k.oneQBValues?.value ?? 0,
-      };
-      ktcCount++;
-    } else {
-      ktcUnmatched.push(k.playerName);
-    }
+  // Dynasty Dealer: direct Sleeper ids (name fallback for any stragglers).
+  let ddCount = 0;
+  for (const d of ddRes.data.players) {
+    const id = players[d.sleeperId] ? d.sleeperId : matchByName(d.name, d.position, d.team);
+    if (!id) continue;
+    players[id].values.dd = { value: d.value };
+    ddCount++;
   }
+
+  // DynastyTradeValues: name-keyed, 1QB and superflex lists.
+  const dtvIds = new Set<string>();
+  const joinDtv = (res: Sourced<DtvValues>, field: "oneQb" | "sf") => {
+    for (const d of res.data.players) {
+      const id = matchByName(d.name, d.position, d.team);
+      if (!id) continue;
+      const prev = players[id].values.dtv ?? { sf: 0, oneQb: 0 };
+      players[id].values.dtv = { ...prev, [field]: d.value };
+      dtvIds.add(id);
+    }
+  };
+  joinDtv(dtv1Res, "oneQb");
+  joinDtv(dtvSfRes, "sf");
 
   for (const t of trendAddRes.data) {
     const p = players[t.player_id];
@@ -223,29 +245,31 @@ export async function buildCanonicalTable(): Promise<CanonicalTable> {
     players,
     fcPicks,
     dpPicks: dpRes.data.picks,
+    ddPicks: ddRes.data.picks,
+    dtvPicks: dtvPicksRes.data,
     ids: dpIdsRes.data,
     matchByName,
     meta: {
       source: worstSource(playersRes.source, fcDynRes.source, fcRedRes.source, dpRes.source),
       sources: {
         fc: worstSource(fcDynRes.source, fcDyn1Res.source, fcRedRes.source),
-        ktc: ktcRes.source,
         dp: dpRes.source,
+        dd: ddRes.source,
+        dtv: worstSource(dtv1Res.source, dtvSfRes.source),
       },
       fetchedAt: Date.now(),
-      ktcUnmatched,
       counts: {
         players: Object.keys(players).length,
         fcDynastySf: fcDynCount,
         fcDynasty1qb: fcDyn1Count,
         fcRedraft: fcRedCount,
-        ktc: ktcCount,
         dp: dpCount,
+        dd: ddCount,
+        dtv: dtvIds.size,
       },
     },
   };
   const failed = (s: DataSourceKind) => s === "stale" || s === "unavailable";
-  // KTC often blocks cloud hosts; it's an optional extra and doesn't shorten the cache.
   const degraded = failed(table.meta.sources.fc) || failed(table.meta.sources.dp);
   cache.set("canonical", table, degraded && table.meta.source !== "fixture" ? DEGRADED_TTL_MS : TTL.canonical);
   return table;

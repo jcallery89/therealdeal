@@ -44,7 +44,7 @@ export function getLeagueConfig(leagueId: string): LeagueConfig | undefined {
 }
 
 /**
- * Both leagues are TE Premium; FantasyCalc/KTC values are TEP-agnostic, so TE
+ * Both leagues are TE Premium; the market values are TEP-agnostic, so TE
  * values get a small visible bump ("TEP adj" in the UI).
  */
 export const TE_PREMIUM_MULTIPLIER = 1.05;
@@ -56,7 +56,6 @@ export const ROOKIE_DRAFT_ROUNDS = 4;
 export const TTL = {
   players: 24 * 60 * 60 * 1000,
   fantasycalc: 12 * 60 * 60 * 1000,
-  ktc: 24 * 60 * 60 * 1000,
   dynastyprocess: 12 * 60 * 60 * 1000,
   league: 5 * 60 * 1000,
   trending: 15 * 60 * 1000,

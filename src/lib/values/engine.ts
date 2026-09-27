@@ -9,7 +9,7 @@ import { DraftPick, PickValueTable, pickValue } from "./picks";
  * - "keeper": long-term 1QB value (The Real Deal keepers).
  */
 export type ValueHorizon = "dynasty" | "season" | "keeper";
-export type SingleSource = "fc" | "dp" | "ktc" | "proj";
+export type SingleSource = "fc" | "dp" | "dd" | "dtv" | "proj";
 export type ValueSource = "consensus" | SingleSource;
 
 export interface ValueMode {
@@ -21,7 +21,8 @@ export const SOURCE_LABELS: Record<ValueSource, string> = {
   consensus: "Consensus",
   fc: "FantasyCalc",
   dp: "DynastyProcess",
-  ktc: "KeepTradeCut",
+  dd: "Dynasty Dealer",
+  dtv: "DynastyTradeValues",
   proj: "Projections",
 };
 
@@ -33,9 +34,10 @@ export const HORIZON_LABELS: Record<ValueHorizon, string> = {
 
 /** The independent opinions behind each horizon; Consensus averages them. */
 export const HORIZON_SOURCES: Record<ValueHorizon, SingleSource[]> = {
-  dynasty: ["fc", "dp", "ktc"],
+  dynasty: ["fc", "dp", "dd", "dtv"],
   season: ["fc", "proj"],
-  keeper: ["fc", "dp", "ktc"],
+  // Dynasty Dealer only publishes superflex-leaning values, so it sits out 1QB.
+  keeper: ["fc", "dp", "dtv"],
 };
 
 export function horizonsFor(league: LeagueConfig): ValueHorizon[] {
@@ -68,12 +70,13 @@ function rawValue(p: CanonicalPlayer, horizon: ValueHorizon, source: SingleSourc
     case "dynasty":
       if (source === "fc") return v.fcDynastySf?.value ?? 0;
       if (source === "dp") return v.dp?.sf ?? 0;
-      if (source === "ktc") return v.ktc?.sf ?? 0;
+      if (source === "dd") return v.dd?.value ?? 0;
+      if (source === "dtv") return v.dtv?.sf ?? 0;
       return 0;
     case "keeper":
       if (source === "fc") return v.fcDynasty1qb?.value ?? 0;
       if (source === "dp") return v.dp?.oneQb ?? 0;
-      if (source === "ktc") return v.ktc?.oneQb ?? 0;
+      if (source === "dtv") return v.dtv?.oneQb ?? 0;
       return 0;
     case "season":
       if (source === "fc") return v.fcRedraft?.value ?? 0;
@@ -151,16 +154,21 @@ export function trend30(p: CanonicalPlayer, league: LeagueConfig): number {
 export interface PickTables {
   fc: PickValueTable;
   dp: PickValueTable;
+  dd?: PickValueTable;
+  dtv?: PickValueTable;
 }
+
+const PICK_SOURCES = ["fc", "dp", "dd", "dtv"] as const;
 
 /** FantasyCalc's typical top dynasty value — the static pick curve's scale. */
 const FC_REFERENCE_MAX = 10500;
 
 /**
  * Value of a draft pick on the same 0-10,000 scale as players. Dynasty picks
- * come from FantasyCalc and DynastyProcess (KTC picks aren't scraped, so KTC
- * mode uses FantasyCalc's). The 1QB keeper league's draft isn't a rookie
- * draft, so its picks use the static curve.
+ * come from every market that prices them (FantasyCalc, DynastyProcess,
+ * Dynasty Dealer, DynastyTradeValues); a source without pick prices falls
+ * back to FantasyCalc's. The 1QB keeper league's draft isn't a rookie draft,
+ * so its picks use the static curve.
  */
 export function draftPickValue(
   pick: DraftPick,
@@ -177,14 +185,18 @@ export function draftPickValue(
   };
   if (!league.isDynasty) return Math.round(norm({ values: {}, source: "static" }, "fc"));
 
-  const fc = tables.fc.source !== "static" ? norm(tables.fc, "fc") : null;
-  const dp = tables.dp.source !== "static" ? norm(tables.dp, "dp") : null;
+  const priced = new Map<SingleSource, number>();
+  for (const s of PICK_SOURCES) {
+    const table = tables[s];
+    if (table && table.source !== "static") priced.set(s, norm(table, s));
+  }
   const fallback = norm({ values: {}, source: "static" }, "fc");
   let v: number;
-  if (mode.source === "dp") v = dp ?? fc ?? fallback;
-  else if (mode.source === "consensus") {
-    const votes = [fc, dp].filter((x): x is number => x !== null);
+  if (mode.source === "consensus") {
+    const votes = [...priced.values()];
     v = votes.length ? votes.reduce((a, b) => a + b, 0) / votes.length : fallback;
-  } else v = fc ?? dp ?? fallback;
+  } else {
+    v = priced.get(mode.source) ?? priced.get("fc") ?? priced.values().next().value ?? fallback;
+  }
   return Math.round(v);
 }

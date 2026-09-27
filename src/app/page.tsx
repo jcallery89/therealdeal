@@ -93,7 +93,7 @@ export default function Home() {
             Welcome back, {user.displayName || user.username}
           </h1>
           <p className="mt-1 text-sm text-slate-500">
-            Rosters sync from Sleeper; values from FantasyCalc and KeepTradeCut.
+            Rosters sync from Sleeper; values blend FantasyCalc, DynastyProcess, Dynasty Dealer and DynastyTradeValues.
           </p>
         </div>
         <Link href="/setup" className="text-xs text-slate-500 underline hover:text-slate-300">

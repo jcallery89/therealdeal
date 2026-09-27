@@ -15,7 +15,7 @@ export default function Sidebar() {
       <NavTree />
 
       <div className="mt-auto px-3 text-[11px] leading-relaxed text-slate-600">
-        Values: FantasyCalc &amp; KeepTradeCut.
+        Values: FantasyCalc, DynastyProcess, Dynasty Dealer &amp; DynastyTradeValues.
         <br />
         Rosters sync from the Sleeper API.
       </div>

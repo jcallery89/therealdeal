@@ -6,9 +6,9 @@ A web app for managing two Sleeper fantasy football leagues:
 - **Dynasty League** — 10-team Dynasty Superflex, PPR + TEP (league `1315718697288990720`)
 
 Rosters sync live from the Sleeper API. Player values are a consensus of
-several independent sources — FantasyCalc, DynastyProcess, Sleeper projections,
-and (when it responds) KeepTradeCut. No API keys are needed — every data source
-is free and read-only.
+several independent sources — FantasyCalc, DynastyProcess, Dynasty Dealer,
+DynastyTradeValues and Sleeper projections. No API keys are needed — every data
+source is free, public and read-only.
 
 ## Features
 
@@ -85,7 +85,7 @@ pulls the latest rosters and transactions from Sleeper on demand.
 
 ```bash
 npm install
-npm run dev        # live mode — real Sleeper/FantasyCalc/KTC data
+npm run dev        # live mode — real Sleeper and value-source data
 ```
 
 Open http://localhost:3000, enter your Sleeper username once, and the app finds
@@ -132,7 +132,8 @@ one (if any) is failing, with the error and timing.
 | [FantasyCalc](https://fantasycalc.com) | market trade values from real trades (dynasty SF, dynasty 1QB, redraft), draft pick values | public JSON API, joined via `sleeperId` |
 | [DynastyProcess](https://github.com/dynastyprocess/data) | dynasty values (1QB + SF) derived from FantasyPros expert rankings, pick values | open CSVs on GitHub, joined via their FantasyPros→Sleeper id crosswalk |
 | Sleeper projections | season stats + rest-of-season projections, scored with your league's settings | points per game over replacement at each position |
-| [KeepTradeCut](https://keeptradecut.com) | crowdsourced dynasty values (1QB + SF) — optional | server-side scrape, name-matched; skipped silently when blocked |
+| [Dynasty Dealer](https://www.dynastydealer.com) | dynasty values from 670k+ real Sleeper trades plus community votes; pick values | free public JSON API, joined via Sleeper id. One (superflex-leaning) value set, so it's used for the superflex Dynasty League only |
+| [DynastyTradeValues](https://dynastytradevalues.com) | algorithmic dynasty values from ADP/market data, 1QB and superflex; pick values | free public JSON API, name-matched |
 | [FantasyPros](https://www.fantasypros.com) via DynastyProcess | weekly expert consensus rankings (~100 experts: rank, best/worst, grade) | daily CSV mirror on GitHub |
 | [nflverse](https://github.com/nflverse) | weekly usage (targets, target share, air yards, WOPR, carries), snap counts, official injury reports with practice status | CSV releases on GitHub, nightly in season |
 | [nfldata](https://github.com/nflverse/nfldata) | schedule, spreads and totals (→ implied team totals, byes, kickoffs) | `games.csv` on GitHub |
@@ -143,6 +144,10 @@ Providers' player ids are joined to Sleeper's through DynastyProcess's id
 crosswalk (FantasyPros, GSIS, PFR, ESPN) with a name fallback. Every source
 beyond Sleeper's league data is optional: if one is down, edges simply use the
 others. Open `/api/health` to see each one's status.
+
+*Why not KeepTradeCut?* It has no public API, blocks cloud servers, and its
+terms prohibit scraping or reusing its values in other tools, so it was
+replaced with Dynasty Dealer and DynastyTradeValues, which publish free APIs.
 
 *Why not Reddit?* Reddit's API requires a registered app since 2023, blocks
 most cloud servers (Vercel, GitHub Actions), and its start/sit threads are
@@ -155,9 +160,9 @@ player.
 
 | League | Horizon | Sources |
 |---|---|---|
-| Dynasty League | Dynasty (superflex) | FantasyCalc SF, DynastyProcess SF, KTC SF |
+| Dynasty League | Dynasty (superflex) | FantasyCalc SF, DynastyProcess SF, Dynasty Dealer, DynastyTradeValues SF |
 | The Real Deal | This season (default) | FantasyCalc redraft, Sleeper projections |
-| The Real Deal | Keeper (Cutdown planner, "keep" column) | FantasyCalc 1QB dynasty, DynastyProcess 1QB, KTC 1QB |
+| The Real Deal | Keeper (Cutdown planner, "keep" column) | FantasyCalc 1QB dynasty, DynastyProcess 1QB, DynastyTradeValues 1QB |
 
 The Real Deal's two horizons are never blended — the trade tools have a
 This season / Keeper toggle. TEs get a small TE-premium multiplier (both leagues
@@ -196,8 +201,11 @@ from the Actions tab if that happens.
   `src/lib/config.ts` when the NFL schedule drops each May.
 - **League IDs**: set the two `NEXT_PUBLIC_LEAGUE_ID_*` variables after your
   leagues renew (see above).
-- **KTC name aliases**: if `/api/values` reports `ktcUnmatched` players, add
-  aliases to `src/lib/players/normalize.ts`.
+- **Name aliases**: DynastyTradeValues (and fallbacks for other sources) match
+  players by name; add any nickname mismatches to `src/lib/players/normalize.ts`.
+- **Source check**: *Actions → Source check → Run workflow* fetches every value
+  source live, joins it to Sleeper exactly like the app, and prints match
+  counts and each source's top players.
 
 ## Development
 

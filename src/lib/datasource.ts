@@ -42,7 +42,7 @@ export interface FetchOptions<T> {
   ttlMs: number;
   /** Transform/validate the live response (fixtures store the parsed shape). */
   parse?: (raw: unknown) => T;
-  /** Response is HTML/text rather than JSON (e.g. KTC scrape). */
+  /** Response is text rather than JSON (e.g. CSV files). */
   asText?: boolean;
   /** Skip the cache read (user-initiated sync); the result is still cached. */
   fresh?: boolean;

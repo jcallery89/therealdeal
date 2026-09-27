@@ -1,5 +1,6 @@
 /**
- * Name normalization for joining KTC (name-keyed) data to Sleeper players.
+ * Name normalization for joining name-keyed sources (DynastyTradeValues,
+ * nflverse/FantasyPros fallbacks) to Sleeper players.
  */
 
 const SUFFIXES = new Set(["jr", "sr", "ii", "iii", "iv", "v"]);

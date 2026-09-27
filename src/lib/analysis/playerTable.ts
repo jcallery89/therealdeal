@@ -21,7 +21,8 @@ export interface PlayerRow {
   /** Each provider's value under the default lens (null = not listed / no data). */
   vFc: number | null;
   vDp: number | null;
-  vKtc: number | null;
+  vDd: number | null;
+  vDtv: number | null;
   vProj: number | null;
   /** Keeper league: long-term 1QB consensus value. */
   keeper: number | null;
@@ -91,7 +92,8 @@ export function buildPlayerRows(opts: {
       value,
       vFc: per("fc", p),
       vDp: per("dp", p),
-      vKtc: per("ktc", p),
+      vDd: per("dd", p),
+      vDtv: per("dtv", p),
       vProj: per("proj", p),
       keeper: keeperValueOf ? keeperValueOf(p) || null : null,
       posRank: null,
@@ -122,7 +124,8 @@ export type SortKey =
   | "value"
   | "vFc"
   | "vDp"
-  | "vKtc"
+  | "vDd"
+  | "vDtv"
   | "vProj"
   | "keeper"
   | "posRank"

@@ -101,7 +101,7 @@ export default function EdgeFeed({
           );
         })}
         <span className="px-1 text-[10px] text-slate-600">
-          + FantasyCalc / DynastyProcess / KTC values · {up.length}/{Object.keys(health).length} live feeds
+          + FantasyCalc / DynastyProcess / Dynasty Dealer / DynastyTradeValues values · {up.length}/{Object.keys(health).length} live feeds
         </span>
       </div>
 

@@ -3,8 +3,8 @@
  *
  * Produces an internally consistent demo world: 120 players (synthetic
  * Sleeper ids) shared by both leagues, distributed across 10 rosters per
- * league, with FantasyCalc-shaped and KTC-shaped value files that reference
- * the same players. Run `node scripts/generate-fixtures.mjs` to regenerate.
+ * league, with value files for every market source that reference the same
+ * players. Run `node scripts/generate-fixtures.mjs` to regenerate.
  */
 import { mkdirSync, writeFileSync } from "fs";
 import path from "path";
@@ -491,26 +491,32 @@ writeFileSync(
   JSON.stringify(fcEntries("red"), null, 2)
 );
 
-// --- KTC-shaped fixture (name-keyed; includes deliberate name variants to
-// exercise the normalization/alias matching) ---
-const KTC_NAME_VARIANTS = {
-  "Hollywood Brown": "Marquise Brown",
-  "Kenneth Walker III": "Kenneth Walker",
-  "Michael Penix Jr.": "Michael Penix",
-  "Cam Ward": "Cameron Ward",
-  "Brian Robinson Jr.": "Brian Robinson",
-};
-const ktc = allPlayers
+// --- Dynasty Dealer (parsed shape; Sleeper ids). Mirrors the draw order of
+// the retired KTC fixture so the rest of the demo world stays identical. ---
+const ddPlayers = allPlayers
   .filter((p) => p.dyn > 1200 || rand() > 0.5) // ~85% coverage
-  .map((p) => ({
-    playerName: KTC_NAME_VARIANTS[p.name] ?? p.name,
-    position: p.pos,
-    team: p.team,
-    age: p.age,
-    oneQBValues: { value: Math.min(9999, jitter(Math.round(p.pos === "QB" ? p.dyn * 0.55 : p.dyn * 0.92), 0.06)) },
-    superflexValues: { value: Math.min(9999, jitter(Math.round((p.dyn / 10500) * 9700), 0.05)) },
-  }));
-writeFileSync(path.join(ROOT, "ktc-playersArray.json"), JSON.stringify(ktc, null, 2));
+  .map((p) => {
+    jitter(1, 0.06); // keep the random sequence stable
+    return {
+      sleeperId: p.id,
+      name: p.name,
+      position: p.pos,
+      team: p.team,
+      value: Math.min(9999, jitter(Math.round((p.dyn / 10500) * 9700), 0.05)),
+    };
+  });
+const ddPicks = [];
+for (const [yi, season] of [String(parseInt(SEASON) + 1), String(parseInt(SEASON) + 2)].entries()) {
+  for (const round of [1, 2, 3]) {
+    ["Early", "Mid", "Late"].forEach((bucket, bi) => {
+      ddPicks.push({
+        name: `${season} ${bucket} ${["1st", "2nd", "3rd"][round - 1]}`,
+        value: Math.round(PICK_CURVE[round][bi] * 1.05 * Math.pow(0.9, yi)),
+      });
+    });
+  }
+}
+writeFileSync(path.join(ROOT, "dynastydealer.json"), JSON.stringify({ players: ddPlayers, picks: ddPicks }, null, 2));
 
 // --- Trending ---
 const byTrend = [...allPlayers].sort((a, b) => (b.exp === 0 ? b.dyn : b.dyn * 0.4) - (a.exp === 0 ? a.dyn : a.dyn * 0.4));
@@ -822,5 +828,43 @@ writeFileSync(
     2
   )
 );
+
+// --- DynastyTradeValues (parsed shape; name-keyed, 1QB + superflex, picks).
+// A couple of name variants exercise the name matching. ---
+const DTV_NAME_VARIANTS = { "Kenneth Walker III": "Kenneth Walker", "Brian Robinson Jr.": "Brian Robinson" };
+const dtvRows = allPlayers
+  .filter((p) => p.dyn > 1400 || rand() > 0.4)
+  .map((p) => ({
+    p,
+    oneQb: Math.min(10000, jitter(Math.round(p.pos === "QB" ? p.dyn * 0.6 : p.dyn * 0.93), 0.07)),
+    sf: Math.min(10000, jitter(Math.round(p.dyn * 0.97), 0.07)),
+  }));
+for (const [format, key] of [["1qb", "oneQb"], ["sf", "sf"]]) {
+  writeFileSync(
+    path.join(ROOT, `dtv-${format}.json`),
+    JSON.stringify(
+      {
+        players: dtvRows
+          .map((r) => ({ name: DTV_NAME_VARIANTS[r.p.name] ?? r.p.name, position: r.p.pos, team: r.p.team, value: r[key] }))
+          .sort((a, b) => b.value - a.value),
+        format,
+        generatedAt: "2025-11-01 12:00:00",
+      },
+      null,
+      2
+    )
+  );
+}
+const dtvPicks = [];
+for (const round of [1, 2, 3]) {
+  for (let slot = 1; slot <= 12; slot++) {
+    const bucket = slot <= 4 ? 0 : slot <= 8 ? 1 : 2;
+    dtvPicks.push({
+      name: `${String(parseInt(SEASON) + 1)} Pick ${round}.${String(slot).padStart(2, "0")}`,
+      value: Math.round(PICK_CURVE[round][bucket] * (1.12 - slot * 0.02)),
+    });
+  }
+}
+writeFileSync(path.join(ROOT, "dtv-picks.json"), JSON.stringify(dtvPicks, null, 2));
 
 console.log(`Generated fixtures for ${allPlayers.length} players (${faPlayers.length} free agents) in ${ROOT}`);

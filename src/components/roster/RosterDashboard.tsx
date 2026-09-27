@@ -121,7 +121,7 @@ export default function RosterDashboard({ bundle }: { bundle: LeagueBundle }) {
                   {!leagueConfig.isDynasty && p && keeperValueOf(p) > 0 && (
                     <span
                       className="font-mono text-[11px] text-slate-600"
-                      title="Keeper value: long-term 1QB consensus (FantasyCalc, DynastyProcess, KTC)"
+                      title="Keeper value: long-term 1QB consensus (FantasyCalc, DynastyProcess, DynastyTradeValues)"
                     >
                       keep {keeperValueOf(p).toLocaleString("en-US")}
                     </span>

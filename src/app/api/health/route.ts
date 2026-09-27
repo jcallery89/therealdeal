@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { LEAGUES } from "@/lib/config";
 import { Sourced } from "@/lib/datasource";
 import { getFcValues } from "@/lib/fantasycalc/client";
-import { getKtcValues } from "@/lib/ktc/scrape";
+import { getDdValues } from "@/lib/dynastydealer/client";
+import { getDtvPicks, getDtvValues } from "@/lib/dynastytradevalues/client";
 import {
   getLeague,
   getLeagueUsers,
@@ -68,7 +69,10 @@ export async function GET() {
     ]),
     check("fantasycalc: dynasty superflex", () => getFcValues("dynasty_sf")),
     check("fantasycalc: redraft", () => getFcValues("redraft_1qb")),
-    check("keeptradecut (optional)", () => getKtcValues()),
+    check("dynasty dealer", () => getDdValues()),
+    check("dynastytradevalues: 1QB", () => getDtvValues("1qb")),
+    check("dynastytradevalues: superflex", () => getDtvValues("sf")),
+    check("dynastytradevalues: picks", () => getDtvPicks()),
     check("dynastyprocess: values", () => getDpValues()),
     check("dynastyprocess: id crosswalk", () => getDpIds()),
     check("fantasypros: weekly expert rankings", () => getFpWeekly()),

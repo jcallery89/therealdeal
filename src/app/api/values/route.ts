@@ -4,7 +4,7 @@ import { parseFcPicks } from "@/lib/values/picks";
 import { computeValueContext } from "@/lib/values/engine";
 
 /**
- * Unified value table: canonical players (Sleeper + FantasyCalc + KTC joined),
+ * Unified value table: canonical players (Sleeper joined with every value source),
  * parsed draft-pick values, and normalization context for blending.
  */
 export async function GET() {
@@ -21,7 +21,6 @@ export async function GET() {
     meta: {
       source: table.meta.source,
       fetchedAt: table.meta.fetchedAt,
-      ktcUnmatched: table.meta.ktcUnmatched,
       counts: table.meta.counts,
     },
   });

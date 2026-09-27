@@ -18,7 +18,7 @@ export interface DraftPick {
 export interface PickValueTable {
   /** key: `${season}-${round}` or `${season}-${round}-${bucket}` */
   values: Record<string, number>;
-  source: "fantasycalc" | "dynastyprocess" | "static";
+  source: "fantasycalc" | "dynastyprocess" | "dynastydealer" | "dynastytradevalues" | "static";
 }
 
 /** "2027 Early 1st", "2027 1st", "2027 Round 1" */

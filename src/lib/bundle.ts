@@ -89,7 +89,8 @@ export async function getLeagueBundle(
       (p.values.fcDynastySf?.value ?? 0) > 0 ||
       (p.values.fcRedraft?.value ?? 0) > 0 ||
       (p.values.dp?.sf ?? 0) > 0 ||
-      (p.values.ktc?.sf ?? 0) > 0;
+      (p.values.dd?.value ?? 0) > 0 ||
+      (p.values.dtv?.sf ?? 0) > 0;
     if (rostered.has(id) || (isRookie && hasValue) || p.trending) {
       players[id] = p;
     }
@@ -104,6 +105,8 @@ export async function getLeagueBundle(
           table.dpPicks.map((p) => ({ name: p.name, value: p.value2qb })),
           "dynastyprocess"
         ),
+        dd: parsePickRows(table.ddPicks, "dynastydealer"),
+        dtv: parsePickRows(table.dtvPicks, "dynastytradevalues"),
       }
     : { fc: { values: {}, source: "static" }, dp: { values: {}, source: "static" } };
   const seasons = pickSeasons(leagueRes.data.season, draft);
@@ -151,7 +154,7 @@ export async function getLeagueBundle(
     teamAnalytics,
     defaultMode: mode,
     planningMode: planningMode(leagueConfig),
-    // Primary health = Sleeper data only; a blocked FantasyCalc/KTC fetch
+    // Primary health = Sleeper data only; a blocked value-source fetch
     // must not brand live rosters as demo data.
     source: worstSource(
       leagueRes.source,
