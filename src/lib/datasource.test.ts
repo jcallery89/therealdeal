@@ -30,19 +30,55 @@ describe("fetchWithFixture (live mode)", () => {
     expect(again.data).toEqual({ n: 1 });
   });
 
-  it("labels an expired entry served after a failed refetch as stale", async () => {
+  /** Run a fetch while fast-forwarding the retry delay. */
+  async function run() {
+    const p = fetchWithFixture(opts);
+    p.catch(() => {}); // callers assert on rejections after the timers run
+    await vi.advanceTimersByTimeAsync(1000);
+    return p;
+  }
+
+  it("labels an expired entry served after a failed refetch as stale, with the reason", async () => {
     mockFetch(ok({ n: 1 }));
     await fetchWithFixture(opts);
     vi.advanceTimersByTime(2000); // past the 1s TTL
     mockFetch(fail);
-    const result = await fetchWithFixture(opts);
+    const result = await run();
     expect(result.source).toBe("stale");
     expect(result.data).toEqual({ n: 1 });
+    expect(result.error).toBe("network down");
+  });
+
+  it("retries a rate-limited request once and recovers", async () => {
+    let calls = 0;
+    mockFetch(() => {
+      calls++;
+      return Promise.resolve(
+        calls === 1 ? new Response("slow down", { status: 429 }) : new Response(JSON.stringify({ n: 2 }))
+      );
+    });
+    const result = await run();
+    expect(calls).toBe(2);
+    expect(result.source).toBe("live");
+    expect(result.data).toEqual({ n: 2 });
+  });
+
+  it("does not retry a 404 and names rate limits clearly", async () => {
+    let calls = 0;
+    mockFetch(() => {
+      calls++;
+      return Promise.resolve(new Response("nope", { status: 404 }));
+    });
+    await expect(run()).rejects.toThrow("HTTP 404");
+    expect(calls).toBe(1);
+
+    mockFetch(() => Promise.resolve(new Response("slow down", { status: 429 })));
+    await expect(run()).rejects.toThrow("rate limited (HTTP 429)");
   });
 
   it("throws when the fetch fails with nothing cached", async () => {
     mockFetch(fail);
-    await expect(fetchWithFixture(opts)).rejects.toBeInstanceOf(SourceUnavailableError);
+    await expect(run()).rejects.toBeInstanceOf(SourceUnavailableError);
   });
 });
 

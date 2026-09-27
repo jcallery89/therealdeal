@@ -15,6 +15,8 @@ export interface Sourced<T> {
   data: T;
   source: DataSourceKind;
   fetchedAt: number;
+  /** Why the live fetch failed, when source is "stale". */
+  error?: string;
 }
 
 export function fixturesMode(): boolean {
@@ -67,27 +69,64 @@ export async function fetchWithFixture<T>(opts: FetchOptions<T>): Promise<Source
     return { data: cached.data, source: "cache", fetchedAt: cached.fetchedAt };
   }
 
-  try {
-    const res = await fetch(opts.url, {
-      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-      headers: { "user-agent": "therealdeal-league-manager" },
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status} for ${opts.url}`);
-    const raw = opts.asText ? await res.text() : await res.json();
-    const data = opts.parse ? opts.parse(raw) : (raw as T);
-    cache.set(opts.key, data, opts.ttlMs);
-    return { data, source: "live", fetchedAt: Date.now() };
-  } catch (err) {
-    if (cached) {
-      return { data: cached.data, source: "stale", fetchedAt: cached.fetchedAt };
+  let lastError: unknown;
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    if (attempt > 0) await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
+    try {
+      const res = await fetch(opts.url, {
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+        headers: { "user-agent": "therealdeal-league-manager" },
+      });
+      if (!res.ok) throw new HttpError(res.status, opts.url);
+      const raw = opts.asText ? await res.text() : await res.json();
+      const data = opts.parse ? opts.parse(raw) : (raw as T);
+      cache.set(opts.key, data, opts.ttlMs);
+      return { data, source: "live", fetchedAt: Date.now() };
+    } catch (err) {
+      lastError = err;
+      if (!isRetryable(err)) break;
     }
-    throw new SourceUnavailableError(opts.key, err);
   }
+  const error = describeError(lastError);
+  console.warn(`[datasource] ${opts.key} failed: ${error}`);
+  if (cached) {
+    return { data: cached.data, source: "stale", fetchedAt: cached.fetchedAt, error };
+  }
+  throw new SourceUnavailableError(opts.key, lastError);
+}
+
+/** One retry for transient failures (network blips, rate limits, 5xx). */
+const MAX_ATTEMPTS = 2;
+const RETRY_DELAY_MS = 400;
+
+class HttpError extends Error {
+  constructor(public status: number, url: string) {
+    super(`HTTP ${status} for ${url}`);
+  }
+}
+
+function isRetryable(err: unknown): boolean {
+  if (err instanceof HttpError) return err.status === 429 || err.status >= 500;
+  // Parse errors (bad JSON/HTML) won't fix themselves; network errors might.
+  return !(err instanceof SyntaxError);
+}
+
+/** Short, user-readable reason for a failed fetch. */
+export function describeError(err: unknown): string {
+  if (err instanceof HttpError) {
+    return err.status === 429 ? "rate limited (HTTP 429)" : `HTTP ${err.status}`;
+  }
+  if (err instanceof Error) {
+    if (err.name === "TimeoutError" || err.name === "AbortError") return `timed out after ${FETCH_TIMEOUT_MS / 1000}s`;
+    if (err instanceof SyntaxError) return "unexpected response format";
+    return err.message || err.name;
+  }
+  return String(err);
 }
 
 export class SourceUnavailableError extends Error {
   constructor(key: string, cause: unknown) {
-    super(`Data source unavailable: ${key} (${cause instanceof Error ? cause.message : String(cause)})`);
+    super(`Data source unavailable: ${key} (${describeError(cause)})`);
     this.name = "SourceUnavailableError";
   }
 }

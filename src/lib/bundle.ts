@@ -112,6 +112,17 @@ export async function getLeagueBundle(
       usersRes.source,
       tradedRes.source
     ),
+    // Which Sleeper requests failed (and why), so the banner can say.
+    sourceIssues: (
+      [
+        ["league settings", leagueRes],
+        ["rosters", rostersRes],
+        ["league members", usersRes],
+        ["traded picks", tradedRes],
+      ] as const
+    )
+      .filter(([, r]) => r.source === "stale")
+      .map(([name, r]) => ({ name, fetchedAt: r.fetchedAt, error: r.error ?? "unknown error" })),
     valueSources: table.meta.sources,
   };
 }

@@ -70,7 +70,7 @@ export default function WeeklyReview({
 
   return (
     <div className="mx-auto max-w-5xl">
-      <DataSourceBanner source={bundle.source} valueSources={bundle.valueSources} />
+      <DataSourceBanner source={bundle.source} valueSources={bundle.valueSources} issues={bundle.sourceIssues} />
 
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>

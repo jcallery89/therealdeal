@@ -80,7 +80,7 @@ export default function PlayersExplorer({ bundle, rows }: { bundle: LeagueBundle
 
   return (
     <div className="mx-auto max-w-6xl">
-      <DataSourceBanner source={bundle.source} valueSources={bundle.valueSources} />
+      <DataSourceBanner source={bundle.source} valueSources={bundle.valueSources} issues={bundle.sourceIssues} />
       <RosterNotice ready={ready} user={user} myRosterId={myRosterId} leagueLabel={leagueConfig.label} />
 
       <h1 className="text-2xl font-bold text-slate-100">Players</h1>

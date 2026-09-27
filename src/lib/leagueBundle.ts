@@ -41,8 +41,17 @@ export interface LeagueBundle {
    * genuinely live rosters as demo data.
    */
   source: DataSourceKind;
+  /** Sleeper requests that failed and are showing an earlier copy. */
+  sourceIssues: SourceIssue[];
   /** Health of each market-value source (live / cache / fixture / unavailable). */
   valueSources: { fc: DataSourceKind; ktc: DataSourceKind };
+}
+
+export interface SourceIssue {
+  name: string;
+  /** When the copy being shown was fetched. */
+  fetchedAt: number;
+  error: string;
 }
 
 export function teamName(users: SleeperLeagueUser[], roster: SleeperRoster): string {
