@@ -59,6 +59,8 @@ export function getDtvPicks(): Promise<Sourced<{ name: string; value: number }[]
     url: `${BASE}/pick-values?limit=200`,
     fixture: "dtv-picks.json",
     ttlMs: TTL.fantasycalc,
+    // A small WordPress host that drops some requests: try harder.
+    attempts: 3,
     parse: parseDtvPicks,
   });
 }
@@ -69,6 +71,7 @@ export function getDtvValues(format: "1qb" | "sf"): Promise<Sourced<DtvValues>> 
     url: `${BASE}/player-values?limit=2000${format === "sf" ? "&format=sf" : ""}`,
     fixture: format === "sf" ? "dtv-sf.json" : "dtv-1qb.json",
     ttlMs: TTL.fantasycalc,
+    attempts: 3,
     parse: parseDtvValues,
   });
 }

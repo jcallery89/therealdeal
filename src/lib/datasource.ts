@@ -46,6 +46,8 @@ export interface FetchOptions<T> {
   asText?: boolean;
   /** Skip the cache read (user-initiated sync); the result is still cached. */
   fresh?: boolean;
+  /** Tries before giving up (default 2); retries back off linearly. */
+  attempts?: number;
 }
 
 /**
@@ -70,8 +72,9 @@ export async function fetchWithFixture<T>(opts: FetchOptions<T>): Promise<Source
   }
 
   let lastError: unknown;
-  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-    if (attempt > 0) await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
+  const attempts = opts.attempts ?? MAX_ATTEMPTS;
+  for (let attempt = 0; attempt < attempts; attempt++) {
+    if (attempt > 0) await new Promise((r) => setTimeout(r, RETRY_DELAY_MS * attempt));
     try {
       const res = await fetch(opts.url, {
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),

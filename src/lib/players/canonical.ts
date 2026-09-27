@@ -140,16 +140,22 @@ export async function buildCanonicalTable(): Promise<CanonicalTable> {
 
   // The player database is required (throws -> error page); value and
   // trending sources are optional.
-  const [playersRes, fcDynRes, fcDyn1Res, fcRedRes, ddRes, dtv1Res, dtvSfRes, dtvPicksRes, dpRes, dpIdsRes, trendAddRes, trendDropRes] =
+  // DynastyTradeValues drops concurrent requests, so its three calls run in
+  // sequence (alongside everything else).
+  const dtvChain = (async () => {
+    const oneQb = await optional(getDtvValues("1qb"), EMPTY_DTV);
+    const sf = await optional(getDtvValues("sf"), EMPTY_DTV);
+    const picks = await optional(getDtvPicks(), []);
+    return [oneQb, sf, picks] as const;
+  })();
+  const [playersRes, fcDynRes, fcDyn1Res, fcRedRes, ddRes, [dtv1Res, dtvSfRes, dtvPicksRes], dpRes, dpIdsRes, trendAddRes, trendDropRes] =
     await Promise.all([
       getPlayersMap(),
       optional(getFcValues("dynasty_sf"), []),
       optional(getFcValues("dynasty_1qb"), []),
       optional(getFcValues("redraft_1qb"), []),
       optional(getDdValues(), EMPTY_DD),
-      optional(getDtvValues("1qb"), EMPTY_DTV),
-      optional(getDtvValues("sf"), EMPTY_DTV),
-      optional(getDtvPicks(), []),
+      dtvChain,
       optional(getDpValues(), EMPTY_DP),
       optional(getDpIds(), EMPTY_CROSSWALK),
       optional(getTrending("add"), []),
@@ -306,7 +312,8 @@ export async function buildCanonicalTable(): Promise<CanonicalTable> {
       fetchedAt: Date.now(),
       sourceDates: sourceDates({
         fc: fcDynRes.data.length ? fcDynRes.fetchedAt : null,
-        dp: dpRes.data.scrapeDate ? `${dpRes.data.scrapeDate}T12:00:00Z` : null,
+        // Day-granular: the scrape time isn't published, so assume end of day.
+        dp: dpRes.data.scrapeDate ? `${dpRes.data.scrapeDate}T23:59:59Z` : null,
         dd: ddRes.data.updatedAt ?? null,
         // "2026-09-23 14:22:27", published in UTC.
         dtv: dtvSfRes.data.generatedAt ? `${dtvSfRes.data.generatedAt.replace(" ", "T")}Z` : null,

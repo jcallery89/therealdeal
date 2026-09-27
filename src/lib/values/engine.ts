@@ -164,10 +164,15 @@ export function playerValue(
     const all = HORIZON_SOURCES[mode.horizon]
       .map((s) => ({ v: sourceValue(p, mode.horizon, s, ctx), stale: staleFor(p, s, ctx) }))
       .filter((x) => x.v > 0);
-    // Sources that predate his injury news sit out, unless none are current.
-    const fresh = all.filter((x) => !x.stale);
-    const votes = (fresh.length ? fresh : all).map((x) => x.v);
-    v = votes.length ? votes.reduce((a, b) => a + b, 0) / votes.length : 0;
+    const mean = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
+    v = mean(all.map((x) => x.v));
+    // A source that predates his injury news hasn't priced it in, so it may
+    // only pull him down: it sits out when it's above the current sources.
+    const current = all.filter((x) => !x.stale).map((x) => x.v);
+    if (current.length && current.length < all.length) {
+      const bar = mean(current);
+      v = Math.min(v, mean(all.filter((x) => !x.stale || x.v <= bar).map((x) => x.v)));
+    }
   } else {
     v = sourceValue(p, mode.horizon, mode.source, ctx);
   }
