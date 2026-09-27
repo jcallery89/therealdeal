@@ -1,0 +1,1350 @@
+{
+  "players": [
+    {
+      "name": "Josh Allen",
+      "position": "QB",
+      "team": "BUF",
+      "fpId": "fpp1001",
+      "value1qb": 5370,
+      "value2qb": 9247
+    },
+    {
+      "name": "Lamar Jackson",
+      "position": "QB",
+      "team": "BAL",
+      "fpId": "fpp1002",
+      "value1qb": 4804,
+      "value2qb": 9679
+    },
+    {
+      "name": "Jayden Daniels",
+      "position": "QB",
+      "team": "WAS",
+      "fpId": "fpp1003",
+      "value1qb": 4794,
+      "value2qb": 9912
+    },
+    {
+      "name": "Jalen Hurts",
+      "position": "QB",
+      "team": "PHI",
+      "fpId": "fpp1004",
+      "value1qb": 4212,
+      "value2qb": 8167
+    },
+    {
+      "name": "Patrick Mahomes",
+      "position": "QB",
+      "team": "KC",
+      "fpId": "fpp1005",
+      "value1qb": 3759,
+      "value2qb": 7328
+    },
+    {
+      "name": "Joe Burrow",
+      "position": "QB",
+      "team": "CIN",
+      "fpId": "fpp1006",
+      "value1qb": 4207,
+      "value2qb": 8009
+    },
+    {
+      "name": "C.J. Stroud",
+      "position": "QB",
+      "team": "HOU",
+      "fpId": "fpp1007",
+      "value1qb": 3168,
+      "value2qb": 7230
+    },
+    {
+      "name": "Caleb Williams",
+      "position": "QB",
+      "team": "CHI",
+      "fpId": "fpp1008",
+      "value1qb": 3577,
+      "value2qb": 6883
+    },
+    {
+      "name": "Drake Maye",
+      "position": "QB",
+      "team": "NE",
+      "fpId": "fpp1009",
+      "value1qb": 3360,
+      "value2qb": 6368
+    },
+    {
+      "name": "Justin Herbert",
+      "position": "QB",
+      "team": "LAC",
+      "fpId": "fpp1010",
+      "value1qb": 3115,
+      "value2qb": 6790
+    },
+    {
+      "name": "Kyler Murray",
+      "position": "QB",
+      "team": "ARI",
+      "fpId": "fpp1011",
+      "value1qb": 2810,
+      "value2qb": 5652
+    },
+    {
+      "name": "Bo Nix",
+      "position": "QB",
+      "team": "DEN",
+      "fpId": "fpp1012",
+      "value1qb": 2858,
+      "value2qb": 5789
+    },
+    {
+      "name": "Jordan Love",
+      "position": "QB",
+      "team": "GB",
+      "fpId": "fpp1013",
+      "value1qb": 2817,
+      "value2qb": 5563
+    },
+    {
+      "name": "Baker Mayfield",
+      "position": "QB",
+      "team": "TB",
+      "fpId": "fpp1014",
+      "value1qb": 2559,
+      "value2qb": 4573
+    },
+    {
+      "name": "Dak Prescott",
+      "position": "QB",
+      "team": "DAL",
+      "fpId": "fpp1015",
+      "value1qb": 2311,
+      "value2qb": 4288
+    },
+    {
+      "name": "Tua Tagovailoa",
+      "position": "QB",
+      "team": "MIA",
+      "fpId": "fpp1016",
+      "value1qb": 2213,
+      "value2qb": 3906
+    },
+    {
+      "name": "Trevor Lawrence",
+      "position": "QB",
+      "team": "JAX",
+      "fpId": "fpp1017",
+      "value1qb": 2107,
+      "value2qb": 4604
+    },
+    {
+      "name": "Cam Ward",
+      "position": "QB",
+      "team": "TEN",
+      "fpId": "fpp1018",
+      "value1qb": 2814,
+      "value2qb": 6086
+    },
+    {
+      "name": "J.J. McCarthy",
+      "position": "QB",
+      "team": "MIN",
+      "fpId": "fpp1019",
+      "value1qb": 2773,
+      "value2qb": 6138
+    },
+    {
+      "name": "Michael Penix Jr.",
+      "position": "QB",
+      "team": "ATL",
+      "fpId": "fpp1020",
+      "value1qb": 2725,
+      "value2qb": 4908
+    },
+    {
+      "name": "Jared Goff",
+      "position": "QB",
+      "team": "DET",
+      "fpId": "fpp1021",
+      "value1qb": 1894,
+      "value2qb": 4073
+    },
+    {
+      "name": "Brock Purdy",
+      "position": "QB",
+      "team": "SF",
+      "fpId": "fpp1022",
+      "value1qb": 2103,
+      "value2qb": 4810
+    },
+    {
+      "name": "Bijan Robinson",
+      "position": "RB",
+      "team": "ATL",
+      "fpId": "fpp1023",
+      "value1qb": 7629,
+      "value2qb": 8796
+    },
+    {
+      "name": "Jahmyr Gibbs",
+      "position": "RB",
+      "team": "DET",
+      "fpId": "fpp1024",
+      "value1qb": 8077,
+      "value2qb": 8886
+    },
+    {
+      "name": "Ashton Jeanty",
+      "position": "RB",
+      "team": "LV",
+      "fpId": "fpp1025",
+      "value1qb": 7888,
+      "value2qb": 9008
+    },
+    {
+      "name": "Saquon Barkley",
+      "position": "RB",
+      "team": "PHI",
+      "fpId": "fpp1026",
+      "value1qb": 5728,
+      "value2qb": 6594
+    },
+    {
+      "name": "Breece Hall",
+      "position": "RB",
+      "team": "NYJ",
+      "fpId": "fpp1027",
+      "value1qb": 4834,
+      "value2qb": 6189
+    },
+    {
+      "name": "Jonathan Taylor",
+      "position": "RB",
+      "team": "IND",
+      "fpId": "fpp1028",
+      "value1qb": 4652,
+      "value2qb": 5777
+    },
+    {
+      "name": "De'Von Achane",
+      "position": "RB",
+      "team": "MIA",
+      "fpId": "fpp1029",
+      "value1qb": 6086,
+      "value2qb": 6565
+    },
+    {
+      "name": "Bucky Irving",
+      "position": "RB",
+      "team": "TB",
+      "fpId": "fpp1030",
+      "value1qb": 6043,
+      "value2qb": 6331
+    },
+    {
+      "name": "Kyren Williams",
+      "position": "RB",
+      "team": "LAR",
+      "fpId": "fpp1031",
+      "value1qb": 4296,
+      "value2qb": 5290
+    },
+    {
+      "name": "Derrick Henry",
+      "position": "RB",
+      "team": "BAL",
+      "fpId": "fpp1032",
+      "value1qb": 3634,
+      "value2qb": 3708
+    },
+    {
+      "name": "Josh Jacobs",
+      "position": "RB",
+      "team": "GB",
+      "fpId": "fpp1033",
+      "value1qb": 4117,
+      "value2qb": 4736
+    },
+    {
+      "name": "Chase Brown",
+      "position": "RB",
+      "team": "CIN",
+      "fpId": "fpp1034",
+      "value1qb": 4069,
+      "value2qb": 4660
+    },
+    {
+      "name": "Kenneth Walker III",
+      "position": "RB",
+      "team": "SEA",
+      "fpId": "fpp1035",
+      "value1qb": 3930,
+      "value2qb": 4471
+    },
+    {
+      "name": "James Cook",
+      "position": "RB",
+      "team": "BUF",
+      "fpId": "fpp1036",
+      "value1qb": 3829,
+      "value2qb": 4328
+    },
+    {
+      "name": "Omarion Hampton",
+      "position": "RB",
+      "team": "LAC",
+      "fpId": "fpp1037",
+      "value1qb": 5164,
+      "value2qb": 5897
+    },
+    {
+      "name": "TreVeyon Henderson",
+      "position": "RB",
+      "team": "NE",
+      "fpId": "fpp1038",
+      "value1qb": 5066,
+      "value2qb": 5281
+    },
+    {
+      "name": "Quinshon Judkins",
+      "position": "RB",
+      "team": "CLE",
+      "fpId": "fpp1039",
+      "value1qb": 4890,
+      "value2qb": 5457
+    },
+    {
+      "name": "RJ Harvey",
+      "position": "RB",
+      "team": "DEN",
+      "fpId": "fpp1040",
+      "value1qb": 3907,
+      "value2qb": 4064
+    },
+    {
+      "name": "Chuba Hubbard",
+      "position": "RB",
+      "team": "CAR",
+      "fpId": "fpp1041",
+      "value1qb": 3405,
+      "value2qb": 3527
+    },
+    {
+      "name": "Alvin Kamara",
+      "position": "RB",
+      "team": "NO",
+      "fpId": "fpp1042",
+      "value1qb": 2599,
+      "value2qb": 2721
+    },
+    {
+      "name": "Christian McCaffrey",
+      "position": "RB",
+      "team": "SF",
+      "fpId": "fpp1043",
+      "value1qb": 3250,
+      "value2qb": 3999
+    },
+    {
+      "name": "Aaron Jones",
+      "position": "RB",
+      "team": "MIN",
+      "fpId": "fpp1044",
+      "value1qb": 2004,
+      "value2qb": 2321
+    },
+    {
+      "name": "Rachaad White",
+      "position": "RB",
+      "team": "TB",
+      "fpId": "fpp1045",
+      "value1qb": 1911,
+      "value2qb": 2246
+    },
+    {
+      "name": "Tony Pollard",
+      "position": "RB",
+      "team": "TEN",
+      "fpId": "fpp1046",
+      "value1qb": 2201,
+      "value2qb": 2188
+    },
+    {
+      "name": "David Montgomery",
+      "position": "RB",
+      "team": "DET",
+      "fpId": "fpp1047",
+      "value1qb": 2377,
+      "value2qb": 2615
+    },
+    {
+      "name": "D'Andre Swift",
+      "position": "RB",
+      "team": "CHI",
+      "fpId": "fpp1048",
+      "value1qb": 2507,
+      "value2qb": 2895
+    },
+    {
+      "name": "Isiah Pacheco",
+      "position": "RB",
+      "team": "KC",
+      "fpId": "fpp1049",
+      "value1qb": 2289,
+      "value2qb": 2590
+    },
+    {
+      "name": "Brian Robinson Jr.",
+      "position": "RB",
+      "team": "WAS",
+      "fpId": "fpp1050",
+      "value1qb": 1980,
+      "value2qb": 2080
+    },
+    {
+      "name": "Rhamondre Stevenson",
+      "position": "RB",
+      "team": "NE",
+      "fpId": "fpp1051",
+      "value1qb": 1915,
+      "value2qb": 1961
+    },
+    {
+      "name": "Zach Charbonnet",
+      "position": "RB",
+      "team": "SEA",
+      "fpId": "fpp1052",
+      "value1qb": 2571,
+      "value2qb": 2826
+    },
+    {
+      "name": "Jaylen Warren",
+      "position": "RB",
+      "team": "PIT",
+      "fpId": "fpp1053",
+      "value1qb": 1790,
+      "value2qb": 2042
+    },
+    {
+      "name": "Tyjae Spears",
+      "position": "RB",
+      "team": "TEN",
+      "fpId": "fpp1054",
+      "value1qb": 1513,
+      "value2qb": 1803
+    },
+    {
+      "name": "Kaleb Johnson",
+      "position": "RB",
+      "team": "PIT",
+      "fpId": "fpp1055",
+      "value1qb": 2765,
+      "value2qb": 3386
+    },
+    {
+      "name": "Braelon Allen",
+      "position": "RB",
+      "team": "NYJ",
+      "fpId": "fpp1056",
+      "value1qb": 2148,
+      "value2qb": 2203
+    },
+    {
+      "name": "Ja'Marr Chase",
+      "position": "WR",
+      "team": "CIN",
+      "fpId": "fpp1057",
+      "value1qb": 9175,
+      "value2qb": 9376
+    },
+    {
+      "name": "Justin Jefferson",
+      "position": "WR",
+      "team": "MIN",
+      "fpId": "fpp1058",
+      "value1qb": 8268,
+      "value2qb": 8829
+    },
+    {
+      "name": "CeeDee Lamb",
+      "position": "WR",
+      "team": "DAL",
+      "fpId": "fpp1059",
+      "value1qb": 7867,
+      "value2qb": 9038
+    },
+    {
+      "name": "Amon-Ra St. Brown",
+      "position": "WR",
+      "team": "DET",
+      "fpId": "fpp1060",
+      "value1qb": 7683,
+      "value2qb": 8255
+    },
+    {
+      "name": "Puka Nacua",
+      "position": "WR",
+      "team": "LAR",
+      "fpId": "fpp1061",
+      "value1qb": 7931,
+      "value2qb": 8777
+    },
+    {
+      "name": "Malik Nabers",
+      "position": "WR",
+      "team": "NYG",
+      "fpId": "fpp1062",
+      "value1qb": 7168,
+      "value2qb": 8559
+    },
+    {
+      "name": "Marvin Harrison Jr.",
+      "position": "WR",
+      "team": "ARI",
+      "fpId": "fpp1063",
+      "value1qb": 6427,
+      "value2qb": 7393
+    },
+    {
+      "name": "Nico Collins",
+      "position": "WR",
+      "team": "HOU",
+      "fpId": "fpp1064",
+      "value1qb": 5681,
+      "value2qb": 6533
+    },
+    {
+      "name": "Brian Thomas Jr.",
+      "position": "WR",
+      "team": "JAX",
+      "fpId": "fpp1065",
+      "value1qb": 7052,
+      "value2qb": 7785
+    },
+    {
+      "name": "A.J. Brown",
+      "position": "WR",
+      "team": "PHI",
+      "fpId": "fpp1066",
+      "value1qb": 5459,
+      "value2qb": 6370
+    },
+    {
+      "name": "Drake London",
+      "position": "WR",
+      "team": "ATL",
+      "fpId": "fpp1067",
+      "value1qb": 6700,
+      "value2qb": 6627
+    },
+    {
+      "name": "Garrett Wilson",
+      "position": "WR",
+      "team": "NYJ",
+      "fpId": "fpp1068",
+      "value1qb": 5684,
+      "value2qb": 6966
+    },
+    {
+      "name": "Tyreek Hill",
+      "position": "WR",
+      "team": "MIA",
+      "fpId": "fpp1069",
+      "value1qb": 3649,
+      "value2qb": 3921
+    },
+    {
+      "name": "Davante Adams",
+      "position": "WR",
+      "team": "LAR",
+      "fpId": "fpp1070",
+      "value1qb": 2561,
+      "value2qb": 3136
+    },
+    {
+      "name": "Jaxon Smith-Njigba",
+      "position": "WR",
+      "team": "SEA",
+      "fpId": "fpp1071",
+      "value1qb": 7019,
+      "value2qb": 7352
+    },
+    {
+      "name": "Ladd McConkey",
+      "position": "WR",
+      "team": "LAC",
+      "fpId": "fpp1072",
+      "value1qb": 5759,
+      "value2qb": 6635
+    },
+    {
+      "name": "Tetairoa McMillan",
+      "position": "WR",
+      "team": "CAR",
+      "fpId": "fpp1073",
+      "value1qb": 5223,
+      "value2qb": 6446
+    },
+    {
+      "name": "Travis Hunter",
+      "position": "WR",
+      "team": "JAX",
+      "fpId": "fpp1074",
+      "value1qb": 5557,
+      "value2qb": 6333
+    },
+    {
+      "name": "Rome Odunze",
+      "position": "WR",
+      "team": "CHI",
+      "fpId": "fpp1075",
+      "value1qb": 5333,
+      "value2qb": 5860
+    },
+    {
+      "name": "Rashee Rice",
+      "position": "WR",
+      "team": "KC",
+      "fpId": "fpp1076",
+      "value1qb": 5186,
+      "value2qb": 5271
+    },
+    {
+      "name": "DeVonta Smith",
+      "position": "WR",
+      "team": "PHI",
+      "fpId": "fpp1077",
+      "value1qb": 4488,
+      "value2qb": 5183
+    },
+    {
+      "name": "Jaylen Waddle",
+      "position": "WR",
+      "team": "MIA",
+      "fpId": "fpp1078",
+      "value1qb": 4132,
+      "value2qb": 4363
+    },
+    {
+      "name": "Terry McLaurin",
+      "position": "WR",
+      "team": "WAS",
+      "fpId": "fpp1079",
+      "value1qb": 3328,
+      "value2qb": 3441
+    },
+    {
+      "name": "Mike Evans",
+      "position": "WR",
+      "team": "TB",
+      "fpId": "fpp1080",
+      "value1qb": 2813,
+      "value2qb": 3014
+    },
+    {
+      "name": "Chris Godwin",
+      "position": "WR",
+      "team": "TB",
+      "fpId": "fpp1081",
+      "value1qb": 2560,
+      "value2qb": 2573
+    },
+    {
+      "name": "DK Metcalf",
+      "position": "WR",
+      "team": "PIT",
+      "fpId": "fpp1082",
+      "value1qb": 3586,
+      "value2qb": 4405
+    },
+    {
+      "name": "Zay Flowers",
+      "position": "WR",
+      "team": "BAL",
+      "fpId": "fpp1083",
+      "value1qb": 4688,
+      "value2qb": 5045
+    },
+    {
+      "name": "DJ Moore",
+      "position": "WR",
+      "team": "CHI",
+      "fpId": "fpp1084",
+      "value1qb": 3392,
+      "value2qb": 4283
+    },
+    {
+      "name": "Jameson Williams",
+      "position": "WR",
+      "team": "DET",
+      "fpId": "fpp1085",
+      "value1qb": 4433,
+      "value2qb": 4867
+    },
+    {
+      "name": "Xavier Worthy",
+      "position": "WR",
+      "team": "KC",
+      "fpId": "fpp1086",
+      "value1qb": 5027,
+      "value2qb": 5260
+    },
+    {
+      "name": "Jordan Addison",
+      "position": "WR",
+      "team": "MIN",
+      "fpId": "fpp1087",
+      "value1qb": 3942,
+      "value2qb": 4434
+    },
+    {
+      "name": "Chris Olave",
+      "position": "WR",
+      "team": "NO",
+      "fpId": "fpp1088",
+      "value1qb": 3569,
+      "value2qb": 4405
+    },
+    {
+      "name": "George Pickens",
+      "position": "WR",
+      "team": "DAL",
+      "fpId": "fpp1089",
+      "value1qb": 3940,
+      "value2qb": 4110
+    },
+    {
+      "name": "Tee Higgins",
+      "position": "WR",
+      "team": "CIN",
+      "fpId": "fpp1090",
+      "value1qb": 4329,
+      "value2qb": 4414
+    },
+    {
+      "name": "Hollywood Brown",
+      "position": "WR",
+      "team": "KC",
+      "fpId": "fpp1091",
+      "value1qb": 1423,
+      "value2qb": 1668
+    },
+    {
+      "name": "Stefon Diggs",
+      "position": "WR",
+      "team": "NE",
+      "fpId": "fpp1092",
+      "value1qb": 1517,
+      "value2qb": 1776
+    },
+    {
+      "name": "Calvin Ridley",
+      "position": "WR",
+      "team": "TEN",
+      "fpId": "fpp1093",
+      "value1qb": 1776,
+      "value2qb": 1944
+    },
+    {
+      "name": "Jerry Jeudy",
+      "position": "WR",
+      "team": "CLE",
+      "fpId": "fpp1094",
+      "value1qb": 2194,
+      "value2qb": 2585
+    },
+    {
+      "name": "Courtland Sutton",
+      "position": "WR",
+      "team": "DEN",
+      "fpId": "fpp1095",
+      "value1qb": 1836,
+      "value2qb": 2341
+    },
+    {
+      "name": "Cooper Kupp",
+      "position": "WR",
+      "team": "SEA",
+      "fpId": "fpp1096",
+      "value1qb": 1453,
+      "value2qb": 1537
+    },
+    {
+      "name": "Matthew Golden",
+      "position": "WR",
+      "team": "GB",
+      "fpId": "fpp1097",
+      "value1qb": 3591,
+      "value2qb": 3954
+    },
+    {
+      "name": "Emeka Egbuka",
+      "position": "WR",
+      "team": "TB",
+      "fpId": "fpp1098",
+      "value1qb": 4051,
+      "value2qb": 4915
+    },
+    {
+      "name": "Luther Burden III",
+      "position": "WR",
+      "team": "CHI",
+      "fpId": "fpp1099",
+      "value1qb": 3377,
+      "value2qb": 3665
+    },
+    {
+      "name": "Jayden Higgins",
+      "position": "WR",
+      "team": "HOU",
+      "fpId": "fpp1100",
+      "value1qb": 2908,
+      "value2qb": 3376
+    },
+    {
+      "name": "Brock Bowers",
+      "position": "TE",
+      "team": "LV",
+      "fpId": "fpp1101",
+      "value1qb": 7253,
+      "value2qb": 7878
+    },
+    {
+      "name": "Trey McBride",
+      "position": "TE",
+      "team": "ARI",
+      "fpId": "fpp1102",
+      "value1qb": 6038,
+      "value2qb": 6233
+    },
+    {
+      "name": "Sam LaPorta",
+      "position": "TE",
+      "team": "DET",
+      "fpId": "fpp1103",
+      "value1qb": 4937,
+      "value2qb": 5161
+    },
+    {
+      "name": "George Kittle",
+      "position": "TE",
+      "team": "SF",
+      "fpId": "fpp1104",
+      "value1qb": 2858,
+      "value2qb": 3029
+    },
+    {
+      "name": "T.J. Hockenson",
+      "position": "TE",
+      "team": "MIN",
+      "fpId": "fpp1105",
+      "value1qb": 3095,
+      "value2qb": 3292
+    },
+    {
+      "name": "Mark Andrews",
+      "position": "TE",
+      "team": "BAL",
+      "fpId": "fpp1106",
+      "value1qb": 2308,
+      "value2qb": 2220
+    },
+    {
+      "name": "Travis Kelce",
+      "position": "TE",
+      "team": "KC",
+      "fpId": "fpp1107",
+      "value1qb": 1344,
+      "value2qb": 1644
+    },
+    {
+      "name": "David Njoku",
+      "position": "TE",
+      "team": "CLE",
+      "fpId": "fpp1108",
+      "value1qb": 2480,
+      "value2qb": 2382
+    },
+    {
+      "name": "Dalton Kincaid",
+      "position": "TE",
+      "team": "BUF",
+      "fpId": "fpp1109",
+      "value1qb": 2607,
+      "value2qb": 2690
+    },
+    {
+      "name": "Evan Engram",
+      "position": "TE",
+      "team": "DEN",
+      "fpId": "fpp1110",
+      "value1qb": 1378,
+      "value2qb": 1469
+    },
+    {
+      "name": "Kyle Pitts",
+      "position": "TE",
+      "team": "ATL",
+      "fpId": "fpp1111",
+      "value1qb": 2364,
+      "value2qb": 2574
+    },
+    {
+      "name": "Tucker Kraft",
+      "position": "TE",
+      "team": "GB",
+      "fpId": "fpp1112",
+      "value1qb": 3162,
+      "value2qb": 3620
+    },
+    {
+      "name": "Jake Ferguson",
+      "position": "TE",
+      "team": "DAL",
+      "fpId": "fpp1113",
+      "value1qb": 1706,
+      "value2qb": 2035
+    },
+    {
+      "name": "Pat Freiermuth",
+      "position": "TE",
+      "team": "PIT",
+      "fpId": "fpp1115",
+      "value1qb": 1285,
+      "value2qb": 1496
+    },
+    {
+      "name": "Tyler Warren",
+      "position": "TE",
+      "team": "IND",
+      "fpId": "fpp1116",
+      "value1qb": 4360,
+      "value2qb": 5272
+    },
+    {
+      "name": "Colston Loveland",
+      "position": "TE",
+      "team": "CHI",
+      "fpId": "fpp1117",
+      "value1qb": 4021,
+      "value2qb": 4644
+    },
+    {
+      "name": "Isaiah Likely",
+      "position": "TE",
+      "team": "BAL",
+      "fpId": "fpp1118",
+      "value1qb": 1670,
+      "value2qb": 1690
+    },
+    {
+      "name": "Hunter Henry",
+      "position": "TE",
+      "team": "NE",
+      "fpId": "fpp1120",
+      "value1qb": 892,
+      "value2qb": 1003
+    },
+    {
+      "name": "Justin Fields",
+      "position": "QB",
+      "team": "NYJ",
+      "fpId": "fpp2001",
+      "value1qb": 1263,
+      "value2qb": 2632
+    },
+    {
+      "name": "Daniel Jones",
+      "position": "QB",
+      "team": "IND",
+      "fpId": "fpp2002",
+      "value1qb": 669,
+      "value2qb": 1344
+    },
+    {
+      "name": "Tyler Allgeier",
+      "position": "RB",
+      "team": "ATL",
+      "fpId": "fpp2003",
+      "value1qb": 1415,
+      "value2qb": 1653
+    },
+    {
+      "name": "Jaylen Wright",
+      "position": "RB",
+      "team": "MIA",
+      "fpId": "fpp2004",
+      "value1qb": 1702,
+      "value2qb": 1989
+    },
+    {
+      "name": "Ray Davis",
+      "position": "RB",
+      "team": "BUF",
+      "fpId": "fpp2005",
+      "value1qb": 957,
+      "value2qb": 1227
+    },
+    {
+      "name": "Tank Bigsby",
+      "position": "RB",
+      "team": "JAX",
+      "fpId": "fpp2006",
+      "value1qb": 1207,
+      "value2qb": 1376
+    },
+    {
+      "name": "Wan'Dale Robinson",
+      "position": "WR",
+      "team": "NYG",
+      "fpId": "fpp2007",
+      "value1qb": 1320,
+      "value2qb": 1400
+    },
+    {
+      "name": "Rashid Shaheed",
+      "position": "WR",
+      "team": "NO",
+      "fpId": "fpp2008",
+      "value1qb": 1177,
+      "value2qb": 1243
+    },
+    {
+      "name": "Jalen McMillan",
+      "position": "WR",
+      "team": "TB",
+      "fpId": "fpp2009",
+      "value1qb": 1224,
+      "value2qb": 1319
+    },
+    {
+      "name": "Dalton Schultz",
+      "position": "TE",
+      "team": "HOU",
+      "fpId": "fpp2011",
+      "value1qb": 637,
+      "value2qb": 804
+    }
+  ],
+  "picks": [
+    {
+      "name": "2026 Pick 1.01",
+      "value1qb": 6292,
+      "value2qb": 6991
+    },
+    {
+      "name": "2026 Pick 2.01",
+      "value1qb": 2480,
+      "value2qb": 2756
+    },
+    {
+      "name": "2026 Pick 3.01",
+      "value1qb": 860,
+      "value2qb": 955
+    },
+    {
+      "name": "2026 Pick 4.01",
+      "value1qb": 332,
+      "value2qb": 369
+    },
+    {
+      "name": "2026 Pick 1.02",
+      "value1qb": 6112,
+      "value2qb": 6791
+    },
+    {
+      "name": "2026 Pick 2.02",
+      "value1qb": 2470,
+      "value2qb": 2744
+    },
+    {
+      "name": "2026 Pick 3.02",
+      "value1qb": 834,
+      "value2qb": 927
+    },
+    {
+      "name": "2026 Pick 4.02",
+      "value1qb": 332,
+      "value2qb": 369
+    },
+    {
+      "name": "2026 Pick 1.03",
+      "value1qb": 5924,
+      "value2qb": 6582
+    },
+    {
+      "name": "2026 Pick 2.03",
+      "value1qb": 2368,
+      "value2qb": 2631
+    },
+    {
+      "name": "2026 Pick 3.03",
+      "value1qb": 825,
+      "value2qb": 917
+    },
+    {
+      "name": "2026 Pick 4.03",
+      "value1qb": 322,
+      "value2qb": 358
+    },
+    {
+      "name": "2026 Pick 1.04",
+      "value1qb": 4504,
+      "value2qb": 5004
+    },
+    {
+      "name": "2026 Pick 2.04",
+      "value1qb": 1823,
+      "value2qb": 2026
+    },
+    {
+      "name": "2026 Pick 3.04",
+      "value1qb": 653,
+      "value2qb": 725
+    },
+    {
+      "name": "2026 Pick 4.04",
+      "value1qb": 225,
+      "value2qb": 250
+    },
+    {
+      "name": "2026 Pick 1.05",
+      "value1qb": 4489,
+      "value2qb": 4988
+    },
+    {
+      "name": "2026 Pick 2.05",
+      "value1qb": 1786,
+      "value2qb": 1984
+    },
+    {
+      "name": "2026 Pick 3.05",
+      "value1qb": 626,
+      "value2qb": 696
+    },
+    {
+      "name": "2026 Pick 4.05",
+      "value1qb": 232,
+      "value2qb": 258
+    },
+    {
+      "name": "2026 Pick 1.06",
+      "value1qb": 4348,
+      "value2qb": 4831
+    },
+    {
+      "name": "2026 Pick 2.06",
+      "value1qb": 1816,
+      "value2qb": 2018
+    },
+    {
+      "name": "2026 Pick 3.06",
+      "value1qb": 612,
+      "value2qb": 680
+    },
+    {
+      "name": "2026 Pick 4.06",
+      "value1qb": 223,
+      "value2qb": 248
+    },
+    {
+      "name": "2026 Pick 1.07",
+      "value1qb": 4323,
+      "value2qb": 4803
+    },
+    {
+      "name": "2026 Pick 2.07",
+      "value1qb": 1731,
+      "value2qb": 1923
+    },
+    {
+      "name": "2026 Pick 3.07",
+      "value1qb": 618,
+      "value2qb": 687
+    },
+    {
+      "name": "2026 Pick 4.07",
+      "value1qb": 219,
+      "value2qb": 243
+    },
+    {
+      "name": "2026 Pick 1.08",
+      "value1qb": 3347,
+      "value2qb": 3719
+    },
+    {
+      "name": "2026 Pick 2.08",
+      "value1qb": 1303,
+      "value2qb": 1448
+    },
+    {
+      "name": "2026 Pick 3.08",
+      "value1qb": 442,
+      "value2qb": 491
+    },
+    {
+      "name": "2026 Pick 4.08",
+      "value1qb": 151,
+      "value2qb": 168
+    },
+    {
+      "name": "2026 Pick 1.09",
+      "value1qb": 3182,
+      "value2qb": 3535
+    },
+    {
+      "name": "2026 Pick 2.09",
+      "value1qb": 1300,
+      "value2qb": 1444
+    },
+    {
+      "name": "2026 Pick 3.09",
+      "value1qb": 431,
+      "value2qb": 479
+    },
+    {
+      "name": "2026 Pick 4.09",
+      "value1qb": 155,
+      "value2qb": 172
+    },
+    {
+      "name": "2026 Pick 1.10",
+      "value1qb": 3126,
+      "value2qb": 3473
+    },
+    {
+      "name": "2026 Pick 2.10",
+      "value1qb": 1270,
+      "value2qb": 1411
+    },
+    {
+      "name": "2026 Pick 3.10",
+      "value1qb": 428,
+      "value2qb": 476
+    },
+    {
+      "name": "2026 Pick 4.10",
+      "value1qb": 149,
+      "value2qb": 166
+    },
+    {
+      "name": "2027 Early 1st",
+      "value1qb": 5261,
+      "value2qb": 5845
+    },
+    {
+      "name": "2027 Mid 1st",
+      "value1qb": 3910,
+      "value2qb": 4344
+    },
+    {
+      "name": "2027 Late 1st",
+      "value1qb": 2952,
+      "value2qb": 3280
+    },
+    {
+      "name": "2027 Early 2nd",
+      "value1qb": 2084,
+      "value2qb": 2316
+    },
+    {
+      "name": "2027 Mid 2nd",
+      "value1qb": 1587,
+      "value2qb": 1763
+    },
+    {
+      "name": "2027 Late 2nd",
+      "value1qb": 1157,
+      "value2qb": 1285
+    },
+    {
+      "name": "2027 Early 3rd",
+      "value1qb": 705,
+      "value2qb": 783
+    },
+    {
+      "name": "2027 Mid 3rd",
+      "value1qb": 566,
+      "value2qb": 629
+    },
+    {
+      "name": "2027 Late 3rd",
+      "value1qb": 403,
+      "value2qb": 448
+    },
+    {
+      "name": "2027 Early 4th",
+      "value1qb": 273,
+      "value2qb": 303
+    },
+    {
+      "name": "2027 Mid 4th",
+      "value1qb": 199,
+      "value2qb": 221
+    },
+    {
+      "name": "2027 Late 4th",
+      "value1qb": 146,
+      "value2qb": 162
+    },
+    {
+      "name": "2028 Early 1st",
+      "value1qb": 4496,
+      "value2qb": 4995
+    },
+    {
+      "name": "2028 Mid 1st",
+      "value1qb": 3478,
+      "value2qb": 3864
+    },
+    {
+      "name": "2028 Late 1st",
+      "value1qb": 2650,
+      "value2qb": 2944
+    },
+    {
+      "name": "2028 Early 2nd",
+      "value1qb": 1819,
+      "value2qb": 2021
+    },
+    {
+      "name": "2028 Mid 2nd",
+      "value1qb": 1422,
+      "value2qb": 1580
+    },
+    {
+      "name": "2028 Late 2nd",
+      "value1qb": 1065,
+      "value2qb": 1183
+    },
+    {
+      "name": "2028 Early 3rd",
+      "value1qb": 639,
+      "value2qb": 710
+    },
+    {
+      "name": "2028 Mid 3rd",
+      "value1qb": 476,
+      "value2qb": 529
+    },
+    {
+      "name": "2028 Late 3rd",
+      "value1qb": 339,
+      "value2qb": 377
+    },
+    {
+      "name": "2028 Early 4th",
+      "value1qb": 248,
+      "value2qb": 275
+    },
+    {
+      "name": "2028 Mid 4th",
+      "value1qb": 177,
+      "value2qb": 197
+    },
+    {
+      "name": "2028 Late 4th",
+      "value1qb": 129,
+      "value2qb": 143
+    }
+  ]
+}

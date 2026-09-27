@@ -18,14 +18,18 @@ export interface DraftPick {
 export interface PickValueTable {
   /** key: `${season}-${round}` or `${season}-${round}-${bucket}` */
   values: Record<string, number>;
-  source: "fantasycalc" | "static";
+  source: "fantasycalc" | "dynastyprocess" | "static";
 }
 
+/** "2027 Early 1st", "2027 1st", "2027 Round 1" */
 const PICK_NAME_RE =
   /^(\d{4})\s+(?:(Early|Mid|Late)\s+)?(?:Round\s+(\d)|(\d)(?:st|nd|rd|th))$/i;
+/** "2026 Pick 1.03" — an exact draft slot. */
+const SLOT_PICK_RE = /^(\d{4})\s+Pick\s+(\d+)\.(\d+)$/i;
 
 export function isPickName(name: string): boolean {
-  return PICK_NAME_RE.test(name.trim());
+  const n = name.trim();
+  return PICK_NAME_RE.test(n) || SLOT_PICK_RE.test(n);
 }
 
 /**
@@ -40,20 +44,52 @@ const STATIC_ROUND_VALUES: Record<number, Record<string, number>> = {
   4: { early: 350, mid: 250, late: 180, generic: 250 },
 };
 
-export function parseFcPicks(entries: FcEntry[]): PickValueTable {
+/**
+ * Build a pick value table from named pick rows. Bucketed names map directly;
+ * exact slots ("2026 Pick 1.03") are averaged into early/mid/late terciles of
+ * that round (team count inferred from the highest slot), plus a generic
+ * round value. Falls back to the static curve when nothing parses.
+ */
+export function parsePickRows(
+  rows: { name: string; value: number }[],
+  source: Exclude<PickValueTable["source"], "static">
+): PickValueTable {
   const values: Record<string, number> = {};
-  for (const e of entries) {
-    const m = e.player.name.trim().match(PICK_NAME_RE);
-    if (!m) continue;
-    const season = m[1];
-    const bucket = m[2]?.toLowerCase() ?? null;
-    const round = parseInt(m[3] ?? m[4], 10);
-    const key = bucket ? `${season}-${round}-${bucket}` : `${season}-${round}`;
-    values[key] = e.value;
+  const slots = new Map<string, { slot: number; value: number }[]>();
+  for (const { name, value } of rows) {
+    const n = name.trim();
+    const m = n.match(PICK_NAME_RE);
+    if (m) {
+      const bucket = m[2]?.toLowerCase() ?? null;
+      const round = parseInt(m[3] ?? m[4], 10);
+      values[bucket ? `${m[1]}-${round}-${bucket}` : `${m[1]}-${round}`] = value;
+      continue;
+    }
+    const s = n.match(SLOT_PICK_RE);
+    if (s) {
+      const key = `${s[1]}-${parseInt(s[2], 10)}`;
+      const list = slots.get(key) ?? [];
+      list.push({ slot: parseInt(s[3], 10), value });
+      slots.set(key, list);
+    }
   }
-  return Object.keys(values).length > 0
-    ? { values, source: "fantasycalc" }
-    : { values, source: "static" };
+  const avg = (xs: number[]) => Math.round(xs.reduce((a, b) => a + b, 0) / xs.length);
+  for (const [key, list] of slots) {
+    const teams = Math.max(...list.map((x) => x.slot));
+    for (const b of ["early", "mid", "late"] as const) {
+      const inBucket = list.filter((x) => bucketForSlot(x.slot, teams) === b).map((x) => x.value);
+      if (inBucket.length && values[`${key}-${b}`] === undefined) values[`${key}-${b}`] = avg(inBucket);
+    }
+    if (values[key] === undefined) values[key] = avg(list.map((x) => x.value));
+  }
+  return Object.keys(values).length > 0 ? { values, source } : { values, source: "static" };
+}
+
+export function parseFcPicks(entries: FcEntry[]): PickValueTable {
+  return parsePickRows(
+    entries.map((e) => ({ name: e.player.name, value: e.value })),
+    "fantasycalc"
+  );
 }
 
 export function pickValue(
@@ -63,7 +99,7 @@ export function pickValue(
   bucket: PickBucket,
   currentSeason: string
 ): number {
-  if (table.source === "fantasycalc") {
+  if (table.source !== "static") {
     const keys = [
       bucket ? `${season}-${round}-${bucket}` : null,
       `${season}-${round}`,

@@ -1,6 +1,7 @@
 import { cache } from "../cache";
 import { TTL } from "../config";
 import { DataSourceKind, Sourced, worstSource } from "../datasource";
+import { DpPick, DpValues, getDpIds, getDpValues } from "../dynastyprocess/client";
 import { getFcValues } from "../fantasycalc/client";
 import { FcEntry } from "../fantasycalc/types";
 import { getKtcValues } from "../ktc/scrape";
@@ -20,22 +21,42 @@ export interface CanonicalPlayer {
   values: {
     fcDynastySf?: { value: number; overallRank: number; positionRank: number | null; trend30Day: number | null };
     fcRedraft?: { value: number; overallRank: number; positionRank: number | null; trend30Day: number | null };
+    /** FantasyCalc dynasty 1QB — the keeper horizon for the 1QB league. */
+    fcDynasty1qb?: { value: number; overallRank: number; positionRank: number | null; trend30Day: number | null };
     ktc?: { sf: number; oneQb: number };
+    /** DynastyProcess (FantasyPros expert consensus) dynasty values. */
+    dp?: { sf: number; oneQb: number };
   };
   trending?: { add?: number; drop?: number };
+}
+
+/** Health of each market-value provider. */
+export interface ValueSourceHealth {
+  fc: DataSourceKind;
+  ktc: DataSourceKind;
+  dp: DataSourceKind;
 }
 
 export interface CanonicalTable {
   players: Record<string, CanonicalPlayer>;
   /** FantasyCalc draft-pick entries (sleeperId null), per format. */
-  fcPicks: { dynastySf: FcEntry[]; redraft: FcEntry[] };
+  fcPicks: { dynastySf: FcEntry[]; dynasty1qb: FcEntry[]; redraft: FcEntry[] };
+  /** DynastyProcess pick values (1QB and superflex). */
+  dpPicks: DpPick[];
   meta: {
     source: DataSourceKind;
     /** Per-value-source health, so optional sources can degrade softly. */
-    sources: { fc: DataSourceKind; ktc: DataSourceKind };
+    sources: ValueSourceHealth;
     fetchedAt: number;
     ktcUnmatched: string[];
-    counts: { players: number; fcDynastySf: number; fcRedraft: number; ktc: number };
+    counts: {
+      players: number;
+      fcDynastySf: number;
+      fcDynasty1qb: number;
+      fcRedraft: number;
+      ktc: number;
+      dp: number;
+    };
   };
 }
 
@@ -53,15 +74,17 @@ function fcValueShape(e: FcEntry) {
  * FantasyCalc (direct via sleeperId) and KTC (normalized-name match with
  * position/team disambiguation). Cached for an hour.
  */
-/** Optional sources degrade to an empty list rather than failing the page. */
-async function optional<T>(p: Promise<Sourced<T[]>>): Promise<Sourced<T[]>> {
+/** Optional sources degrade to an empty value rather than failing the page. */
+async function optional<T>(p: Promise<Sourced<T>>, empty: T): Promise<Sourced<T>> {
   try {
     return await p;
   } catch (err) {
     console.warn("[canonical] optional source unavailable:", err);
-    return { data: [], source: "unavailable", fetchedAt: Date.now() };
+    return { data: empty, source: "unavailable", fetchedAt: Date.now() };
   }
 }
+
+const EMPTY_DP: DpValues = { players: [], picks: [] };
 
 /** Degraded tables are retried soon instead of sticking for the full TTL. */
 const DEGRADED_TTL_MS = 2 * 60 * 1000;
@@ -72,14 +95,17 @@ export async function buildCanonicalTable(): Promise<CanonicalTable> {
 
   // The player database is required (throws -> error page); value and
   // trending sources are optional.
-  const [playersRes, fcDynRes, fcRedRes, ktcRes, trendAddRes, trendDropRes] =
+  const [playersRes, fcDynRes, fcDyn1Res, fcRedRes, ktcRes, dpRes, dpIdsRes, trendAddRes, trendDropRes] =
     await Promise.all([
       getPlayersMap(),
-      optional(getFcValues("dynasty_sf")),
-      optional(getFcValues("redraft_1qb")),
-      optional(getKtcValues()),
-      optional(getTrending("add")),
-      optional(getTrending("drop")),
+      optional(getFcValues("dynasty_sf"), []),
+      optional(getFcValues("dynasty_1qb"), []),
+      optional(getFcValues("redraft_1qb"), []),
+      optional(getKtcValues(), []),
+      optional(getDpValues(), EMPTY_DP),
+      optional(getDpIds(), {}),
+      optional(getTrending("add"), []),
+      optional(getTrending("drop"), []),
     ]);
 
   const players: Record<string, CanonicalPlayer> = {};
@@ -105,44 +131,55 @@ export async function buildCanonicalTable(): Promise<CanonicalTable> {
     byName.set(key, list);
   }
 
-  const fcPicks: CanonicalTable["fcPicks"] = { dynastySf: [], redraft: [] };
-  let fcDynCount = 0;
-  for (const e of fcDynRes.data) {
-    if (!e.player.sleeperId || isPickName(e.player.name)) {
-      if (isPickName(e.player.name)) fcPicks.dynastySf.push(e);
-      continue;
+  const fcPicks: CanonicalTable["fcPicks"] = { dynastySf: [], dynasty1qb: [], redraft: [] };
+  const joinFc = (
+    entries: FcEntry[],
+    field: "fcDynastySf" | "fcDynasty1qb" | "fcRedraft",
+    pickList: FcEntry[]
+  ): number => {
+    let count = 0;
+    for (const e of entries) {
+      if (isPickName(e.player.name)) {
+        pickList.push(e);
+        continue;
+      }
+      const p = e.player.sleeperId ? players[e.player.sleeperId] : undefined;
+      if (p) {
+        p.values[field] = fcValueShape(e);
+        count++;
+      }
     }
-    const p = players[e.player.sleeperId];
-    if (p) {
-      p.values.fcDynastySf = fcValueShape(e);
-      fcDynCount++;
-    }
-  }
-  let fcRedCount = 0;
-  for (const e of fcRedRes.data) {
-    if (!e.player.sleeperId || isPickName(e.player.name)) {
-      if (isPickName(e.player.name)) fcPicks.redraft.push(e);
-      continue;
-    }
-    const p = players[e.player.sleeperId];
-    if (p) {
-      p.values.fcRedraft = fcValueShape(e);
-      fcRedCount++;
+    return count;
+  };
+  const fcDynCount = joinFc(fcDynRes.data, "fcDynastySf", fcPicks.dynastySf);
+  const fcDyn1Count = joinFc(fcDyn1Res.data, "fcDynasty1qb", fcPicks.dynasty1qb);
+  const fcRedCount = joinFc(fcRedRes.data, "fcRedraft", fcPicks.redraft);
+
+  /** Match a name-keyed row to a Sleeper id, disambiguating by position/team. */
+  const matchByName = (name: string, position: string, team: string | null): string | undefined => {
+    const candidates = byName.get(normalizeName(name)) ?? [];
+    if (candidates.length === 1) return candidates[0];
+    return (
+      candidates.find((id) => players[id].position === position && players[id].team === team) ??
+      candidates.find((id) => players[id].position === position)
+    );
+  };
+
+  // DynastyProcess: FantasyPros id -> Sleeper id crosswalk, name fallback.
+  let dpCount = 0;
+  for (const d of dpRes.data.players) {
+    const viaId = dpIdsRes.data[d.fpId];
+    const id = viaId && players[viaId] ? viaId : matchByName(d.name, d.position, d.team);
+    if (id) {
+      players[id].values.dp = { sf: d.value2qb, oneQb: d.value1qb };
+      dpCount++;
     }
   }
 
   const ktcUnmatched: string[] = [];
   let ktcCount = 0;
   for (const k of ktcRes.data) {
-    const candidates = byName.get(normalizeName(k.playerName)) ?? [];
-    let matchId: string | undefined;
-    if (candidates.length === 1) {
-      matchId = candidates[0];
-    } else if (candidates.length > 1) {
-      matchId =
-        candidates.find((id) => players[id].position === k.position && players[id].team === k.team) ??
-        candidates.find((id) => players[id].position === k.position);
-    }
+    const matchId = matchByName(k.playerName, k.position, k.team);
     if (matchId) {
       players[matchId].values.ktc = {
         sf: k.superflexValues?.value ?? 0,
@@ -166,29 +203,29 @@ export async function buildCanonicalTable(): Promise<CanonicalTable> {
   const table: CanonicalTable = {
     players,
     fcPicks,
+    dpPicks: dpRes.data.picks,
     meta: {
-      source: worstSource(
-        playersRes.source,
-        fcDynRes.source,
-        fcRedRes.source,
-        ktcRes.source
-      ),
+      source: worstSource(playersRes.source, fcDynRes.source, fcRedRes.source, dpRes.source),
       sources: {
-        fc: worstSource(fcDynRes.source, fcRedRes.source),
+        fc: worstSource(fcDynRes.source, fcDyn1Res.source, fcRedRes.source),
         ktc: ktcRes.source,
+        dp: dpRes.source,
       },
       fetchedAt: Date.now(),
       ktcUnmatched,
       counts: {
         players: Object.keys(players).length,
         fcDynastySf: fcDynCount,
+        fcDynasty1qb: fcDyn1Count,
         fcRedraft: fcRedCount,
         ktc: ktcCount,
+        dp: dpCount,
       },
     },
   };
   const failed = (s: DataSourceKind) => s === "stale" || s === "unavailable";
-  const degraded = failed(table.meta.sources.fc) || failed(table.meta.sources.ktc);
+  // KTC often blocks cloud hosts; it's an optional extra and doesn't shorten the cache.
+  const degraded = failed(table.meta.sources.fc) || failed(table.meta.sources.dp);
   cache.set("canonical", table, degraded && table.meta.source !== "fixture" ? DEGRADED_TTL_MS : TTL.canonical);
   return table;
 }

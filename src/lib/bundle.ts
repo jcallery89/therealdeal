@@ -11,8 +11,22 @@ import {
   getState,
   getTradedPicks,
 } from "./sleeper/client";
-import { computeValueContext, ValueSource } from "./values/engine";
-import { computePickInventory, parseFcPicks, pickRounds, pickSeasons } from "./values/picks";
+import { getSeasonProjections, getSeasonStats } from "./sleeper/stats";
+import {
+  computeValueContext,
+  defaultMode,
+  HORIZON_SOURCES,
+  PickTables,
+  planningMode,
+} from "./values/engine";
+import {
+  computePickInventory,
+  parseFcPicks,
+  parsePickRows,
+  pickRounds,
+  pickSeasons,
+} from "./values/picks";
+import { computeProductionValues } from "./values/production";
 import type { LeagueBundle } from "./leagueBundle";
 
 export type { LeagueBundle } from "./leagueBundle";
@@ -43,7 +57,24 @@ export async function getLeagueBundle(
   // Sleeper lists a league's drafts newest first.
   const draft = draftsRes?.data?.[0] ?? null;
 
-  const valueContext = computeValueContext(table.players);
+  // This-season production values (league-scored) only matter for the
+  // redraft-style horizon, i.e. The Real Deal.
+  let production: Record<string, number> = {};
+  if (!leagueConfig.isDynasty) {
+    const [stats, projections] = await Promise.all([
+      getSeasonStats(stateRes.data.season),
+      getSeasonProjections(stateRes.data.season),
+    ]);
+    production = computeProductionValues({
+      players: table.players,
+      teams: rostersRes.data.length,
+      rosterPositions: leagueRes.data.roster_positions,
+      scoring: leagueRes.data.scoring_settings,
+      seasonStats: stats.data,
+      seasonProjections: projections.data,
+    });
+  }
+  const valueContext = computeValueContext(table.players, production);
   const rostered = new Set(
     rostersRes.data.flatMap((r) => [
       ...(r.players ?? []),
@@ -57,15 +88,24 @@ export async function getLeagueBundle(
     const hasValue =
       (p.values.fcDynastySf?.value ?? 0) > 0 ||
       (p.values.fcRedraft?.value ?? 0) > 0 ||
+      (p.values.dp?.sf ?? 0) > 0 ||
       (p.values.ktc?.sf ?? 0) > 0;
     if (rostered.has(id) || (isRookie && hasValue) || p.trending) {
       players[id] = p;
     }
   }
 
-  const pickValues = parseFcPicks(
-    leagueConfig.isDynasty ? table.fcPicks.dynastySf : table.fcPicks.redraft
-  );
+  // Rookie-pick markets only apply to the dynasty league; the keeper league's
+  // full draft uses the static curve (see draftPickValue).
+  const pickValues: PickTables = leagueConfig.isDynasty
+    ? {
+        fc: parseFcPicks(table.fcPicks.dynastySf),
+        dp: parsePickRows(
+          table.dpPicks.map((p) => ({ name: p.name, value: p.value2qb })),
+          "dynastyprocess"
+        ),
+      }
+    : { fc: { values: {}, source: "static" }, dp: { values: {}, source: "static" } };
   const seasons = pickSeasons(leagueRes.data.season, draft);
   // The official draft order only applies to the draft it belongs to;
   // otherwise estimate the next draft's order from standings.
@@ -77,14 +117,14 @@ export async function getLeagueBundle(
     pickRounds(draft, tradedRes.data),
     draftSlots(rostersRes.data, orderForNextDraft)
   );
-  const defaultSource: ValueSource = leagueConfig.isDynasty ? "blend" : "fc";
+  const mode = defaultMode(leagueConfig);
 
   const teamAnalytics = computeTeamAnalytics({
     league: leagueConfig,
     rosters: rostersRes.data,
     players: table.players,
     ctx: valueContext,
-    source: defaultSource,
+    mode,
     picks,
     pickValues,
     leagueSeason: leagueRes.data.season,
@@ -97,13 +137,20 @@ export async function getLeagueBundle(
     users: usersRes.data,
     state: stateRes.data,
     players,
-    valueContext,
+    // Ship only the production values the client can use.
+    valueContext: {
+      ...valueContext,
+      production: Object.fromEntries(
+        Object.entries(valueContext.production).filter(([id]) => players[id])
+      ),
+    },
     pickValues,
     picks,
     pickSeasons: seasons,
     draft,
     teamAnalytics,
-    defaultSource,
+    defaultMode: mode,
+    planningMode: planningMode(leagueConfig),
     // Primary health = Sleeper data only; a blocked FantasyCalc/KTC fetch
     // must not brand live rosters as demo data.
     source: worstSource(
@@ -123,6 +170,16 @@ export async function getLeagueBundle(
     )
       .filter(([, r]) => r.source === "stale")
       .map(([name, r]) => ({ name, fetchedAt: r.fetchedAt, error: r.error ?? "unknown error" })),
-    valueSources: table.meta.sources,
+    valueSources: {
+      ...table.meta.sources,
+      proj: leagueConfig.isDynasty ? "unavailable" : Object.keys(production).length ? "live" : "unavailable",
+    },
+    // Only worth a warning when EVERY market source behind the default view failed.
+    valuesUnavailable:
+      table.meta.source !== "fixture" &&
+      HORIZON_SOURCES[mode.horizon].every((s) => {
+        const h = s === "proj" ? (Object.keys(production).length ? "live" : "unavailable") : table.meta.sources[s];
+        return h === "stale" || h === "unavailable";
+      }),
   };
 }

@@ -25,9 +25,10 @@ test("dynasty roster dashboard renders starters, strength, and demo banner", asy
   await page.screenshot({ path: `${SHOTS}/3-roster-dynasty.png`, fullPage: true });
 });
 
-test("keeper roster dashboard renders with KTC context values", async ({ page }) => {
+test("keeper roster dashboard shows this-season and keeper values", async ({ page }) => {
   await page.goto(`/league/${KEEPER}`);
   await expect(page.getByRole("heading", { name: "Starters" })).toBeVisible();
+  await expect(page.getByText(/^keep [\d,]+$/).first()).toBeVisible();
   await page.screenshot({ path: `${SHOTS}/4-roster-keeper.png` });
 });
 
@@ -53,6 +54,18 @@ test("trade analyzer evaluates a player-plus-pick swap", async ({ page }) => {
 
   const verdict = page.getByTestId("verdict-panel");
   await expect(verdict).toBeVisible();
+  await expect(verdict.getByText(/Fair trade|favors/i).first()).toBeVisible();
+
+  // Each value source gives its own verdict alongside the consensus.
+  const breakdown = page.getByTestId("source-breakdown");
+  await expect(breakdown).toBeVisible();
+  await expect(breakdown.getByText("FantasyCalc")).toBeVisible();
+  await expect(breakdown.getByText("DynastyProcess")).toBeVisible();
+  await expect(breakdown.getByText(/sources agree|Sources disagree/)).toBeVisible();
+
+  // Switching the lens to a single source re-values the trade.
+  await page.getByTestId("source-dp").click();
+  await expect(page.getByTestId("source-dp")).toHaveAttribute("aria-pressed", "true");
   await expect(verdict.getByText(/Fair trade|favors/i).first()).toBeVisible();
   await page.screenshot({ path: `${SHOTS}/5-trade.png`, fullPage: true });
 });
@@ -140,6 +153,27 @@ test("trade finder suggests deals and hands off to the analyzer", async ({ page 
   // Both sides arrive pre-filled, so the verdict panel is already rendered.
   await expect(page.getByTestId("verdict-panel")).toBeVisible();
   await page.screenshot({ path: `${SHOTS}/11-analyzer-prefill.png` });
+});
+
+test("keeper league trade finder toggles this-season vs keeper values", async ({ page }) => {
+  await page.goto(`/league/${KEEPER}/tradefinder`);
+  const cards = page.getByTestId("trade-suggestions").locator("> div");
+  await expect(cards.first()).toBeVisible();
+  // This season: FantasyCalc redraft + Sleeper projections; no dynasty-only sources.
+  await expect(page.getByTestId("horizon-season")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByTestId("source-proj")).toBeEnabled();
+  await expect(page.getByTestId("source-dp")).toHaveCount(0);
+
+  await page.getByTestId("horizon-keeper").click();
+  await expect(page.getByTestId("horizon-keeper")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByTestId("source-dp")).toBeEnabled();
+  await expect(page.getByTestId("source-proj")).toHaveCount(0);
+  await page.screenshot({ path: `${SHOTS}/10b-tradefinder-keeper.png`, fullPage: true });
+
+  // The analyzer opens with the same lens.
+  await cards.first().getByRole("link", { name: /Open in analyzer/ }).click();
+  await page.waitForURL("**/trade?*");
+  await expect(page.getByTestId("horizon-keeper")).toHaveAttribute("aria-pressed", "true");
 });
 
 test("cutdown page includes the league cut watch", async ({ page }) => {

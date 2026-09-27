@@ -16,4 +16,4 @@ export interface FcEntry {
   redraftValue: number | null;
 }
 
-export type FcFormat = "dynasty_sf" | "redraft_1qb";
+export type FcFormat = "dynasty_sf" | "dynasty_1qb" | "redraft_1qb";

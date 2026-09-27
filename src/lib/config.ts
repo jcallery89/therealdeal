@@ -57,6 +57,7 @@ export const TTL = {
   players: 24 * 60 * 60 * 1000,
   fantasycalc: 12 * 60 * 60 * 1000,
   ktc: 24 * 60 * 60 * 1000,
+  dynastyprocess: 12 * 60 * 60 * 1000,
   league: 5 * 60 * 1000,
   trending: 15 * 60 * 1000,
   state: 15 * 60 * 1000,

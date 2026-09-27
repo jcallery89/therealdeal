@@ -2,7 +2,7 @@ import { LeagueConfig } from "../config";
 import { CanonicalPlayer } from "../players/canonical";
 import type { StatLines } from "../sleeper/stats";
 import { SleeperRoster } from "../sleeper/types";
-import { trend30 } from "../values/engine";
+import { SingleSource, trend30 } from "../values/engine";
 import { scoreStatLine } from "./lineup";
 
 export const EXPLORER_POSITIONS = ["QB", "RB", "WR", "TE", "K", "DEF"] as const;
@@ -16,7 +16,15 @@ export interface PlayerRow {
   injury: string | null;
   /** Roster that owns the player in this league; null = free agent. */
   ownerRosterId: number | null;
+  /** Consensus value under the default lens. */
   value: number;
+  /** Each provider's value under the default lens (null = not listed / no data). */
+  vFc: number | null;
+  vDp: number | null;
+  vKtc: number | null;
+  vProj: number | null;
+  /** Keeper league: long-term 1QB consensus value. */
+  keeper: number | null;
   /** Rank by value within the position (valued players only). */
   posRank: number | null;
   trend: number;
@@ -44,8 +52,17 @@ export function buildPlayerRows(opts: {
   scoring: Record<string, number>;
   seasonStats: StatLines;
   projections: StatLines;
+  /** Per-provider value functions for the default lens. */
+  sourceValueOf?: Partial<Record<SingleSource, (p: CanonicalPlayer) => number>>;
+  keeperValueOf?: (p: CanonicalPlayer) => number;
 }): PlayerRow[] {
-  const { players, rosters, valueOf, league, scoring, seasonStats, projections } = opts;
+  const { players, rosters, valueOf, league, scoring, seasonStats, projections, sourceValueOf = {}, keeperValueOf } = opts;
+  const per = (src: SingleSource, p: CanonicalPlayer): number | null => {
+    const f = sourceValueOf[src];
+    if (!f) return null;
+    const v = f(p);
+    return v > 0 ? v : null;
+  };
   const owner = new Map<string, number>();
   for (const r of rosters) for (const id of r.players ?? []) owner.set(id, r.roster_id);
   const positions = new Set<string>(EXPLORER_POSITIONS);
@@ -72,6 +89,11 @@ export function buildPlayerRows(opts: {
       injury: p.injuryStatus,
       ownerRosterId,
       value,
+      vFc: per("fc", p),
+      vDp: per("dp", p),
+      vKtc: per("ktc", p),
+      vProj: per("proj", p),
+      keeper: keeperValueOf ? keeperValueOf(p) || null : null,
       posRank: null,
       trend: trend30(p, league),
       seasonPts,
@@ -96,7 +118,22 @@ export function buildPlayerRows(opts: {
   return rows.sort((a, b) => b.value - a.value);
 }
 
-export type SortKey = "value" | "posRank" | "ppg" | "seasonPts" | "gp" | "proj" | "trend" | "age" | "adds" | "name";
+export type SortKey =
+  | "value"
+  | "vFc"
+  | "vDp"
+  | "vKtc"
+  | "vProj"
+  | "keeper"
+  | "posRank"
+  | "ppg"
+  | "seasonPts"
+  | "gp"
+  | "proj"
+  | "trend"
+  | "age"
+  | "adds"
+  | "name";
 
 /** Sort rows by a column; missing values always sink to the bottom. */
 export function sortRows(rows: PlayerRow[], key: SortKey, dir: "asc" | "desc"): PlayerRow[] {

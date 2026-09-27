@@ -557,4 +557,72 @@ for (const p of allPlayers) {
 }
 writeFileSync(path.join(ROOT, "stats-season.json"), JSON.stringify(seasonStats, null, 2));
 
+// New sources are generated last so the fixtures above keep their values.
+
+// --- Season-long projections (array shape) for the projections value source ---
+writeFileSync(
+  path.join(ROOT, "projections-season.json"),
+  JSON.stringify(
+    allPlayers.map((p) => {
+      const gp = 17;
+      const ppg = Math.max(0, p.red / 430 + rand() * 5 - 2);
+      return {
+        player_id: p.id,
+        stats: {
+          gp,
+          pts_ppr: Math.round(ppg * gp * 10) / 10,
+          rec: Math.round((RECEPTIONS[p.pos] ?? 0) * gp * (0.6 + rand() * 0.8)),
+        },
+      };
+    }),
+    null,
+    2
+  )
+);
+
+// --- FantasyCalc dynasty 1QB (keeper horizon for The Real Deal) ---
+for (const p of allPlayers) {
+  p.dyn1 = jitter(Math.round(p.pos === "QB" ? p.dyn * 0.55 : p.dyn * 0.95), 0.04);
+}
+writeFileSync(
+  path.join(ROOT, "fantasycalc-dynasty-1qb.json"),
+  JSON.stringify([...fcEntries("dyn1"), ...fcPicks], null, 2)
+);
+
+// --- DynastyProcess (parsed shape of values.csv + db_playerids.csv). A few
+// players are missing from the id crosswalk to exercise the name fallback. ---
+const dpPlayers = allPlayers
+  .filter((p) => p.dyn > 1500 || rand() > 0.3)
+  .map((p) => ({
+    name: p.name,
+    position: p.pos,
+    team: p.team,
+    fpId: `fp${p.id}`,
+    value1qb: jitter(Math.round((p.pos === "QB" ? p.dyn * 0.5 : p.dyn * 0.9) * 0.95), 0.08),
+    value2qb: jitter(Math.round(p.dyn * 0.95), 0.08),
+  }));
+const dpPicks = [];
+for (let slot = 1; slot <= 10; slot++) {
+  for (const round of [1, 2, 3, 4]) {
+    const bucket = slot <= 3 ? 0 : slot <= 7 ? 1 : 2;
+    const v = jitter(Math.round(PICK_CURVE[round][bucket] * (1.08 - slot * 0.015)), 0.03);
+    dpPicks.push({ name: `${y1} Pick ${round}.${String(slot).padStart(2, "0")}`, value1qb: Math.round(v * 0.9), value2qb: v });
+  }
+}
+for (const yearsOut of [2, 3]) {
+  const season = String(parseInt(SEASON) + yearsOut);
+  for (const round of [1, 2, 3, 4]) {
+    ["Early", "Mid", "Late"].forEach((bucket, bi) => {
+      const v = jitter(Math.round(PICK_CURVE[round][bi] * Math.pow(0.88, yearsOut - 1)), 0.03);
+      dpPicks.push({ name: `${season} ${bucket} ${["1st", "2nd", "3rd", "4th"][round - 1]}`, value1qb: Math.round(v * 0.9), value2qb: v });
+    });
+  }
+}
+writeFileSync(path.join(ROOT, "dp-values.json"), JSON.stringify({ players: dpPlayers, picks: dpPicks }, null, 2));
+const dpIds = {};
+dpPlayers.forEach((p, i) => {
+  if (i % 17 !== 5) dpIds[p.fpId] = p.fpId.slice(2);
+});
+writeFileSync(path.join(ROOT, "dp-ids.json"), JSON.stringify(dpIds, null, 2));
+
 console.log(`Generated fixtures for ${allPlayers.length} players (${faPlayers.length} free agents) in ${ROOT}`);

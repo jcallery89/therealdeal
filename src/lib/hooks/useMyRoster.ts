@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { LeagueBundle, resolveMyRosterId } from "../leagueBundle";
 import { CanonicalPlayer } from "../players/canonical";
-import { playerValue, ValueSource } from "../values/engine";
+import { playerValue, ValueMode } from "../values/engine";
 import { useSleeperUser } from "./useSleeperUser";
 
 /**
@@ -22,10 +22,11 @@ export function useMyRoster(bundle: LeagueBundle) {
 }
 
 /** Format-aware value function for this league and value source. */
-export function useValueOf(bundle: LeagueBundle, source: ValueSource = bundle.defaultSource) {
+export function useValueOf(bundle: LeagueBundle, mode: ValueMode = bundle.defaultMode) {
   const { leagueConfig, valueContext } = bundle;
+  const { horizon, source } = mode;
   return useMemo(
-    () => (p: CanonicalPlayer) => playerValue(p, leagueConfig, source, valueContext),
-    [leagueConfig, source, valueContext]
+    () => (p: CanonicalPlayer) => playerValue(p, leagueConfig, { horizon, source }, valueContext),
+    [leagueConfig, horizon, source, valueContext]
   );
 }

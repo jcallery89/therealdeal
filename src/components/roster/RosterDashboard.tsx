@@ -15,7 +15,6 @@ import {
 import { LeagueBundle, teamName } from "@/lib/leagueBundle";
 import { BYE_WEEKS } from "@/lib/config";
 import { useMyRoster, useValueOf } from "@/lib/hooks/useMyRoster";
-import { keeperContextValue } from "@/lib/values/engine";
 
 export default function RosterDashboard({ bundle }: { bundle: LeagueBundle }) {
   const {
@@ -31,6 +30,8 @@ export default function RosterDashboard({ bundle }: { bundle: LeagueBundle }) {
   const { user, ready, myRosterId, viewRosterId, setViewRosterId } = useMyRoster(bundle);
   const roster = rosters.find((r) => r.roster_id === viewRosterId) ?? rosters[0];
   const valueOf = useValueOf(bundle);
+  // Keeper league: long-term value shown next to this-season value.
+  const keeperValueOf = useValueOf(bundle, bundle.planningMode);
 
   const slots = useMemo(() => starterSlots(league.roster_positions), [league.roster_positions]);
 
@@ -117,12 +118,12 @@ export default function RosterDashboard({ bundle }: { bundle: LeagueBundle }) {
                   <PlayerCell player={p} playerId={id} currentWeek={state.week} />
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
-                  {!leagueConfig.isDynasty && p && keeperContextValue(p) !== null && (
+                  {!leagueConfig.isDynasty && p && keeperValueOf(p) > 0 && (
                     <span
                       className="font-mono text-[11px] text-slate-600"
-                      title="KeepTradeCut dynasty 1QB value (keeper context)"
+                      title="Keeper value: long-term 1QB consensus (FantasyCalc, DynastyProcess, KTC)"
                     >
-                      ktc {keeperContextValue(p)!.toLocaleString("en-US")}
+                      keep {keeperValueOf(p).toLocaleString("en-US")}
                     </span>
                   )}
                   {p && (
@@ -141,7 +142,7 @@ export default function RosterDashboard({ bundle }: { bundle: LeagueBundle }) {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <DataSourceBanner source={bundle.source} valueSources={bundle.valueSources} issues={bundle.sourceIssues} />
+      <DataSourceBanner source={bundle.source} valuesUnavailable={bundle.valuesUnavailable} issues={bundle.sourceIssues} />
       <RosterNotice ready={ready} user={user} myRosterId={myRosterId} leagueLabel={leagueConfig.label} />
 
       <div className="flex flex-wrap items-end justify-between gap-3">

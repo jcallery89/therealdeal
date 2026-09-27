@@ -27,6 +27,16 @@ export default function PlayersExplorer({ bundle, rows }: { bundle: LeagueBundle
 
   const hasStats = rows.some((r) => r.seasonPts !== null);
   const hasProj = rows.some((r) => r.proj !== null);
+  // One column per value provider that has data, so disagreements are visible.
+  const sourceCols = (
+    [
+      ["vFc", "FC", "FantasyCalc"],
+      ["vDp", "DP", "DynastyProcess (FantasyPros consensus)"],
+      ["vKtc", "KTC", "KeepTradeCut"],
+      ["vProj", "Proj", "Sleeper projections, your league's scoring"],
+      ["keeper", "Keeper", "Long-term 1QB keeper value (consensus)"],
+    ] as const
+  ).filter(([k]) => rows.some((r) => r[k] !== null));
 
   const ownerName = useMemo(
     () => new Map(rosters.map((r) => [r.roster_id, teamName(users, r)])),
@@ -57,13 +67,24 @@ export default function PlayersExplorer({ bundle, rows }: { bundle: LeagueBundle
     setLimit(PAGE);
   };
 
-  const Header = ({ k, label, className = "" }: { k: SortKey; label: string; className?: string }) => (
+  const Header = ({
+    k,
+    label,
+    className = "",
+    title,
+  }: {
+    k: SortKey;
+    label: string;
+    className?: string;
+    title?: string;
+  }) => (
     <th
       className={`px-2 py-2 text-right ${className}`}
       aria-sort={sortKey === k ? (sortDir === "asc" ? "ascending" : "descending") : "none"}
     >
       <button
         onClick={() => setSort(k)}
+        title={title}
         data-testid={`sort-${k}`}
         className={`uppercase tracking-wider hover:text-slate-200 ${sortKey === k ? "text-emerald-300" : ""}`}
       >
@@ -80,13 +101,14 @@ export default function PlayersExplorer({ bundle, rows }: { bundle: LeagueBundle
 
   return (
     <div className="mx-auto max-w-6xl">
-      <DataSourceBanner source={bundle.source} valueSources={bundle.valueSources} issues={bundle.sourceIssues} />
+      <DataSourceBanner source={bundle.source} valuesUnavailable={bundle.valuesUnavailable} issues={bundle.sourceIssues} />
       <RosterNotice ready={ready} user={user} myRosterId={myRosterId} leagueLabel={leagueConfig.label} />
 
       <h1 className="text-2xl font-bold text-slate-100">Players</h1>
       <p className="mt-1 text-sm text-slate-500">
-        {leagueConfig.label} · {state.season} stats and week {state.week} projections scored with your league&apos;s
-        settings · click a column to sort
+        {leagueConfig.label} · Value is the consensus of every source (wide screens show each one) ·{" "}
+        {state.season} stats and week {state.week} projections scored with your league&apos;s settings · click a
+        column to sort
       </p>
       {!hasStats && (
         <p className="mt-2 text-xs text-sky-300">
@@ -139,6 +161,9 @@ export default function PlayersExplorer({ bundle, rows }: { bundle: LeagueBundle
               </th>
               <th className="px-2 py-2 text-left uppercase tracking-wider">Owner</th>
               <Header k="value" label="Value" />
+              {sourceCols.map(([k, label, title]) => (
+                <Header key={k} k={k} label={label} title={title} className="hidden lg:table-cell" />
+              ))}
               <Header k="posRank" label="Pos rk" />
               {hasStats && <Header k="ppg" label="PPG" />}
               {hasStats && <Header k="seasonPts" label="Pts" />}
@@ -174,6 +199,11 @@ export default function PlayersExplorer({ bundle, rows }: { bundle: LeagueBundle
                     )}
                   </td>
                   <td className="px-2 py-1.5 text-right font-mono text-slate-200">{r.value > 0 ? fmt(r.value) : "—"}</td>
+                  {sourceCols.map(([k]) => (
+                    <td key={k} className="hidden px-2 py-1.5 text-right font-mono text-xs text-slate-500 lg:table-cell">
+                      {fmt(r[k])}
+                    </td>
+                  ))}
                   <td className="px-2 py-1.5 text-right font-mono text-slate-400">
                     {r.posRank !== null ? `${r.position}${r.posRank}` : "—"}
                   </td>
@@ -200,7 +230,7 @@ export default function PlayersExplorer({ bundle, rows }: { bundle: LeagueBundle
             })}
             {visible.length === 0 && (
               <tr>
-                <td colSpan={11} className="px-3 py-6 text-center text-sm text-slate-600">
+                <td colSpan={11 + sourceCols.length} className="px-3 py-6 text-center text-sm text-slate-600">
                   No players match these filters.
                 </td>
               </tr>

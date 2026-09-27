@@ -1,8 +1,8 @@
 import { LeagueConfig } from "../config";
 import { CanonicalPlayer } from "../players/canonical";
 import { SleeperRoster } from "../sleeper/types";
-import { DraftPick, PickValueTable } from "../values/picks";
-import { draftPickValue, playerValue, ValueContext, ValueSource, trend30 } from "../values/engine";
+import { DraftPick } from "../values/picks";
+import { draftPickValue, PickTables, playerValue, ValueContext, ValueMode, trend30 } from "../values/engine";
 
 export type PostureBucket = "Contend" | "Push" | "Retool" | "Rebuild";
 
@@ -46,12 +46,12 @@ export function computeTeamAnalytics(opts: {
   rosters: SleeperRoster[];
   players: Record<string, CanonicalPlayer>;
   ctx: ValueContext;
-  source: ValueSource;
+  mode: ValueMode;
   picks: DraftPick[];
-  pickValues: PickValueTable;
+  pickValues: PickTables;
   leagueSeason: string;
 }): TeamAnalytics[] {
-  const { league, rosters, players, ctx, source, picks, pickValues, leagueSeason } = opts;
+  const { league, rosters, players, ctx, mode, picks, pickValues, leagueSeason } = opts;
 
   const base = rosters.map((r) => {
     const ids = r.players ?? [];
@@ -59,7 +59,7 @@ export function computeTeamAnalytics(opts: {
     for (const id of ids) {
       const p = players[id];
       if (!p) continue;
-      const v = playerValue(p, league, source, ctx);
+      const v = playerValue(p, league, mode, ctx);
       pv += v;
       winNow += p.values.fcRedraft?.value ?? 0;
       if (p.age !== null && p.age < 25) future += v;
@@ -71,7 +71,7 @@ export function computeTeamAnalytics(opts: {
     }
     let pickTotal = 0;
     for (const pick of picks.filter((p) => p.ownerRosterId === r.roster_id)) {
-      pickTotal += draftPickValue(pick, pickValues, leagueSeason, league, source, ctx);
+      pickTotal += draftPickValue(pick, pickValues, leagueSeason, league, mode, ctx);
     }
     if (league.isDynasty) future += pickTotal;
     const { wins, losses, ties } = r.settings;

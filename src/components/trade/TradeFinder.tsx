@@ -1,18 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import DataSourceBanner from "@/components/DataSourceBanner";
 import RosterNotice from "@/components/RosterNotice";
 import TeamPicker from "@/components/TeamPicker";
+import ValueModePicker from "@/components/ValueModePicker";
 import { PositionBadge } from "@/components/players/PlayerRow";
 import { starterSlots } from "@/lib/analysis/rosterStrength";
 import { findTrades } from "@/lib/analysis/tradeFinder";
 import { TradeAsset } from "@/lib/analysis/trade";
 import { LeagueBundle, teamName } from "@/lib/leagueBundle";
-import { useMyRoster } from "@/lib/hooks/useMyRoster";
-import { CanonicalPlayer } from "@/lib/players/canonical";
-import { draftPickValue, playerValue } from "@/lib/values/engine";
+import { useMyRoster, useValueOf } from "@/lib/hooks/useMyRoster";
+import { draftPickValue, ValueMode } from "@/lib/values/engine";
 
 function AssetLine({ asset }: { asset: TradeAsset }) {
   return (
@@ -44,10 +44,8 @@ export default function TradeFinder({ bundle }: { bundle: LeagueBundle }) {
     [rosters, users]
   );
 
-  const valueOf = useMemo(
-    () => (p: CanonicalPlayer) => playerValue(p, leagueConfig, bundle.defaultSource, valueContext),
-    [leagueConfig, bundle.defaultSource, valueContext]
-  );
+  const [mode, setMode] = useState<ValueMode>(bundle.defaultMode);
+  const valueOf = useValueOf(bundle, mode);
 
   const suggestions = useMemo(
     () =>
@@ -61,11 +59,11 @@ export default function TradeFinder({ bundle }: { bundle: LeagueBundle }) {
         teamAnalytics,
         picks,
         pickValueOf: (p) =>
-          draftPickValue(p, pickValues, league.season, leagueConfig, bundle.defaultSource, valueContext),
+          draftPickValue(p, pickValues, league.season, leagueConfig, mode, valueContext),
         teamNameById,
         limit: 10,
       }),
-    [leagueConfig, myRosterId, rosters, players, valueOf, league.roster_positions, teamAnalytics, picks, pickValues, league.season, bundle.defaultSource, valueContext, teamNameById]
+    [leagueConfig, myRosterId, rosters, players, valueOf, league.roster_positions, teamAnalytics, picks, pickValues, league.season, mode, valueContext, teamNameById]
   );
 
   const analyzerLink = (s: (typeof suggestions)[number]) => {
@@ -74,13 +72,16 @@ export default function TradeFinder({ bundle }: { bundle: LeagueBundle }) {
       b: String(s.opponentRosterId),
       sendA: s.send.map((x) => x.id).join(","),
       sendB: s.receive.map((x) => x.id).join(","),
+      // Open the analyzer with the same value lens.
+      h: mode.horizon,
+      src: mode.source,
     });
     return `/league/${leagueConfig.id}/trade?${params.toString()}`;
   };
 
   return (
     <div className="mx-auto max-w-5xl">
-      <DataSourceBanner source={bundle.source} valueSources={bundle.valueSources} issues={bundle.sourceIssues} />
+      <DataSourceBanner source={bundle.source} valuesUnavailable={bundle.valuesUnavailable} issues={bundle.sourceIssues} />
       <RosterNotice ready={ready} user={user} myRosterId={mineId} leagueLabel={leagueConfig.label} />
 
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -99,6 +100,9 @@ export default function TradeFinder({ bundle }: { bundle: LeagueBundle }) {
           myRosterId={mineId}
           label="Find trades for"
         />
+      </div>
+      <div className="mt-3">
+        <ValueModePicker league={leagueConfig} ctx={valueContext} mode={mode} onChange={setMode} />
       </div>
 
       <div data-testid="trade-suggestions" className="mt-5 flex flex-col gap-4">

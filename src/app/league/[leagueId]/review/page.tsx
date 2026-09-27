@@ -36,7 +36,7 @@ export default async function ReviewPage({
     users: bundle.users,
     players: bundle.players,
     rosterPositions: bundle.league.roster_positions,
-    valueOf: (p) => playerValue(p, bundle.leagueConfig, bundle.defaultSource, bundle.valueContext),
+    valueOf: (p) => playerValue(p, bundle.leagueConfig, bundle.defaultMode, bundle.valueContext),
     // Current records only describe the most recent week.
     includeRecords: week === defaultWeek,
   });

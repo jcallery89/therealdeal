@@ -67,3 +67,18 @@ export async function getSeasonStats(season: string): Promise<Sourced<StatLines>
     return { data: {}, source: "unavailable", fetchedAt: Date.now() };
   }
 }
+
+/** Full-season projections (Sleeper updates them in-season). Best-effort. */
+export async function getSeasonProjections(season: string): Promise<Sourced<StatLines>> {
+  try {
+    return await fetchWithFixture<StatLines>({
+      key: `sleeper:projections:${season}:season`,
+      url: `https://api.sleeper.app/projections/nfl/${season}?season_type=regular&${positionParams}`,
+      fixture: "projections-season.json",
+      ttlMs: TTL.projections,
+      parse: normalizeStatLines,
+    }).then((r) => ({ ...r, data: normalizeStatLines(r.data) }));
+  } catch {
+    return { data: {}, source: "unavailable", fetchedAt: Date.now() };
+  }
+}

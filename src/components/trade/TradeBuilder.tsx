@@ -12,7 +12,16 @@ import {
 } from "@/lib/analysis/trade";
 import { LeagueBundle, teamName } from "@/lib/leagueBundle";
 import { useMyRoster, useValueOf } from "@/lib/hooks/useMyRoster";
-import { draftPickValue, ValueSource } from "@/lib/values/engine";
+import ValueModePicker from "@/components/ValueModePicker";
+import {
+  draftPickValue,
+  HORIZON_LABELS,
+  HORIZON_SOURCES,
+  playerValue,
+  SOURCE_LABELS,
+  sourceAvailable,
+  ValueMode,
+} from "@/lib/values/engine";
 import { pickLabel } from "@/lib/values/picks";
 
 interface AssetOption extends TradeAsset {
@@ -26,6 +35,8 @@ export interface TradePrefill {
   teamB: number | null;
   sendA: string[];
   sendB: string[];
+  /** Value lens to open with (from the Trade Finder). */
+  mode?: ValueMode | null;
 }
 
 export default function TradeBuilder({
@@ -43,7 +54,7 @@ export default function TradeBuilder({
 
   const [teamA, setTeamA] = useState<number>(prefill?.teamA ?? homeRosterId);
   const [teamB, setTeamB] = useState<number>(prefill?.teamB ?? firstOther(prefill?.teamA ?? homeRosterId));
-  const [source, setSource] = useState<ValueSource>(bundle.defaultSource);
+  const [mode, setMode] = useState<ValueMode>(prefill?.mode ?? bundle.defaultMode);
   const [sendA, setSendA] = useState<TradeAsset[]>([]);
   const [sendB, setSendB] = useState<TradeAsset[]>([]);
 
@@ -65,7 +76,21 @@ export default function TradeBuilder({
     [rosters, users]
   );
 
-  const valueOf = useValueOf(bundle, source);
+  const valueOf = useValueOf(bundle, mode);
+
+  /** An asset's value under any lens (used for live values and the breakdown). */
+  const assetValue = (asset: TradeAsset, m: ValueMode): number => {
+    if (asset.kind === "player") {
+      const p = players[asset.id];
+      return p ? playerValue(p, leagueConfig, m, valueContext) : 0;
+    }
+    const pick = picks.find((x) => `${x.season}-${x.round}-${x.originalRosterId}` === asset.id);
+    return pick ? draftPickValue(pick, pickValues, league.season, leagueConfig, m, valueContext) : 0;
+  };
+  // Sent assets are re-valued under the current lens (switching sources used
+  // to leave them at the value they had when added).
+  const liveA = sendA.map((a) => ({ ...a, value: assetValue(a, mode) }));
+  const liveB = sendB.map((a) => ({ ...a, value: assetValue(a, mode) }));
 
   const optionsFor = (rosterId: number): AssetOption[] => {
     const roster = rosters.find((r) => r.roster_id === rosterId);
@@ -98,7 +123,7 @@ export default function TradeBuilder({
           kind: "pick" as const,
           id: `${p.season}-${p.round}-${p.originalRosterId}`,
           label,
-          value: draftPickValue(p, pickValues, league.season, leagueConfig, source, valueContext),
+          value: draftPickValue(p, pickValues, league.season, leagueConfig, mode, valueContext),
           search: label.toLowerCase(),
         };
       })
@@ -144,12 +169,39 @@ export default function TradeBuilder({
       };
     };
     return evaluateTrade(
-      { rosterId: teamA, assets: sendA },
-      { rosterId: teamB, assets: sendB },
+      { rosterId: teamA, assets: liveA },
+      { rosterId: teamB, assets: liveB },
       { a: teamNameById.get(teamA) ?? "Team A", b: teamNameById.get(teamB) ?? "Team B" },
-      { a: fitFor(teamA, sendB, sendA), b: fitFor(teamB, sendA, sendB) }
+      { a: fitFor(teamA, liveB, liveA), b: fitFor(teamB, liveA, liveB) }
     );
-  }, [sendA, sendB, teamA, teamB, bundle.league.roster_positions, leagueConfig, players, valueOf, rosters, teamAnalytics, teamNameById]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sendA, sendB, teamA, teamB, mode, bundle.league.roster_positions, leagueConfig, players, valueOf, rosters, teamAnalytics, teamNameById]);
+
+  // What each individual source thinks of the same trade.
+  const breakdown = useMemo(() => {
+    if (sendA.length === 0 && sendB.length === 0) return [];
+    const names = { a: teamNameById.get(teamA) ?? "Team A", b: teamNameById.get(teamB) ?? "Team B" };
+    return HORIZON_SOURCES[mode.horizon]
+      .filter((s) => sourceAvailable(mode.horizon, s, valueContext))
+      .map((s) => {
+        const m: ValueMode = { horizon: mode.horizon, source: s };
+        const revalue = (list: TradeAsset[]) => list.map((a) => ({ ...a, value: assetValue(a, m) }));
+        const e = evaluateTrade(
+          { rosterId: teamA, assets: revalue(sendA) },
+          { rosterId: teamB, assets: revalue(sendB) },
+          names
+        );
+        return { source: s, verdict: e.verdict, favors: e.favors, deltaPct: e.deltaPct };
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sendA, sendB, teamA, teamB, mode.horizon, valueContext, teamNameById]);
+  const agreement = (() => {
+    if (breakdown.length < 2) return null;
+    const calls = new Set(breakdown.map((b) => b.favors ?? "fair"));
+    return calls.size === 1
+      ? `All ${breakdown.length} sources agree`
+      : "Sources disagree — treat this one as a judgment call";
+  })();
 
   const sideColumn = (
     label: "A" | "B",
@@ -171,45 +223,25 @@ export default function TradeBuilder({
         setSent([]);
       }}
       options={optionsFor(rosterId)}
-      sent={sent}
-      setSent={setSent}
+      sent={sent.map((a) => ({ ...a, value: assetValue(a, mode) }))}
+      setSent={(next) => setSent(next)}
     />
   );
 
   return (
     <div className="mx-auto max-w-5xl">
-      <DataSourceBanner source={bundle.source} valueSources={bundle.valueSources} issues={bundle.sourceIssues} />
+      <DataSourceBanner source={bundle.source} valuesUnavailable={bundle.valuesUnavailable} issues={bundle.sourceIssues} />
       <RosterNotice ready={ready} user={user} myRosterId={myRosterId} leagueLabel={leagueConfig.label} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-slate-100">Trade Analyzer</h1>
           <p className="mt-1 text-sm text-slate-500">
-            {leagueConfig.label} · values reflect {leagueConfig.isDynasty ? "dynasty superflex" : "redraft (win-now)"} market
-            {" · "}TEs get a TEP adjustment
+            {leagueConfig.label} · {HORIZON_LABELS[mode.horizon].toLowerCase()}{" "}
+            {mode.horizon === "dynasty" ? "superflex" : mode.horizon === "keeper" ? "1QB" : ""} values ·{" "}
+            {SOURCE_LABELS[mode.source]} · TEs get a TEP adjustment
           </p>
         </div>
-        {leagueConfig.isDynasty ? (
-          <div className="flex overflow-hidden rounded-lg border border-slate-700 text-xs">
-            {(["fc", "ktc", "blend"] as const).map((s) => {
-              const down = s !== "blend" && bundle.valueSources[s] === "unavailable";
-              return (
-              <button
-                key={s}
-                onClick={() => setSource(s)}
-                disabled={down}
-                title={down ? "This source didn't respond — its values are unavailable right now" : undefined}
-                className={`px-3 py-1.5 font-medium disabled:cursor-not-allowed disabled:opacity-40 ${
-                  source === s ? "bg-emerald-500/20 text-emerald-300" : "bg-slate-900 text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                {s === "fc" ? "FantasyCalc" : s === "ktc" ? "KeepTradeCut" : "Blend"}
-              </button>
-              );
-            })}
-          </div>
-        ) : (
-          <span className="text-[11px] text-slate-600">FantasyCalc redraft values (KTC has no redraft market)</span>
-        )}
+        <ValueModePicker league={leagueConfig} ctx={valueContext} mode={mode} onChange={setMode} />
       </div>
 
       <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -226,10 +258,29 @@ export default function TradeBuilder({
             </span>
           </div>
 
+          {breakdown.length > 1 && (
+            <div data-testid="source-breakdown" className="mt-3 rounded-lg bg-slate-800/40 px-3 py-2">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                By source · {agreement}
+              </div>
+              <ul className="mt-1 grid gap-x-4 gap-y-0.5 text-xs sm:grid-cols-2">
+                {breakdown.map((b) => (
+                  <li key={b.source} className="flex justify-between gap-2">
+                    <span className="text-slate-400">{SOURCE_LABELS[b.source]}</span>
+                    <span className={b.favors ? "text-slate-200" : "text-emerald-300"}>
+                      {b.verdict}
+                      {b.favors ? ` (${Math.round(b.deltaPct)}%)` : ""}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <div className="mt-4 grid gap-4 md:grid-cols-2">
             {([
-              ["A", teamA, evaluation.a, sendB, evaluation.b],
-              ["B", teamB, evaluation.b, sendA, evaluation.a],
+              ["A", teamA, evaluation.a, liveB, evaluation.b],
+              ["B", teamB, evaluation.b, liveA, evaluation.a],
             ] as const).map(([side, rosterId, sideEval, receives, otherEval]) => {
               const receivesTotal = otherEval.adjTotal;
               const max = Math.max(evaluation.a.adjTotal, evaluation.b.adjTotal, 1);

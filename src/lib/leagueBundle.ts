@@ -9,8 +9,8 @@ import type {
   SleeperRoster,
   SleeperState,
 } from "./sleeper/types";
-import type { ValueContext, ValueSource } from "./values/engine";
-import type { DraftPick, PickValueTable } from "./values/picks";
+import type { PickTables, ValueContext, ValueMode } from "./values/engine";
+import type { DraftPick } from "./values/picks";
 
 /**
  * Everything a league page needs, assembled server-side (see bundle.ts) and
@@ -27,14 +27,17 @@ export interface LeagueBundle {
   players: Record<string, CanonicalPlayer>;
   /** Computed over the FULL table so blend normalization stays correct. */
   valueContext: ValueContext;
-  pickValues: PickValueTable;
+  pickValues: PickTables;
   picks: DraftPick[];
   /** Seasons tracked in `picks`, next draft first. */
   pickSeasons: string[];
   /** The league's most recent Sleeper draft, if any. */
   draft: SleeperDraft | null;
   teamAnalytics: TeamAnalytics[];
-  defaultSource: ValueSource;
+  /** Lens for trades, rosters, and analytics. */
+  defaultMode: ValueMode;
+  /** Lens for keep/cut decisions (long-term value). */
+  planningMode: ValueMode;
   /**
    * Health of the PRIMARY data (Sleeper rosters/league). Value sources are
    * tracked separately in valueSources so a blocked scraper doesn't flag
@@ -43,8 +46,10 @@ export interface LeagueBundle {
   source: DataSourceKind;
   /** Sleeper requests that failed and are showing an earlier copy. */
   sourceIssues: SourceIssue[];
-  /** Health of each market-value source (live / cache / fixture / unavailable). */
-  valueSources: { fc: DataSourceKind; ktc: DataSourceKind };
+  /** Health of each value source (live / cache / fixture / unavailable). */
+  valueSources: { fc: DataSourceKind; ktc: DataSourceKind; dp: DataSourceKind; proj: DataSourceKind };
+  /** Every source behind the default view failed — values are missing. */
+  valuesUnavailable: boolean;
 }
 
 export interface SourceIssue {

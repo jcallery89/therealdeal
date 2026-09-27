@@ -1,8 +1,6 @@
 import { DataSourceKind } from "@/lib/datasource";
 import type { SourceIssue } from "@/lib/leagueBundle";
 
-const SOURCE_NAMES = { fc: "FantasyCalc", ktc: "KeepTradeCut" } as const;
-
 function minutesAgo(ts: number): string {
   const mins = Math.max(0, Math.round((Date.now() - ts) / 60_000));
   return mins < 1 ? "under a minute ago" : `${mins} min ago`;
@@ -10,11 +8,12 @@ function minutesAgo(ts: number): string {
 
 export default function DataSourceBanner({
   source,
-  valueSources,
+  valuesUnavailable = false,
   issues = [],
 }: {
   source: DataSourceKind;
-  valueSources?: { fc: DataSourceKind; ktc: DataSourceKind };
+  /** Every value source behind the current view failed. */
+  valuesUnavailable?: boolean;
   issues?: SourceIssue[];
 }) {
   if (source === "fixture") {
@@ -50,21 +49,16 @@ export default function DataSourceBanner({
     );
   }
 
-  // Rosters are fine; softly note value sources that failed.
-  const valueNotes = (["fc", "ktc"] as const)
-    .filter((k) => valueSources?.[k] === "stale" || valueSources?.[k] === "unavailable")
-    .map((k) =>
-      valueSources![k] === "unavailable"
-        ? `${SOURCE_NAMES[k]} didn't respond`
-        : `${SOURCE_NAMES[k]} didn't refresh (showing earlier values)`
-    );
-  if (valueNotes.length === 0) return null;
+  // Individual value providers (e.g. KeepTradeCut, which often blocks cloud
+  // hosts) drop out of the consensus silently; only warn when all of them fail.
+  if (!valuesUnavailable) return null;
   return (
     <div
       data-testid="values-note"
       className="mb-4 rounded-md border border-slate-700 bg-slate-800/40 px-3 py-2 text-xs text-slate-400"
     >
-      {valueNotes.join("; ")} — values lean on what&apos;s available. Rosters are live from Sleeper.
+      Market values couldn&apos;t be loaded just now, so player values may be missing. Rosters are
+      live from Sleeper — try Sync in a few minutes.
     </div>
   );
 }

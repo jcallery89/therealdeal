@@ -90,8 +90,8 @@ export default function KeeperPlanner({ bundle }: { bundle: LeagueBundle }) {
   }, [deadline]);
 
   const valueOf = useMemo(
-    () => (p: CanonicalPlayer) => playerValue(p, leagueConfig, bundle.defaultSource, valueContext),
-    [leagueConfig, bundle.defaultSource, valueContext]
+    () => (p: CanonicalPlayer) => playerValue(p, leagueConfig, bundle.planningMode, valueContext),
+    [leagueConfig, bundle.planningMode, valueContext]
   );
 
   const plan = useMemo(
@@ -263,7 +263,7 @@ export default function KeeperPlanner({ bundle }: { bundle: LeagueBundle }) {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <DataSourceBanner source={bundle.source} valueSources={bundle.valueSources} issues={bundle.sourceIssues} />
+      <DataSourceBanner source={bundle.source} valuesUnavailable={bundle.valuesUnavailable} issues={bundle.sourceIssues} />
       <RosterNotice ready={ready} user={user} myRosterId={myRosterId} leagueLabel={leagueConfig.label} />
 
       <div className="flex flex-wrap items-end justify-between gap-3">

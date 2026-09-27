@@ -38,13 +38,13 @@ export default function StrategyView({ bundle }: { bundle: LeagueBundle }) {
         .filter((p) => p.yearsExp === 0)
         .map((p) => ({
           player: p,
-          value: playerValue(p, leagueConfig, bundle.defaultSource, valueContext),
+          value: playerValue(p, leagueConfig, bundle.defaultMode, valueContext),
           rosteredBy: rosters.find((r) => r.players?.includes(p.sleeperId))?.roster_id ?? null,
         }))
         .filter((r) => r.value > 0)
         .sort((a, b) => b.value - a.value)
         .slice(0, 25),
-    [players, leagueConfig, bundle.defaultSource, valueContext, rosters]
+    [players, leagueConfig, bundle.defaultMode, valueContext, rosters]
   );
 
   const seasons = bundle.pickSeasons;
@@ -63,7 +63,7 @@ export default function StrategyView({ bundle }: { bundle: LeagueBundle }) {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <DataSourceBanner source={bundle.source} valueSources={bundle.valueSources} issues={bundle.sourceIssues} />
+      <DataSourceBanner source={bundle.source} valuesUnavailable={bundle.valuesUnavailable} issues={bundle.sourceIssues} />
       <RosterNotice ready={ready} user={user} myRosterId={myRosterId} leagueLabel={leagueConfig.label} />
       <h1 className="text-2xl font-bold text-slate-100">
         {leagueConfig.isDynasty ? "Dynasty Strategy" : "League Strategy"}

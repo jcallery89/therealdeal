@@ -5,6 +5,7 @@ import {
   computePickInventory,
   isPickName,
   parseFcPicks,
+  parsePickRows,
   pickRounds,
   pickSeasons,
   pickValue,
@@ -118,5 +119,36 @@ describe("computePickInventory", () => {
     expect(picks.find((p) => p.season === "2026" && p.originalRosterId === 1)?.bucket).toBe("early");
     expect(picks.find((p) => p.season === "2026" && p.originalRosterId === 3)?.bucket).toBe("late");
     expect(picks.find((p) => p.season === "2027" && p.originalRosterId === 1)?.bucket).toBeNull();
+  });
+});
+
+describe("parsePickRows", () => {
+  it("averages exact slots into early/mid/late terciles and a generic round value", () => {
+    const rows = Array.from({ length: 12 }, (_, i) => ({
+      name: `2026 Pick 1.${String(i + 1).padStart(2, "0")}`,
+      value: 1200 - i * 100, // 1.01 = 1200 ... 1.12 = 100
+    }));
+    const table = parsePickRows(rows, "dynastyprocess");
+    expect(table.source).toBe("dynastyprocess");
+    expect(table.values["2026-1-early"]).toBe(1050); // slots 1-4
+    expect(table.values["2026-1-mid"]).toBe(650); // slots 5-8
+    expect(table.values["2026-1-late"]).toBe(250); // slots 9-12
+    expect(table.values["2026-1"]).toBe(650);
+  });
+
+  it("mixes slot and bucket naming styles", () => {
+    const table = parsePickRows(
+      [
+        { name: "2026 Pick 1.01", value: 7100 },
+        { name: "2027 Early 1st", value: 4517 },
+      ],
+      "dynastyprocess"
+    );
+    expect(pickValue(table, "2027", 1, "early", "2026")).toBe(4517);
+    expect(pickValue(table, "2026", 1, "early", "2026")).toBe(7100);
+  });
+
+  it("recognizes slot-style names as picks", () => {
+    expect(isPickName("2026 Pick 1.03")).toBe(true);
   });
 });

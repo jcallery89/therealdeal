@@ -2,106 +2,189 @@ import { LeagueConfig, TE_PREMIUM_MULTIPLIER } from "../config";
 import { CanonicalPlayer } from "../players/canonical";
 import { DraftPick, PickValueTable, pickValue } from "./picks";
 
-export type ValueSource = "fc" | "ktc" | "blend";
+/**
+ * What a value measures:
+ * - "dynasty": long-term superflex value (Dynasty league).
+ * - "season": this season only (The Real Deal).
+ * - "keeper": long-term 1QB value (The Real Deal keepers).
+ */
+export type ValueHorizon = "dynasty" | "season" | "keeper";
+export type SingleSource = "fc" | "dp" | "ktc" | "proj";
+export type ValueSource = "consensus" | SingleSource;
+
+export interface ValueMode {
+  horizon: ValueHorizon;
+  source: ValueSource;
+}
+
+export const SOURCE_LABELS: Record<ValueSource, string> = {
+  consensus: "Consensus",
+  fc: "FantasyCalc",
+  dp: "DynastyProcess",
+  ktc: "KeepTradeCut",
+  proj: "Projections",
+};
+
+export const HORIZON_LABELS: Record<ValueHorizon, string> = {
+  dynasty: "Dynasty",
+  season: "This season",
+  keeper: "Keeper",
+};
+
+/** The independent opinions behind each horizon; Consensus averages them. */
+export const HORIZON_SOURCES: Record<ValueHorizon, SingleSource[]> = {
+  dynasty: ["fc", "dp", "ktc"],
+  season: ["fc", "proj"],
+  keeper: ["fc", "dp", "ktc"],
+};
+
+export function horizonsFor(league: LeagueConfig): ValueHorizon[] {
+  return league.isDynasty ? ["dynasty"] : ["season", "keeper"];
+}
+
+/** Default lens for trades, rosters, and analytics. */
+export function defaultMode(league: LeagueConfig): ValueMode {
+  return { horizon: league.isDynasty ? "dynasty" : "season", source: "consensus" };
+}
+
+/** Keep/cut decisions look at long-term value. */
+export function planningMode(league: LeagueConfig): ValueMode {
+  return { horizon: league.isDynasty ? "dynasty" : "keeper", source: "consensus" };
+}
 
 export interface ValueContext {
-  fcDynMax: number;
-  fcRedMax: number;
-  ktcSfMax: number;
-  ktcOneQbMax: number;
+  /** Top raw value per `${horizon}:${source}` — the normalization scale. */
+  maxes: Record<string, number>;
+  /** player_id -> this-season PPG over replacement (league-scored). */
+  production: Record<string, number>;
 }
 
-export function computeValueContext(players: Record<string, CanonicalPlayer>): ValueContext {
-  let fcDynMax = 1, fcRedMax = 1, ktcSfMax = 1, ktcOneQbMax = 1;
-  for (const p of Object.values(players)) {
-    fcDynMax = Math.max(fcDynMax, p.values.fcDynastySf?.value ?? 0);
-    fcRedMax = Math.max(fcRedMax, p.values.fcRedraft?.value ?? 0);
-    ktcSfMax = Math.max(ktcSfMax, p.values.ktc?.sf ?? 0);
-    ktcOneQbMax = Math.max(ktcOneQbMax, p.values.ktc?.oneQb ?? 0);
+const SCALE = 10000;
+const key = (h: ValueHorizon, s: SingleSource) => `${h}:${s}`;
+
+function rawValue(p: CanonicalPlayer, horizon: ValueHorizon, source: SingleSource, ctx: ValueContext): number {
+  const v = p.values;
+  switch (horizon) {
+    case "dynasty":
+      if (source === "fc") return v.fcDynastySf?.value ?? 0;
+      if (source === "dp") return v.dp?.sf ?? 0;
+      if (source === "ktc") return v.ktc?.sf ?? 0;
+      return 0;
+    case "keeper":
+      if (source === "fc") return v.fcDynasty1qb?.value ?? 0;
+      if (source === "dp") return v.dp?.oneQb ?? 0;
+      if (source === "ktc") return v.ktc?.oneQb ?? 0;
+      return 0;
+    case "season":
+      if (source === "fc") return v.fcRedraft?.value ?? 0;
+      if (source === "proj") return ctx.production[p.sleeperId] ?? 0;
+      return 0;
   }
-  return { fcDynMax, fcRedMax, ktcSfMax, ktcOneQbMax };
 }
 
-const BLEND_SCALE = 10000;
+export function computeValueContext(
+  players: Record<string, CanonicalPlayer>,
+  production: Record<string, number> = {}
+): ValueContext {
+  const ctx: ValueContext = { maxes: {}, production };
+  for (const h of Object.keys(HORIZON_SOURCES) as ValueHorizon[]) {
+    for (const s of HORIZON_SOURCES[h]) {
+      let max = 1;
+      for (const p of Object.values(players)) max = Math.max(max, rawValue(p, h, s, ctx));
+      ctx.maxes[key(h, s)] = max;
+    }
+  }
+  return ctx;
+}
+
+/** Whether a source has any data for this horizon right now. */
+export function sourceAvailable(horizon: ValueHorizon, source: ValueSource, ctx: ValueContext): boolean {
+  if (source === "consensus") return HORIZON_SOURCES[horizon].some((s) => sourceAvailable(horizon, s, ctx));
+  return HORIZON_SOURCES[horizon].includes(source) && (ctx.maxes[key(horizon, source)] ?? 1) > 1;
+}
+
+/** One source's opinion on the shared 0-10,000 scale (share of its top player). */
+export function sourceValue(
+  p: CanonicalPlayer,
+  horizon: ValueHorizon,
+  source: SingleSource,
+  ctx: ValueContext
+): number {
+  const raw = rawValue(p, horizon, source, ctx);
+  return raw > 0 ? (raw / (ctx.maxes[key(horizon, source)] ?? 1)) * SCALE : 0;
+}
 
 function tepAdjust(value: number, position: string): number {
   return position === "TE" ? Math.round(value * TE_PREMIUM_MULTIPLIER) : value;
 }
 
 /**
- * Format-aware player value.
- * - Dynasty SF league: FC dynasty-SF and/or KTC SF. Blend = mean of the two
- *   after normalizing each source to share-of-top-player x 10000 (the sources
- *   use different absolute scales).
- * - Keeper league (1QB, win-now): FC redraft is primary. KTC has no redraft
- *   values, so 'ktc'/'blend' fall back to FC redraft there (KTC 1QB dynasty
- *   value is surfaced separately as context in the UI).
- * Both leagues apply the TE-premium multiplier.
+ * A player's value under a mode. Consensus averages every source that has an
+ * opinion on the player (a source that doesn't list them, or is down, simply
+ * doesn't vote). TE premium applies in both leagues.
  */
 export function playerValue(
   p: CanonicalPlayer,
   league: LeagueConfig,
-  source: ValueSource,
+  mode: ValueMode,
   ctx: ValueContext
 ): number {
-  if (league.isDynasty) {
-    const fc = p.values.fcDynastySf?.value ?? 0;
-    const ktc = p.values.ktc?.sf ?? 0;
-    const fcNorm = (fc / ctx.fcDynMax) * BLEND_SCALE;
-    const ktcNorm = (ktc / ctx.ktcSfMax) * BLEND_SCALE;
-    let v: number;
-    if (source === "fc") v = fc;
-    else if (source === "ktc") v = ktc;
-    else if (fc > 0 && ktc > 0) v = Math.round((fcNorm + ktcNorm) / 2);
-    else v = Math.round(Math.max(fcNorm, ktcNorm));
-    return tepAdjust(v, p.position);
+  let v: number;
+  if (mode.source === "consensus") {
+    const votes = HORIZON_SOURCES[mode.horizon]
+      .map((s) => sourceValue(p, mode.horizon, s, ctx))
+      .filter((x) => x > 0);
+    v = votes.length ? votes.reduce((a, b) => a + b, 0) / votes.length : 0;
+  } else {
+    v = sourceValue(p, mode.horizon, mode.source, ctx);
   }
-  return tepAdjust(p.values.fcRedraft?.value ?? 0, p.position);
-}
-
-/** Secondary context value shown alongside the primary (keeper league only). */
-export function keeperContextValue(p: CanonicalPlayer): number | null {
-  return p.values.ktc?.oneQb ?? null;
+  return tepAdjust(Math.round(v), p.position);
 }
 
 export function trend30(p: CanonicalPlayer, league: LeagueConfig): number {
   return (league.isDynasty ? p.values.fcDynastySf?.trend30Day : p.values.fcRedraft?.trend30Day) ?? 0;
 }
 
+// ---------------------------------------------------------------------------
+// Draft picks
+
+export interface PickTables {
+  fc: PickValueTable;
+  dp: PickValueTable;
+}
+
 /** FantasyCalc's typical top dynasty value — the static pick curve's scale. */
 const FC_REFERENCE_MAX = 10500;
 
 /**
- * Pick values come from FantasyCalc (or the static curve on the same scale),
- * while player values in Blend/KTC mode live on other scales. Map a raw pick
- * value into the active source's scale so picks and players stay comparable.
+ * Value of a draft pick on the same 0-10,000 scale as players. Dynasty picks
+ * come from FantasyCalc and DynastyProcess (KTC picks aren't scraped, so KTC
+ * mode uses FantasyCalc's). The 1QB keeper league's draft isn't a rookie
+ * draft, so its picks use the static curve.
  */
-export function scaledPickValue(
-  raw: number,
-  league: LeagueConfig,
-  source: ValueSource,
-  ctx: ValueContext
-): number {
-  if (!league.isDynasty || source === "fc") return raw;
-  const fcMax = ctx.fcDynMax > 1 ? ctx.fcDynMax : FC_REFERENCE_MAX;
-  if (source === "blend") return Math.round((raw * BLEND_SCALE) / fcMax);
-  const ktcMax = ctx.ktcSfMax > 1 ? ctx.ktcSfMax : 9999;
-  return Math.round((raw * ktcMax) / fcMax);
-}
-
-/** Value of a draft pick in the active source's scale. */
 export function draftPickValue(
   pick: DraftPick,
-  table: PickValueTable,
+  tables: PickTables,
   leagueSeason: string,
   league: LeagueConfig,
-  source: ValueSource,
+  mode: ValueMode,
   ctx: ValueContext
 ): number {
-  return scaledPickValue(
-    pickValue(table, pick.season, pick.round, pick.bucket, leagueSeason),
-    league,
-    source,
-    ctx
-  );
+  const norm = (table: PickValueTable, source: SingleSource) => {
+    const max = table.source === "static" ? FC_REFERENCE_MAX : ctx.maxes[key("dynasty", source)] ?? 1;
+    const scale = max > 1 ? max : FC_REFERENCE_MAX;
+    return (pickValue(table, pick.season, pick.round, pick.bucket, leagueSeason) / scale) * SCALE;
+  };
+  if (!league.isDynasty) return Math.round(norm({ values: {}, source: "static" }, "fc"));
+
+  const fc = tables.fc.source !== "static" ? norm(tables.fc, "fc") : null;
+  const dp = tables.dp.source !== "static" ? norm(tables.dp, "dp") : null;
+  const fallback = norm({ values: {}, source: "static" }, "fc");
+  let v: number;
+  if (mode.source === "dp") v = dp ?? fc ?? fallback;
+  else if (mode.source === "consensus") {
+    const votes = [fc, dp].filter((x): x is number => x !== null);
+    v = votes.length ? votes.reduce((a, b) => a + b, 0) / votes.length : fallback;
+  } else v = fc ?? dp ?? fallback;
+  return Math.round(v);
 }
